@@ -1,0 +1,192 @@
+import { createSlice, PayloadAction, createAsyncThunk, createSelector, createAction } from '@reduxjs/toolkit'
+import type { RootState } from '../store'
+import ApiService from '../api/api.service';
+import Cookies from 'js-cookie';
+
+// TODO: move to models
+interface SignUpProps {
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    rememberMe?: boolean,
+}
+interface UserProps {
+    userId: string,
+    email: string,
+    isAdmin: boolean;
+    loggedIn: boolean;
+    loading: boolean;
+    error: string,
+}
+
+export interface UserState {
+    shouldFetchData: boolean;
+    userInfo: UserProps,
+    signUp: {
+        inProgress: boolean,
+        error: string,
+    },
+    signIn: {
+        inProgress: boolean,
+        error: string,
+    }
+    accessToken: string;
+    shouldRenderApp: boolean;
+}
+
+const initialState: UserState = {
+    shouldFetchData: false,
+    userInfo: null,
+    signUp: { inProgress: false, error: null },
+    signIn: { inProgress: false, error: null },
+    accessToken: null,
+    shouldRenderApp: false,
+}
+
+export const signUp = createAsyncThunk('user/signUp', async (props: SignUpProps) => {
+    const { firstName, lastName, email, password } = props;
+    return await ApiService.signUp(firstName, lastName, email, password);
+});
+
+export const signIn = createAsyncThunk('user/signIn', async (props: Partial<SignUpProps>) => {
+    const { email, password, rememberMe } = props;
+    return await ApiService.signIn(email, password, rememberMe);
+});
+
+export const invalidateRefreshToken = createAsyncThunk('user/invalidateRefreshToken', async (props: { refreshToken: string }) => {  
+    const { refreshToken } = props;
+    return await ApiService.deleteRefreshToken(refreshToken);
+});
+
+export const checkToken = createAsyncThunk('user/checkToken', async (props: { token: string, refresh: boolean }) => {
+    const { token, refresh } = props;
+    return await ApiService.checkToken(token, refresh);
+});
+
+export const userSlice = createSlice({
+    name: 'user',
+    initialState,
+    reducers: {
+        setShouldFetchData: (state, action: PayloadAction<boolean>) => {
+            state.shouldFetchData = action.payload;
+        },
+        setShouldRenderApp: (state, action: PayloadAction<boolean>) => {
+            state.shouldRenderApp = action.payload;
+        },
+        signOut: (state) => {
+            state.userInfo = null;
+            state.shouldFetchData = false;
+            Cookies.remove('accessToken');
+            Cookies.remove('refreshToken');
+            state.accessToken = null;
+        }
+    },
+    extraReducers: (builder) => {
+        // signUp
+        builder.addCase(signUp.pending, (state) => {
+            state.signUp.inProgress = true;
+        })
+        builder.addCase(signUp.fulfilled, (state, action) => {
+            console.log(action.payload)
+            state.signUp.inProgress = false;
+            state.signUp.error = null;
+
+            state.userInfo = {
+                userId: action.payload.id,
+                email: action.payload.email,
+                isAdmin: action.payload.role === 'admin',
+                loggedIn: true,
+                loading: false,
+                error: '',
+            }
+            state.accessToken = action.payload.accessToken; // TODO
+            state.shouldFetchData = true;
+        })
+        builder.addCase(signUp.rejected, (state, action) => {
+            state.signUp.inProgress = false;
+            state.signUp.error = action.error.message;
+        })
+        // signIn
+        builder.addCase(signIn.pending, (state) => {
+            state.signIn.inProgress = true;
+        })
+        builder.addCase(signIn.fulfilled, (state, action) => {
+            // console.log(action.payload)
+            state.signIn.inProgress = false;
+            state.signIn.error = null;
+
+            state.userInfo = {
+                userId: action.payload.id,
+                email: action.payload.email,
+                isAdmin: action.payload.role === 'admin',
+                loggedIn: true,
+                loading: false,
+                error: '',
+            }
+            state.shouldFetchData = true;
+            state.accessToken = action.payload.accessToken;
+            Cookies.set('accessToken', action.payload.accessToken, { secure: true, sameSite: 'strict', expires: 1 });
+
+            if (action.payload.refreshToken) {
+                console.log('setting refresh token', action.payload.refreshToken);
+                // Set the access token in a cookie with a specific name and options (e.g., secure, httpOnly)
+                Cookies.set('refreshToken', action.payload.refreshToken, { secure: true, sameSite: 'strict', expires: 1 }); // TODO: look into options
+            }
+
+        })
+        builder.addCase(signIn.rejected, (state, action) => {
+            state.signIn.inProgress = false;
+            state.signIn.error = action.error.message;
+        })
+        // invalidateRefreshToken
+        builder.addCase(invalidateRefreshToken.pending, (state) => {
+
+        })
+        builder.addCase(invalidateRefreshToken.fulfilled, (state, action) => {
+            console.log('refresh token deleted; ', action.payload)
+        })
+        builder.addCase(invalidateRefreshToken.rejected, (state, action) => {
+            console.log('refresh token not deleted; ', action.payload);
+        })
+        // checkToken
+        builder.addCase(checkToken.pending, (state) => {
+        })
+        builder.addCase(checkToken.fulfilled, (state, action) => {
+            state.accessToken = action.payload.accessToken;
+            state.userInfo = {
+                userId: action.payload.id,
+                email: action.payload.email,
+                isAdmin: action.payload.role === 'admin',
+                loggedIn: true,
+                loading: false,
+                error: '',
+            }
+            state.shouldFetchData = true;
+            state.shouldRenderApp = true;
+        })
+        builder.addCase(checkToken.rejected, (state, action) => {
+            console.log('refresh token rejected; ', action.payload);
+            state.shouldRenderApp = true;
+            Cookies.remove('accessToken');
+            Cookies.remove('refreshToken');
+        })
+    }
+})
+
+export const { setShouldFetchData, setShouldRenderApp, signOut } = userSlice.actions
+
+const selectUserState = (state: RootState) => state.user;
+export const selectShouldFetchData = createSelector([selectUserState], userState => userState.shouldFetchData);
+
+export const selectUserInfo = createSelector([selectUserState], userState => userState.userInfo);
+export const selectShouldRenderApp = createSelector([selectUserState], userState => userState.shouldRenderApp);
+export const selectLoggedIn = createSelector([selectUserInfo], userInfo => userInfo?.loggedIn ?? false);
+export const selectUserId = createSelector([selectUserInfo], userInfo => userInfo?.userId ?? null);
+export const selectUserEmail = createSelector([selectUserInfo], userInfo => userInfo?.email) ?? null;
+export const selectUserIsAdmin = createSelector([selectUserInfo], userInfo => userInfo?.isAdmin ?? false);
+export const selectUserAccessToken = createSelector([selectUserState], userState => userState?.accessToken ?? null);
+export const selectUserLoading = createSelector([selectUserInfo], userInfo => userInfo?.loading ?? false);
+export const selectUserError = createSelector([selectUserInfo], userInfo => userInfo?.error ?? null);
+
+export default userSlice.reducer
