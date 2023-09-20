@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
-import { uploadExposure } from '../redux/slices/exposure.slice';
-import { Avatar, Box, Input, InputLabel, Button, Container, CssBaseline, Typography, FormControl, MenuItem, Select } from '@mui/material';
+import { uploadExposure, selectUploadTimestamps, deleteExposure } from '../redux/slices/exposure.slice';
+import { Avatar, Box, Input, InputLabel, Button, Container, CssBaseline, Typography, FormControl, MenuItem, Select, TableContainer, Table, TableBody, TableCell, TableRow, TableHead, Divider } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -10,6 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { EXPOSURE_TYPES } from '../constants/types.constants';
 import useLoginRedirect from '../hooks/useLoginRedirect';
 import { selectLoggedIn, selectUserAccessToken, selectUserId } from '../redux/slices/user.slice';
+import { ExposureUploadTable } from './tables/ExposureUploadInfo.comp';
 
 const steps: string[] = [
     'Specify Type',
@@ -26,6 +27,7 @@ export function UploadExposureForm() {
     const [loggedIn] = useState<boolean>(useAppSelector(selectLoggedIn));
     const [userId] = useState<string>(useAppSelector(selectUserId));
     const [accessToken] = useState<string>(useAppSelector(selectUserAccessToken));
+    const uploadTimestamps: string[][] = useAppSelector(selectUploadTimestamps);
 
     const [file, setFile] = useState<File>(null);
     const [fileName, setFileName] = useState<string>(null);
@@ -53,7 +55,11 @@ export function UploadExposureForm() {
     }
 
     const uploadInProgress = useAppSelector(state => state.exposure.uploadInProgress);
+    const deleteInProgress = useAppSelector(state => state.exposure.deleteInProgress);
     const uploadError = useAppSelector(state => state.exposure.uploadError);
+    const deleteError = useAppSelector(state => state.exposure.deleteError);
+
+    const disableDeletion = uploadInProgress || deleteInProgress || waitingForResponse;
 
     const onFormSubmissionComplete = () => {
         setTimeout(() => {
@@ -103,6 +109,17 @@ export function UploadExposureForm() {
         }
     };
 
+    const handleDelete = (exposureType) => {
+        dispatch(deleteExposure({ exposureType: exposureType }));
+    }
+
+    const resetForm = () => {
+        setStepNumber(0);
+        setFile(null);
+        setFileName(null);
+        setExposureUploadType('');
+    }
+
     if (!loggedIn) return null;
     return (
         <>
@@ -123,6 +140,12 @@ export function UploadExposureForm() {
                             <Typography variant="h6" sx={{textAlign: 'center'}}>
                                 Success!
                             </Typography>
+                            <Button
+                                sx={{ width: 1, my: 5 }}
+                                variant='outlined'
+                                onClick={resetForm} >
+                                    Upload Another File
+                            </Button>
                         </Box>
                     }
 
@@ -199,7 +222,7 @@ export function UploadExposureForm() {
                                         <Button
                                             sx={{ width: 1 }}
                                             variant='contained'
-                                            disabled={steps[stepNumber] !== 'Submit' || waitingForResponse}
+                                            disabled={steps[stepNumber] !== 'Submit' || waitingForResponse || deleteInProgress}
                                             onClick={handleUpload} >
                                             {waitingForResponse ? <CircularProgress size={24} color="inherit" /> : 'Submit'}
                                         </Button>
@@ -215,11 +238,15 @@ export function UploadExposureForm() {
                                     </Box>
                                 </>
                             )}
-                            <Box sx={{ width: 1, mt: 1 }}>
+                            <Box sx={{ width: 1, my: 5 }}>
                                 <Typography variant="body2">
                                     TODO: Instructions
                                 </Typography>
                             </Box>
+                            {/* <Divider /> */}
+                            {uploadTimestamps &&
+                                <ExposureUploadTable uploadTimestamps={uploadTimestamps} handleDelete={handleDelete} disableDeletion={disableDeletion} />
+                            }
                         </Box>
                     }
                     

@@ -68,6 +68,19 @@ class ApiService {
             .then(res => res.data);
     }
 
+    async deleteExposure(accessToken: string, exposureType: string) {
+        const formData = new FormData();
+        formData.append('exposureType', exposureType);
+        const headersObj = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + accessToken,
+            }
+        }
+        return axios.post(this.baseUrl + '/deleteExposure', formData, headersObj)
+            .then(res => res.data);
+    }
+
     async uploadAdps(uid: string, accessToken: string, csvFile: File, exposureType: string) {
         const formData = new FormData();
         formData.append('file', csvFile);

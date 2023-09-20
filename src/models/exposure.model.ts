@@ -5,6 +5,7 @@ export interface Exposure {
     posPicksByRound: PosPicksByRound[],
     draftEntriesRunningTotals: RunningTotals[],
     entryBreakdown: EntryBreakdown,
+    uploadTime: string,
 }
 
 export interface EntryBreakdown {

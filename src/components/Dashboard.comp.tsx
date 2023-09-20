@@ -26,7 +26,7 @@ import StickyFooter from './StickyFooter.comp';
 import { EXPOSURE_TYPES } from '../constants/types.constants';
 import { selectLoggedIn, selectUserIsAdmin, selectShouldRenderApp } from '../redux/slices/user.slice';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { selectExposureType, setExposureType } from '../redux/slices/exposure.slice';
+import { selectExposureType, setExposureType, selectUserUploadedTypes } from '../redux/slices/exposure.slice';
 import useFetchData from '../hooks/useFetchData';
 import useToken from '../hooks/useToken';
 
@@ -49,6 +49,7 @@ export default function Dashboard() {
     const isLoggedIn = useAppSelector<boolean>(selectLoggedIn);
     const exposureType = useAppSelector<string>(selectExposureType);
     const shouldRenderApp = useAppSelector<boolean>(selectShouldRenderApp);
+    const userUploadedTypes = useAppSelector<string[]>(selectUserUploadedTypes);
 
     const [mobileOpen, setMobileOpen] = useState(false);
     const [selectedLink, setSelectedLink] = useState<string>('');
@@ -69,20 +70,21 @@ export default function Dashboard() {
         }
     };
 
-    // TODO: finish
     const exposureDropdown = exposureType && (
-        // <Box sx={{ mb: 5, width: 1, height: 60 }}>
-        <Box>
-            <FormControl sx={{ width: 1 }}>
-                <InputLabel>Exposure Data Type</InputLabel>
+        <Box sx={{ mt: 2, mb: 1 }}>
+            <FormControl sx={{ maxWidth: '200px', p: '0px 10px' }}>
+                <InputLabel sx={{ color: 'white' }}>Exposure Data Type</InputLabel>
                 <Select
+                    sx={{ color: 'white', height: '50px' }}
                     autoWidth
                     labelId="exposureType"
                     value={exposureType}
                     label="Exposure Data Type"
                     onChange={handleExporsureUploadTypeChange} >
                     {EXPOSURE_TYPES.map(([value, label], index) =>
-                        <MenuItem key={index} value={value}>{label}</MenuItem>
+                        <MenuItem key={index} disabled={userUploadedTypes.find(x => x === value) === undefined} value={value}>
+                            {label}
+                        </MenuItem>
                     )}
                 </Select>
             </FormControl>
@@ -129,11 +131,13 @@ export default function Dashboard() {
     const drawer = (
         <Box sx={{ backgroundColor: '#1C2536', flexGrow: 1 }}>
             <Toolbar />
+            <Divider />
             {isLoggedIn && <>
+                {exposureDropdown}
                 <Divider />
                 {generateList(mainLinks)}
+                <Divider />
             </>}
-            <Divider />
             {generateList(accountLinks)}
         </Box>
     );
@@ -146,10 +150,9 @@ export default function Dashboard() {
                     <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2, display: { sm: 'none' } }}>
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" noWrap component="div">
+                    <Typography variant="h6" noWrap component="div" >
                         Underdog Fantasy Exposure
                     </Typography>
-                    <>{exposureDropdown}</>
                 </Toolbar>
             </AppBar>
 

@@ -10,3 +10,16 @@ export const getNumbericalDate = (date: string): number => {
     const dateObj = new Date(year, month - 1, day); // Create a Date object with the parsed values
     return dateObj.getTime(); // Get the numerical value (timestamp) of the date
 }
+
+
+/**
+ * @param timestamp: string in the format "2023-09-06T01:37:12.375Z"
+ * @returns date string in the format "MM/DD/YY"
+ */
+export const convertTimestampToDate = (timestamp: string): string => {
+    let date = new Date(timestamp);
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+    let year = date.getFullYear().toString().slice(2);
+    return `${month}/${day}/${year}`;
+}
