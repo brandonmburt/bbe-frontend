@@ -4,6 +4,7 @@ export interface Exposure {
     draftedTeams: DraftedTeam[],
     posPicksByRound: PosPicksByRound[],
     draftEntriesRunningTotals: RunningTotals[],
+    tournaments: Tournament[];
     entryBreakdown: EntryBreakdown,
     uploadTime: string,
 }
@@ -80,6 +81,14 @@ export interface RunningTotals {
     date: string,
     draftsRunningTotal: number,
     feesRunningTotal: number,
+}
+
+export interface Tournament {
+    id: string;
+    title: string;
+    entryFee: number;
+    tournamentSize: number;
+    totalPrizes: number;
 }
 
 export type SelectionArr = [number, string, string][]; // [Pick Number, Draft Entry, Picked At][]

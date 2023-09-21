@@ -1,14 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAppSelector } from '../redux/hooks'
-import { selectDraftedTeams, selectExposureType } from '../redux/slices/exposure.slice';
-import { DraftedTeam } from '../models/exposure.model';
+import { selectDraftedTeams, selectExposureType, selectTournaments } from '../redux/slices/exposure.slice';
+import { DraftedTeam, Tournament } from '../models/exposure.model';
 import { deserializeMap } from '../redux/utils/serialize.utils'; 
 import { Player } from '../models/player.model';
 import { Adp } from '../models/adp.model';
 import { selectAdpMapByType } from '../redux/slices/adps.slice';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Tournament } from '../models/tournament.model';
-import { selectTournamentsMap } from '../redux/slices/tournaments.slice';
 import { selectPlayersMap } from '../redux/slices/players.slice';
 import { formatAsMoney } from '../utils/format.utils';
 import { CardComp } from './CardComp.comp';
@@ -25,7 +23,7 @@ export function DraftedRoster() {
 
     const rosterRef = useRef(null);
 
-    const tournamentsMap: Map<string, Tournament> = deserializeMap(useAppSelector(selectTournamentsMap));
+    const tournaments: Tournament[] = useAppSelector(selectTournaments);
     const playersMap: Map<string, Player> = deserializeMap(useAppSelector(selectPlayersMap));
     const adpMap: Map<string, Adp> = useAppSelector(selectAdpMapByType);
     const draftedTeams: DraftedTeam[] = useAppSelector(selectDraftedTeams);
@@ -71,7 +69,7 @@ export function DraftedRoster() {
 
     useEffect(() => {
         if (!draftedTeams || !adpMap) return;
-        let arr: DraftedTeamRowData[] = getDraftedRosters(draftedTeams, adpMap, playersMap, tournamentsMap);
+        let arr: DraftedTeamRowData[] = getDraftedRosters(draftedTeams, adpMap, playersMap, tournaments);
         setDraftedTeamsData(arr);
     }, [draftedTeams, adpMap]);
 

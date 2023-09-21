@@ -46,7 +46,7 @@ const router = createBrowserRouter([
             element: <UploadAdp />,
         },
         {
-            path: "/draft",
+            path: "/drafts",
             element: <DraftedRoster />,
         },
         {

@@ -105,9 +105,10 @@ export const exposureSlice = createSlice({
             let timestampInfo = [];
             EXPOSURE_TYPES.forEach(exposureType => {
                 if (exposureResponse.hasOwnProperty(exposureType[0])) {
+                    const exposureObj = { ...exposureResponse[exposureType[0]] }
                     responseExposureTypes.push(exposureType[0]);
-                    exposureMap.set(exposureType[0], exposureResponse[exposureType[0]]);
-                    timestampInfo.push([exposureType[0], exposureType[1], exposureResponse[exposureType[0]].uploadTime]);
+                    exposureMap.set(exposureType[0], exposureObj);
+                    timestampInfo.push([exposureType[0], exposureType[1], exposureObj.uploadTime]);
                 }
             });
             state.exposureMap = serializeMap(exposureMap);
@@ -188,5 +189,6 @@ export const selectNumDrafts = createSelector([selectExposureByType], (exposure)
 export const selectPosPicksByRound = createSelector([selectExposureByType], (exposure) => exposure?.posPicksByRound ?? null);
 export const selectRunningTotals = createSelector([selectExposureByType], (exposure) => exposure?.draftEntriesRunningTotals ?? null);
 export const selectDraftedPlayers = createSelector([selectExposureByType], (exposure) => exposure?.draftedPlayers ?? null);
+export const selectTournaments = createSelector([selectExposureByType], (exposure) => exposure?.tournaments ?? null);
 
 export default exposureSlice.reducer

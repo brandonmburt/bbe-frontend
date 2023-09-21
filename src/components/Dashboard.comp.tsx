@@ -95,7 +95,7 @@ export default function Dashboard() {
     const mainLinks: LinkObj[] = [
         { name: 'Home', path: '/', icon: <HomeIcon /> },
         { name: 'Exposure', path: '/exposure', icon: <ExposureIcon /> },
-        { name: 'Drafted Teams', path: '/draft', icon: <GroupsIcon /> },
+        { name: 'Drafts', path: '/drafts', icon: <GroupsIcon /> },
     ];
 
     const accountLinks: LinkObj[] = isLoggedIn ? [

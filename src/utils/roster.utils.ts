@@ -1,11 +1,10 @@
 import { DraftedTeamRowData, PickInfo, PlayoffStack } from '../models/roster.model';
 import { Adp } from '../models/adp.model';
-import { DraftedTeam } from '../models/exposure.model';
+import { DraftedTeam, Tournament } from '../models/exposure.model';
 import { Player } from '../models/player.model';
-import { Tournament } from '../models/tournament.model';
 import { PLAYOFF_MATCHUPS } from '../constants/playoffs.constants';
 
-export const getDraftedRosters = (draftedTeams: DraftedTeam[], adpMap: Map<string, Adp>, playersMap: Map<string, Player>, tournamentsMap: Map<string, Tournament>): DraftedTeamRowData[] => {
+export const getDraftedRosters = (draftedTeams: DraftedTeam[], adpMap: Map<string, Adp>, playersMap: Map<string, Player>, tournaments: Tournament[]): DraftedTeamRowData[] => {
     let arr: DraftedTeamRowData[] = [];
         draftedTeams.forEach(draftedTeam => {
             const { qbs, rbs, wrs, tes, draftEntryFee, draftEntry, weeklyWinnerId, tournamentId, draftSize } = draftedTeam;
@@ -41,7 +40,7 @@ export const getDraftedRosters = (draftedTeams: DraftedTeam[], adpMap: Map<strin
                 startDate: selections[0].timestamp,
             }
             if (weeklyWinnerId !== '' || tournamentId !== '') {
-                let tournament: Tournament = tournamentsMap.get(weeklyWinnerId !== '' ? weeklyWinnerId : tournamentId);
+                let tournament: Tournament = tournaments.find(t => t.id === weeklyWinnerId || t.id === tournamentId);
                 rowData = {
                     ...rowData,
                     entryType: weeklyWinnerId !== '' ? 'Weekly Winner' : 'Tournament',
