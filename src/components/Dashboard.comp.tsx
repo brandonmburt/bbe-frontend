@@ -135,8 +135,11 @@ export default function Dashboard() {
             {isLoggedIn && <>
                 {exposureDropdown}
                 <Divider />
-                {generateList(mainLinks)}
-                <Divider />
+                {exposureType && <>
+                    {generateList(mainLinks)} {/* Fairly hacky; revist another time (will also want a new navigation hook) */}
+                    <Divider />
+                </>}
+                
             </>}
             {generateList(accountLinks)}
         </Box>

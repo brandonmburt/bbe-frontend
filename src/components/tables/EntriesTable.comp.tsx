@@ -19,15 +19,17 @@ export function EntriesTable(props) {
                 <TableHead>
                     <TableRow sx={{textAlign: 'center'}}>
                         <TableCell>Type</TableCell>
-                        <TableCell sx={{textAlign: 'center'}}>Entries</TableCell>
-                        <TableCell sx={{textAlign: 'right'}}>Fees</TableCell>
+                        <TableCell sx={{textAlign: 'center'}}>Fast Drafts</TableCell>
+                        <TableCell sx={{textAlign: 'center'}}>Slow Drafts</TableCell>
+                        <TableCell sx={{textAlign: 'right'}}>Entry Fees</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {arr.map(([type, obj], i) => (
                         <TableRow key={i}>
                             <TableCell>{type}s <DraftBadge type={type} /></TableCell>
-                            <TableCell sx={{textAlign: 'center'}}>{obj.quantity}</TableCell>
+                            <TableCell sx={{textAlign: 'center'}}>{obj.fastDrafts}</TableCell>
+                            <TableCell sx={{textAlign: 'center'}}>{obj.slowDrafts}</TableCell>
                             <TableCell sx={{textAlign: 'right'}}>{formatAsMoney(obj.fees)}</TableCell>
                         </TableRow>
                     ))}

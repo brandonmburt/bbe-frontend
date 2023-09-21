@@ -10,18 +10,16 @@ export interface Exposure {
 }
 
 export interface EntryBreakdown {
-    sitAndGos: {
-        quantity: number,
-        fees: number,
-    },
-    tournaments: {
-        quantity: number,
-        fees: number,
-    },
-    weeklyWinners: {
-        quantity: number,
-        fees: number,
-    },
+    sitAndGos: BreakdownData,
+    tournaments: BreakdownData,
+    weeklyWinners: BreakdownData,
+}
+
+export interface BreakdownData {
+    quantity: number,
+    fees: number,
+    fastDrafts: number,
+    slowDrafts: number,
 }
 
 export interface DraftSpots {
@@ -67,6 +65,7 @@ export interface DraftedTeam {
     rbs: SelectionArr,
     wrs: SelectionArr,
     tes: SelectionArr,
+    draftType: string,
 }
 
 export interface PosPicksByRound {

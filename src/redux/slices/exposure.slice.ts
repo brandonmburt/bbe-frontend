@@ -117,24 +117,30 @@ export const exposureSlice = createSlice({
             let totalDrafts = 0;
             let totalEntryFees = 0;
             let breakdown: EntryBreakdown = {
-                sitAndGos: { quantity: 0, fees: 0 },
-                tournaments: { quantity: 0, fees: 0 },
-                weeklyWinners: { quantity: 0, fees: 0 },
+                sitAndGos: { quantity: 0, fees: 0, fastDrafts: 0, slowDrafts: 0 },
+                tournaments: { quantity: 0, fees: 0, fastDrafts: 0, slowDrafts: 0 },
+                weeklyWinners: { quantity: 0, fees: 0, fastDrafts: 0, slowDrafts: 0 },
             };
             exposureMap.forEach((exposure: Exposure) => {
                 totalDrafts += exposure.draftSpots.totalNumDrafts;
                 totalEntryFees += exposure.draftSpots.totalDollarSum;
                 exposure.draftedTeams.forEach((team: DraftedTeam) => {
-                    const { weeklyWinnerId, tournamentId, draftEntryFee } = team;
+                    const { weeklyWinnerId, tournamentId, draftEntryFee, draftType } = team;
                     if (tournamentId != '') {
                         breakdown.tournaments.quantity++;
                         breakdown.tournaments.fees += draftEntryFee;
+                        breakdown.tournaments.fastDrafts += draftType === 'fast' ? 1 : 0;
+                        breakdown.tournaments.slowDrafts += draftType === 'slow' ? 1 : 0;
                     } else if (weeklyWinnerId != '') {
                         breakdown.weeklyWinners.quantity++;
                         breakdown.weeklyWinners.fees += draftEntryFee;
+                        breakdown.weeklyWinners.fastDrafts += draftType === 'fast' ? 1 : 0;
+                        breakdown.weeklyWinners.slowDrafts += draftType === 'slow' ? 1 : 0;
                     } else {
                         breakdown.sitAndGos.quantity++;
                         breakdown.sitAndGos.fees += draftEntryFee;
+                        breakdown.sitAndGos.fastDrafts += draftType === 'fast' ? 1 : 0;
+                        breakdown.sitAndGos.slowDrafts += draftType === 'slow' ? 1 : 0;
                     }
                 });
             });
