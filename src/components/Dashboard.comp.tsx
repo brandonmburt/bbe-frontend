@@ -25,10 +25,11 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import StickyFooter from './StickyFooter.comp';
 import { EXPOSURE_TYPES } from '../constants/types.constants';
 import { selectLoggedIn, selectUserIsAdmin, selectShouldRenderApp } from '../redux/slices/user.slice';
-import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { selectExposureType, setExposureType, selectUserUploadedTypes } from '../redux/slices/exposure.slice';
+import { FormControl, InputLabel, Select, MenuItem, Stack } from '@mui/material';
+import { selectExposureType, setExposureType, selectUserUploadedTypes, selectUploadTimestamps } from '../redux/slices/exposure.slice';
 import useFetchData from '../hooks/useFetchData';
 import useToken from '../hooks/useToken';
+import { convertTimestampToDate } from '../utils/date.utils';
 
 const drawerWidth = 200;
 
@@ -39,6 +40,7 @@ interface LinkObj {
 }
 
 // Dark: backgroundColor: '#1C2536', Off White: backgroundColor: '#FAF9F6'
+// Light Blue: '#1976d2'
 export default function Dashboard() {
     useToken();
     useFetchData();
@@ -50,6 +52,7 @@ export default function Dashboard() {
     const exposureType = useAppSelector<string>(selectExposureType);
     const shouldRenderApp = useAppSelector<boolean>(selectShouldRenderApp);
     const userUploadedTypes = useAppSelector<string[]>(selectUserUploadedTypes);
+    const uploadTimestamps: string[] = useAppSelector(selectUploadTimestamps);
 
     const [mobileOpen, setMobileOpen] = useState(false);
     const [selectedLink, setSelectedLink] = useState<string>('');
@@ -66,28 +69,42 @@ export default function Dashboard() {
         let val = event.target.value;
         if (EXPOSURE_TYPES.find(([value,]) => value === val)) {
             dispatch(setExposureType(val))
-            console.log(val)
         }
+        setMobileOpen(false);
     };
 
     const exposureDropdown = exposureType && (
         <Box sx={{ mt: 2, mb: 1 }}>
             <FormControl sx={{ maxWidth: '200px', p: '0px 10px' }}>
-                <InputLabel sx={{ color: 'white' }}>Exposure Data Type</InputLabel>
+                <InputLabel sx={{ color: '#FAF9F6', pl: 1}}>Exposure Type</InputLabel>
                 <Select
-                    sx={{ color: 'white', height: '50px' }}
+                    sx={{ color: '#FAF9F6', height: '60px', wordWrap: 'break-word',
+                        '& .MuiOutlinedInput-notchedOutline': { borderColor: '#1976d2' },
+                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#1976d2' },
+                        '& .MuiSelect-icon': { color: '#1976d2' }
+                    }}
                     autoWidth
+                    variant='outlined'
                     labelId="exposureType"
                     value={exposureType}
-                    label="Exposure Data Type"
+                    label="Exposure Type"
                     onChange={handleExporsureUploadTypeChange} >
                     {EXPOSURE_TYPES.map(([value, label], index) =>
-                        <MenuItem key={index} disabled={userUploadedTypes.find(x => x === value) === undefined} value={value}>
+                        <MenuItem key={index} disabled={userUploadedTypes.find(x => x[0] === value) === undefined} value={value}>
+                            <img style={{ height: '24px', marginRight: '10px' }} src="/logos/uf-logo-small.png" alt="Underdog Fantasy" />
                             {label}
+                            {userUploadedTypes.find(x => x[0] === value) !== undefined && (
+                                <span style={{ marginLeft: '5px', color: 'grey', fontSize: '12px' }}>{userUploadedTypes.find(x => x[0] === value)[1]}</span>
+                            )}
                         </MenuItem>
                     )}
                 </Select>
             </FormControl>
+            {uploadTimestamps && uploadTimestamps.find(t => t[0] === exposureType) &&
+                <Box sx={{mb: 2, color: 'grey', pl: '15px', fontSize: '12px'}}>
+                    Last Upload Date: {convertTimestampToDate(uploadTimestamps.find(t => t[0] === exposureType)[2])}
+                </Box>
+            }
         </Box>
 
     )
@@ -109,6 +126,7 @@ export default function Dashboard() {
 
     const updateSelectedLink = (name: string) => {
         setSelectedLink(name);
+        setMobileOpen(false);
     }
 
     const generateList = (linkObjArr: LinkObj[]) => {
@@ -131,13 +149,12 @@ export default function Dashboard() {
     const drawer = (
         <Box sx={{ backgroundColor: '#1C2536', flexGrow: 1 }}>
             <Toolbar />
-            <Divider />
             {isLoggedIn && <>
                 {exposureDropdown}
-                <Divider />
+                <Divider sx={{ borderColor: 'darkgrey' }} />
                 {exposureType && <>
-                    {generateList(mainLinks)} {/* Fairly hacky; revist another time (will also want a new navigation hook) */}
-                    <Divider />
+                    {generateList(mainLinks)}
+                    <Divider sx={{ borderColor: 'darkgrey' }} />
                 </>}
                 
             </>}
@@ -153,9 +170,22 @@ export default function Dashboard() {
                     <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2, display: { sm: 'none' } }}>
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" noWrap component="div" >
-                        Underdog Fantasy Exposure
-                    </Typography>
+                    {exposureType && EXPOSURE_TYPES.find(([value,]) => value === exposureType) ? (
+                        <Stack>
+                            <Typography variant="h6" noWrap component="div" sx={{ lineHeight: '1' }}>
+                                Best Ball Explorer
+                            </Typography>
+                            <Typography variant='overline' component='div' sx={{ lineHeight: '1', height: '16px', color: '#1976d2'}} >
+                                <img style={{ height: '12px', marginRight: '5px' }} src="/logos/uf-logo-small.png" alt="Underdog Fantasy" />
+                                {EXPOSURE_TYPES.find(([value,]) => value === exposureType)[1]}
+                            </Typography>
+                        </Stack>
+                    ) : (
+                        <Typography variant="h6" noWrap component="div">
+                            Best Ball Explorer
+                        </Typography>
+                    )}
+                    
                 </Toolbar>
             </AppBar>
 
@@ -189,7 +219,7 @@ export default function Dashboard() {
                     {drawer}
                 </Drawer>
             </Box>
-            <Box sx={{ flexGrow: 1, p: { s: 1, md: 3 }, width: { sm: `calc(100% - ${drawerWidth}px)` } }}>
+            <Box sx={{ flexGrow: 1, p: { s: 1, md: 3 }, width: { xs: `calc(100% - ${drawerWidth}px)` } }}>
                 <Toolbar />
                 <Outlet />
             </Box>

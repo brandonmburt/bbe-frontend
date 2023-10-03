@@ -75,19 +75,19 @@ export function Home() {
 
     return entriesContent && summaryTable && barChartData ? (
         <>
-            <Box sx={{ flexGrow: 1, padding: '20px 40px' }}>
-                <Grid container spacing={4}>
+            <Box sx={{ flexGrow: 1, padding: { xs: '10px', sm: '20px 40px' } }}>
+                <Grid container spacing={{ xs: 2, sm: 4 }}>
                     <Grid xs={12} >
                         <Box sx={{ flexGrow: 1 }} >
-                            <Grid container spacing={4}>
-                                <Grid xs={12} md={4} >
+                            <Grid container spacing={{ xs: 2, sm: 4 }}>
+                                <Grid xs={12} md={6} lg={4} >
                                     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }} >
-                                        <CardComp sx={{ flexGrow: 1}} title='Overview' body={summaryTable} />
+                                        <CardComp sx={{ flexGrow: 1}} title='Overview' body={summaryTable} tooltip='Calculated using all uploaded exposure data'/>
                                     </Box>
                                 </Grid>
-                                <Grid xs={12} md={8} >
+                                <Grid xs={12} md={6} lg={8} >
                                     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }} >
-                                        <CardComp title='Entries' body={entriesContent} />
+                                        <CardComp title='Entries' body={entriesContent} tooltip='Calculated using all uploaded exposure data' />
                                     </Box>
                                 </Grid>
                             </Grid>
@@ -96,8 +96,8 @@ export function Home() {
                 </Grid>
             </Box>
 
-            <Box sx={{ flexGrow: 1, padding: '20px 40px' }}>
-                <Grid container spacing={4} >
+            <Box sx={{ flexGrow: 1, padding: { xs: '10px', sm: '20px 40px' } }}>
+                <Grid container spacing={{ xs: 2, sm: 4 }} >
                     <Grid xs={12} >
                         <CardComp
                             body={<DraftPositionChart height={'400px'} data={barChartData} />}
@@ -107,14 +107,14 @@ export function Home() {
             </Box>
 
             {runningTotals && posPicksByRound &&
-                <Box sx={{ flexGrow: 1, padding: '20px 40px' }}>
-                    <Grid container spacing={4}>
-                        <Grid xs={12} md={6} >
+                <Box sx={{ flexGrow: 1, padding: { xs: '10px', sm: '20px 40px' } }}>
+                    <Grid container spacing={{ xs: 2, sm: 4 }}>
+                        <Grid xs={12} lg={6} >
                             <CardComp
                                 body={<DraftsEnteredAreaChart height={'400px'} data={runningTotalsData} />}
                             />
                         </Grid>
-                        <Grid xs={12} md={6} >
+                        <Grid xs={12} lg={6} >
                             <CardComp
                                 body={<PickTendenciesAreaChart height={'400px'} data={posPicksByRound} />}
                             />

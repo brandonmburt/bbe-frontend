@@ -28,7 +28,7 @@ export function SelectedPlayerTable(props) {
     const tableWidth = (100/tableCols.length).toString() + '%';
     
     return (
-        <TableContainer sx={{ pt: 4, pb: 3 }}>
+        <TableContainer sx={{ pt: 2, pb: 3 }}>
             <Table>
                 <TableHead>
                     <TableRow>

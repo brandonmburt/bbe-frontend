@@ -5,6 +5,8 @@ import { ToggleButtonGroup, ToggleButton, Typography, Box } from '@mui/material'
 import Switch from '@mui/material/Switch';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import InfoIcon from '@mui/icons-material/Info';
+import { Tooltip as MUIToolTip } from '@mui/material';
 
 export function DraftPositionChart (props) {
 
@@ -40,12 +42,15 @@ export function DraftPositionChart (props) {
     return (
         <div style={{height: `${props.height}` }} >
             <Box sx={{ width: 1,flexDirection: 'row', display: 'flex', justifyContent: 'space-between' }}>
-                <Box sx={{ width: .6 }}>
-                    <Typography variant="h5">
+                <Box sx={{ width: .5 }}>
+                    <Typography variant="h5" sx={{ fontSize: { xs: '20px', md: '24px' } }}>
                         Draft Position Distribution
+                        <MUIToolTip title={'Generated using data for the selected exposure type'} placement="top" arrow>
+                            <InfoIcon sx={{ marginLeft: '5px', color: 'lightgrey', lineHeight: 1, verticalAlign: 'middle' }} />
+                        </MUIToolTip>
                     </Typography>        
                 </Box>
-                <Box sx={{ width: .4, textAlign: 'right' }}>
+                <Box sx={{ width: .5, textAlign: 'right' }}>
                     {distributionToggleButtons}
                 </Box>
             </Box>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
-import { uploadExposure, selectUploadTimestamps, deleteExposure } from '../redux/slices/exposure.slice';
+import { uploadExposure, selectUploadTimestamps, deleteExposure, selectUploadMessage } from '../redux/slices/exposure.slice';
 import { Avatar, Box, Input, InputLabel, Button, Container, CssBaseline, Typography, FormControl, MenuItem, Select, TableContainer, Table, TableBody, TableCell, TableRow, TableHead, Divider } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import Stepper from '@mui/material/Stepper';
@@ -28,6 +28,7 @@ export function UploadExposureForm() {
     const [userId] = useState<string>(useAppSelector(selectUserId));
     const [accessToken] = useState<string>(useAppSelector(selectUserAccessToken));
     const uploadTimestamps: string[][] = useAppSelector(selectUploadTimestamps);
+    const uploadMessage: string = useAppSelector(selectUploadMessage);
 
     const [file, setFile] = useState<File>(null);
     const [fileName, setFileName] = useState<string>(null);
@@ -138,7 +139,7 @@ export function UploadExposureForm() {
                     {stepNumber === steps.length && 
                         <Box sx={{ width: 1 }}>
                             <Typography variant="h6" sx={{textAlign: 'center'}}>
-                                Success!
+                                {uploadMessage}
                             </Typography>
                             <Button
                                 sx={{ width: 1, my: 5 }}
@@ -152,15 +153,18 @@ export function UploadExposureForm() {
                     <Box sx={{ mb: 5, width: 1, height: 60 }}>
                         {stepNumber === 0 && (
                             <FormControl sx={{ width: 1 }}>
-                                <InputLabel>Exposure Data Type</InputLabel>
+                                <InputLabel>Exposure Type</InputLabel>
                                 <Select
                                     autoWidth
                                     labelId="exposureType"
                                     value={exposureUploadType}
-                                    label="Exposure Data Type"
+                                    label="Exposure Type"
                                     onChange={handleExporsureUploadTypeChange} >
                                     {EXPOSURE_TYPES.map(([value, label], index) =>
-                                        <MenuItem key={index} value={value}>{label}</MenuItem>
+                                        <MenuItem key={index} value={value}>
+                                            <img style={{ height: '24px', marginRight: '10px' }} src="/logos/uf-logo-small.png" alt="Underdog Fantasy" />
+                                            {label}
+                                        </MenuItem>
                                     )}
                                 </Select>
                             </FormControl>

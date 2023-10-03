@@ -37,4 +37,5 @@ export interface SelectedPlayer {
     posRank: string;
     team: string;
     pos: string;
+    tournamentTitle: string;
 }

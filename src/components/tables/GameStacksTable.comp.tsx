@@ -3,6 +3,7 @@ import { TeamBadge } from '../badges/TeamBadge.comp';
 import { DOMES } from '../../constants/domes.constants';
 import StadiumIcon from '@mui/icons-material/Stadium'; // TODO: used to indicate dome games
 import React from 'react';
+import Tooltip from '@mui/material/Tooltip';
 
 export function GameStacksTable(props) {
 
@@ -31,11 +32,15 @@ export function GameStacksTable(props) {
                                 {playoffStacks.has(week) && playoffStacks.get(week).length > 0 && playoffStacks.get(week).map(({ home, away }, i) => {
                                     return (
                                         <TableRow key={i}>
-                                            <TableCell style={{ whiteSpace: 'nowrap' }}>
+                                            <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                                 <TeamBadge mr={0} team={away[0].team} />
                                                 <span style={{ fontSize: '12px' }}> @ </span>
                                                 <TeamBadge mr={0} team={home[0].team} />
-                                                {/* {DOMES[home[0].team] && <StadiumIcon sx={{ color: 'grey'}}/>} */}
+                                                {DOMES[home[0].team] &&
+                                                    <Tooltip title={'Dome game'} placement="top" arrow>
+                                                        <StadiumIcon sx={{ height: '20px', position: 'absolute', color: 'grey' }}/>
+                                                    </Tooltip>
+                                                }
                                             </TableCell>
                                             <TableCell>{away.map(p => p.name).join(', ')}</TableCell>
                                             <TableCell>{home.map(p => p.name).join(', ')}</TableCell>

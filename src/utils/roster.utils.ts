@@ -7,7 +7,7 @@ import { PLAYOFF_MATCHUPS } from '../constants/playoffs.constants';
 export const getDraftedRosters = (draftedTeams: DraftedTeam[], adpMap: Map<string, Adp>, playersMap: Map<string, Player>, tournaments: Tournament[]): DraftedTeamRowData[] => {
     let arr: DraftedTeamRowData[] = [];
         draftedTeams.forEach(draftedTeam => {
-            const { qbs, rbs, wrs, tes, draftEntryFee, draftEntry, weeklyWinnerId, tournamentId, draftSize } = draftedTeam;
+            const { qbs, rbs, wrs, tes, draftEntryFee, draftEntry, weeklyWinnerId, tournamentId, draftSize, draftType } = draftedTeam;
             let totalCLV = 0;
             const selections: PickInfo[] = [...qbs, ...rbs, ...wrs, ...tes].map(([pick, id, timestamp]) => {
                 const adp = adpMap.get(id)?.adp ?? -1;
@@ -38,6 +38,7 @@ export const getDraftedRosters = (draftedTeams: DraftedTeam[], adpMap: Map<strin
                 tournamentSize: null,
                 tournamentPrizes: null,
                 startDate: selections[0].timestamp,
+                draftType: draftType.charAt(0).toUpperCase() + draftType.slice(1),
             }
             if (weeklyWinnerId !== '' || tournamentId !== '') {
                 let tournament: Tournament = tournaments.find(t => t.id === weeklyWinnerId || t.id === tournamentId);

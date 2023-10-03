@@ -27,7 +27,7 @@ export function EntriesTable(props) {
                 <TableBody>
                     {arr.map(([type, obj], i) => (
                         <TableRow key={i}>
-                            <TableCell>{type}s <DraftBadge type={type} /></TableCell>
+                            <TableCell sx={{ whiteSpace: 'nowrap' }}>{type}s <DraftBadge type={type} /></TableCell>
                             <TableCell sx={{textAlign: 'center'}}>{obj.fastDrafts}</TableCell>
                             <TableCell sx={{textAlign: 'center'}}>{obj.slowDrafts}</TableCell>
                             <TableCell sx={{textAlign: 'right'}}>{formatAsMoney(obj.fees)}</TableCell>

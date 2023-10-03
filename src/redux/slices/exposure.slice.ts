@@ -7,6 +7,7 @@ import ApiService from '../api/api.service';
 export interface ExposureState {
     uploadInProgress: boolean,
     uploadError: string,
+    uploadMessage: string,
     deleteInProgress: boolean,
     deleteError: string,
     loadingExposureData: boolean,
@@ -18,7 +19,7 @@ export interface ExposureState {
         entryBreakdown: EntryBreakdown,
     }
     exposureTypes: {
-        userUploadedTypes: string[],
+        userUploadedTypes: [string, string][], // [exposureId, draftQuantityStr]
         selectedType: string,
     }
     uploadTimestamps: string[][], // [exposureType, exposureDisplay, timestamp][]
@@ -28,6 +29,7 @@ export interface ExposureState {
 const initialState: ExposureState = {
     uploadInProgress: false,
     uploadError: null,
+    uploadMessage: null,
     deleteInProgress: false,
     deleteError: null,
     loadingExposureData: false,
@@ -70,7 +72,7 @@ export const exposureSlice = createSlice({
         setExposureType: (state, action: PayloadAction<string>) => {
             const type = action.payload, { userUploadedTypes } = state.exposureTypes;
             if (type === '') state.exposureTypes.selectedType = null;
-            if (EXPOSURE_TYPES.map(t => t[0]).includes(type) && userUploadedTypes.includes(type)) {
+            if (EXPOSURE_TYPES.map(t => t[0]).includes(type) && userUploadedTypes.find(t => t[0] === type)) {
                 state.exposureTypes.selectedType = action.payload;
             }
         },
@@ -82,15 +84,18 @@ export const exposureSlice = createSlice({
         // uploadExposure
         builder.addCase(uploadExposure.pending, (state) => {
             state.uploadInProgress = true;
+            state.uploadMessage = null;
         })
         builder.addCase(uploadExposure.fulfilled, (state, action) => {
             state.uploadInProgress = false;
             state.uploadError = null;
+            state.uploadMessage = action.payload;
             state.shouldRefreshData = true;
         })
         builder.addCase(uploadExposure.rejected, (state, action) => {
             state.uploadInProgress = false;
             state.uploadError = action.error.message;
+            state.uploadMessage = null;
         })
         // fetchExposureData
         builder.addCase(fetchExposureData.pending, (state) => {
@@ -106,7 +111,9 @@ export const exposureSlice = createSlice({
             EXPOSURE_TYPES.forEach(exposureType => {
                 if (exposureResponse.hasOwnProperty(exposureType[0])) {
                     const exposureObj = { ...exposureResponse[exposureType[0]] }
-                    responseExposureTypes.push(exposureType[0]);
+                    const numTeams: number = exposureObj.draftSpots.totalNumDrafts;
+                    const numTeamsStr: string = numTeams.toString() + (numTeams === 1 ? ' Draft' : ' Drafts');
+                    responseExposureTypes.push([exposureType[0], numTeamsStr]);
                     exposureMap.set(exposureType[0], exposureObj);
                     timestampInfo.push([exposureType[0], exposureType[1], exposureObj.uploadTime]);
                 }
@@ -149,7 +156,7 @@ export const exposureSlice = createSlice({
             state.totals.entryBreakdown = breakdown;
             if (responseExposureTypes.length > 0) {
                 state.exposureTypes.userUploadedTypes = responseExposureTypes;
-                state.exposureTypes.selectedType = responseExposureTypes[0];
+                state.exposureTypes.selectedType = responseExposureTypes[0][0];
             }
         })
         builder.addCase(fetchExposureData.rejected, (state, action) => {
@@ -184,6 +191,7 @@ export const selectExposureType = createSelector([selectExposure], exposure => e
 export const selectUserUploadedTypes = createSelector([selectExposure], exposure => exposure.exposureTypes.userUploadedTypes);
 export const selectUploadTimestamps = createSelector([selectExposure], exposure => exposure.uploadTimestamps);
 export const selectShouldRefreshData = createSelector([selectExposure], exposure => exposure.shouldRefreshData);
+export const selectUploadMessage = createSelector([selectExposure], exposure => exposure.uploadMessage);
 
 export const selectExposureMap = createSelector([state => state.exposure.exposureMap], exposureMap => deserializeMap(exposureMap));
 export const selectExposureByType = createSelector([selectExposureMap, selectExposureType], (exposureMap, type) => {

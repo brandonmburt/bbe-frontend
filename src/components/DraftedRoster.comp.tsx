@@ -10,7 +10,8 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { selectPlayersMap } from '../redux/slices/players.slice';
 import { formatAsMoney } from '../utils/format.utils';
 import { CardComp } from './CardComp.comp';
-import { Grid, Box, Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
 import { DraftBadge } from './badges/DraftBadge.comp';
 import useLoginRedirect from '../hooks/useLoginRedirect';
 import { RosterTable } from './tables/RosterTable.comp';
@@ -54,6 +55,7 @@ export function DraftedRoster() {
             }
         },
         { field: 'title', headerName: 'Title', minWidth: 150, type: 'string', headerAlign: 'center', align: 'center' },
+        { field: 'draftType', headerName: 'Draft Type', minWidth: 75, type: 'string', headerAlign: 'center', align: 'center' },
         { field: 'entryFee', headerName: 'Entry Fee', minWidth: 100, type: 'number', valueFormatter: ({ value }) => !value ? null : formatAsMoney(value), headerAlign: 'center', align: 'center' },
         { field: 'totalCLV', headerName: 'Total CLV', minWidth: 100, type: 'number', align: 'center', headerAlign: 'center' },
         { field: 'draftSize', headerName: 'Draft Size', minWidth: 100, type: 'number', align: 'center', headerAlign: 'center' },
@@ -79,12 +81,10 @@ export function DraftedRoster() {
     return (
         <>
             {draftedTeamsData &&
-                <Box sx={{ padding: '20px 40px' }}>
-                    <Grid container spacing={4} >
-                        <Grid item xs={12} >
-                            <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }} >
-                                <CardComp title='Drafted Teams' body={<div style={{ height: '500px' }}><DataGrid rowSelection={false} rows={draftedTeamsData} columns={columns} /></div>} />
-                            </Box>
+                <Box sx={{ padding: { xs: '10px', sm: '20px 40px' }, width: '100%' }}>
+                    <Grid container spacing={{ xs: 2, sm: 4 }} >
+                        <Grid xs={12} >
+                            <CardComp title='Drafted Teams' body={<div style={{ height: '500px', width: '100%'}}><DataGrid rowSelection={false} rows={draftedTeamsData} columns={columns} /></div>} />
                         </Grid>
                     </Grid>
                 </Box>
@@ -92,9 +92,9 @@ export function DraftedRoster() {
 
             <Box ref={rosterRef} >
                 {selectedTeamData &&
-                    <Box sx={{ padding: '20px 40px' }}>
-                        <Grid container spacing={4} >
-                            <Grid item xs={12} lg={6} >
+                    <Box sx={{ padding: { xs: '10px', sm: '20px 40px' } }}>
+                        <Grid container spacing={{ xs: 2, sm: 4 }} >
+                            <Grid xs={12} lg={6} >
                                 <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} >
                                     <CardComp title={
                                             <>
@@ -103,7 +103,7 @@ export function DraftedRoster() {
                                         } body={selectedRosterTable} />
                                 </Box>
                             </Grid>
-                            <Grid item xs={12} lg={6} >
+                            <Grid xs={12} lg={6} >
                                 <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }} >
                                     <CardComp title='Playoff Game Stacks' body={playoffStacksTable} />
                                 </Box>

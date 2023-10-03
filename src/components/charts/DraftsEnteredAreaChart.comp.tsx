@@ -3,6 +3,8 @@ import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, X
 import { CustomTooltip } from './CustomTooltip.comp';
 import { ToggleButtonGroup, ToggleButton, Typography, Box } from '@mui/material';
 import { formatAsMoney } from '../../utils/format.utils';
+import InfoIcon from '@mui/icons-material/Info';
+import { Tooltip as MUIToolTip } from '@mui/material';
 
 export function DraftsEnteredAreaChart(props) {
 
@@ -27,11 +29,15 @@ export function DraftsEnteredAreaChart(props) {
     )
 
     return (
-        <div style={{ height: `${props.height}` }}>
-            <Box sx={{ width: 1, flexDirection: 'row', display: 'flex', justifyContent: 'space-between' }}>
+        <Box style={{ height: `${props.height}` }}>
+            <Box sx={{ width: 1, flexDirection: 'row', display: 'flex', justifyContent: 'space-between', marginBottom: { xs: '10px', sm: '20px' } }}>
                 <Box sx={{ width: .55 }}>
-                    <Typography variant="h5">
-                        Cumulative Draft Data
+                    <Typography variant="h5" sx={{ fontSize: { xs: '20px', md: '24px' } }}>
+                        Cumulative <span style={{ whiteSpace: 'nowrap' }}>Drafts
+                        <MUIToolTip title={'Generated using data for the selected exposure type'} placement="top" arrow>
+                            <InfoIcon sx={{ marginLeft: '5px', color: 'lightgrey', lineHeight: 1, verticalAlign: 'middle' }} />
+                        </MUIToolTip>
+                        </span>
                     </Typography>
                 </Box>
                 <Box sx={{ width: .45, textAlign: 'right' }}>
@@ -39,7 +45,7 @@ export function DraftsEnteredAreaChart(props) {
                 </Box>
             </Box>
 
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="95%">
                 <AreaChart
                     data={props.data}
                     margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
@@ -62,7 +68,7 @@ export function DraftsEnteredAreaChart(props) {
                     />
                 </AreaChart>
             </ResponsiveContainer>
-        </div>
+        </Box>
     );
 
 };

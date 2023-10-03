@@ -2,6 +2,7 @@ import Button from '@mui/material/Button';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { PlayerBadge } from '../badges/PlayerBadge.comp';
 import { TeamBadge } from '../badges/TeamBadge.comp';
+import Tooltip from '@mui/material/Tooltip';
 
 export default function PlayerExposureGrid({ handleViewPlayer, rows }) {
 
@@ -17,7 +18,9 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows }) {
         { field: 'fees', headerName: 'Entry Fees', minWidth: 75, type: 'number', valueFormatter: ({ value }) => `$${value}`, align: 'center', headerAlign: 'center' },
         { field: 'avgPick', headerName: 'Avg Pick', minWidth: 50, type: 'number', align: 'center', headerAlign: 'center' },
         { field: 'adp', headerName: 'ADP', minWidth: 50, type: 'number', align: 'center', headerAlign: 'center' },
-        { field: 'clv', headerName: 'CLV', minWidth: 50, type: 'number', align: 'center', headerAlign: 'center' },
+        { field: 'clv', headerName: 'CLV', minWidth: 50, type: 'number', align: 'center', headerAlign: 'center', renderHeader(params) {
+            return (<Tooltip title='Closing Line Value: Avg. Pick - ADP' placement='top'><div>{params.colDef.headerName}</div></Tooltip>)
+        }, },
         { field: 'percentDrafted', headerName: 'Exposure', minWidth: 75, type: 'number', valueFormatter: ({ value }) => `${value}%`, align: 'center', headerAlign: 'center' },
         { field: 'id', headerName: '', minWidth: 100, align: 'center', sortable: false, filterable: false, hideable: false, disableColumnMenu: true,
                 renderCell({row}) {

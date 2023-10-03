@@ -19,10 +19,10 @@ export function PlayerScatterPlotChart(props) {
 
     return (
         <>
-            <Box sx={{ width: 1, flexDirection: 'row', display: 'flex', justifyContent: 'right', fontSize: '12px' }}>
+            <Box sx={{ width: 1, flexDirection: 'row', display: { xs: 'block', md: 'flex' }, justifyContent: 'right', fontSize: '12px' }}>
                 <FormGroup>
                     <FormControlLabel
-                        label={<span style={{ fontSize: '14px' }}>Show Line Of Best Fit</span>}
+                        label={<span style={{ fontSize: '14px' }}>Line Of Best Fit</span>}
                         labelPlacement='start'
                         control={
                             <Switch checked={bestFitSwitch} onChange={() => setBestFitSwitch(!bestFitSwitch)} />
@@ -30,7 +30,7 @@ export function PlayerScatterPlotChart(props) {
                 </FormGroup>
                 <FormGroup>
                     <FormControlLabel
-                        label={<span style={{ fontSize: '14px' }}>Show Average Pick</span>}
+                        label={<span style={{ fontSize: '14px' }}>Average Pick</span>}
                         labelPlacement='start'
                         control={
                             <Switch checked={avgPickSwitch} onChange={() => setAvgPickSwitch(!avgPickSwitch)} />
@@ -38,7 +38,7 @@ export function PlayerScatterPlotChart(props) {
                 </FormGroup>
                 <FormGroup>
                     <FormControlLabel
-                        label={<span style={{ fontSize: '14px' }}>Show Current ADP</span>}
+                        label={<span style={{ fontSize: '14px' }}>Current ADP</span>}
                         labelPlacement='start'
                         control={
                             <Switch checked={adpSwitch} onChange={() => setAdpSwitch(!adpSwitch)} />
@@ -47,7 +47,7 @@ export function PlayerScatterPlotChart(props) {
             </Box>
 
             <ResponsiveContainer width="100%" height={400}>
-                <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }} >
+                <ScatterChart margin={{ top: 20, right: 40, bottom: 0, left: 0 }} >
                     <CartesianGrid />
                     <XAxis scale="time" type="category" dataKey="x" name="date string" tickFormatter={formatXAxisLabel} />
                     <YAxis type="number" dataKey="y" name="pick" domain={scatterRange} />

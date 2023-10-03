@@ -23,7 +23,10 @@ export function ExposureUploadTable(props) {
                 <TableBody>
                     {EXPOSURE_TYPES.map(([value, label], index) => (
                         <TableRow key={index}>
-                            <TableCell>{label}</TableCell>
+                            <TableCell>
+                                <img style={{ height: '13px', marginRight: '5px' }} src="/logos/uf-logo-small.png" alt="Underdog Fantasy" />
+                                {label}
+                            </TableCell>
                             <TableCell align="center">
                                 {uploadTimestamps.find(timestamp => timestamp[0] === value) ?
                                     convertTimestampToDate(uploadTimestamps.find(timestamp => timestamp[0] === value)[2]) :

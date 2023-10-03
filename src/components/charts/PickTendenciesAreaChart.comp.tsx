@@ -2,22 +2,27 @@ import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, X
 import { CustomTooltip } from './CustomTooltip.comp';
 import { POS_COLORS } from '../../constants/colors.constants';
 import { Box, Typography } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+import { Tooltip as MUIToolTip } from '@mui/material';
 
 export function PickTendenciesAreaChart(props) {
 
     const formatYAxisLabel = (value) => value * 100 + '%';
 
     return (
-        <div style={{ height: `${props.height}` }} >
+        <Box style={{ height: `${props.height}` }} >
             <Box sx={{ width: 1, flexDirection: 'row', display: 'flex', justifyContent: 'space-between' }}>
                 <Box sx={{ width: 1 }}>
-                    <Typography variant="h5">
+                    <Typography variant="h5" sx={{ marginBottom: { xs: '10px', sm: '20px' }, fontSize: { xs: '20px', md: '24px' } }}>
                         Pick Tendencies By Round
+                        <MUIToolTip title={'Generated using data for the selected exposure type'} placement="top" arrow>
+                            <InfoIcon sx={{ marginLeft: '5px', color: 'lightgrey', lineHeight: 1, verticalAlign: 'middle' }} />
+                        </MUIToolTip>
                     </Typography>
                 </Box>
             </Box>
 
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="95%">
                 <AreaChart
                     data={props.data}
                     stackOffset="expand"
@@ -34,7 +39,7 @@ export function PickTendenciesAreaChart(props) {
                     <Area type="monotone" dataKey="TE" stackId="1" stroke={POS_COLORS.te} fill={POS_COLORS.te} />
                 </AreaChart>
             </ResponsiveContainer>
-        </div>
+        </Box>
     );
 
 };

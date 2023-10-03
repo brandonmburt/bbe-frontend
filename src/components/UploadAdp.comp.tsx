@@ -48,12 +48,12 @@ export function UploadAdp() {
                     
                     <Box sx={{ mt: 1, width: 1 }}>
                         <FormControl sx={{ width: 1 }}>
-                            <InputLabel>Exposure Data Type</InputLabel>
+                            <InputLabel>Exposure Type</InputLabel>
                             <Select
                                 autoWidth
                                 labelId="exposureType"
                                 value={exposureUploadType}
-                                label="Exposure Data Type"
+                                label="Exposure Type"
                                 onChange={handleExporsureUploadTypeChange} >
                                 {EXPOSURE_TYPES.map(([value, label], index) =>
                                     <MenuItem key={index} value={value}>{label}</MenuItem>

@@ -68,7 +68,7 @@ export function RosterTable(props) {
                                     {selectedTeamData.selections.filter(({ pos }) => pos === position).map(({ pickNum, name, currAdp, clv, id, pos, team }, index) => {
                                         return (
                                             <TableRow key={position+index}>
-                                                <TableCell><TeamBadge mr={'15px'} team={team}/>{name}</TableCell>
+                                                <TableCell sx={{ whiteSpace: 'nowrap' }} ><TeamBadge mr={'15px'} team={team}/>{name}</TableCell>
                                                 <TableCell>{pickNum}</TableCell>
                                                 <TableCell>{currAdp}</TableCell>
                                                 <TableCell>{clv.toFixed(1)}</TableCell>
