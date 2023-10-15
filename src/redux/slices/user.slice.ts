@@ -14,7 +14,7 @@ interface SignUpProps {
 interface UserProps {
     userId: string,
     email: string,
-    isAdmin: boolean;
+    role: string;
     loggedIn: boolean;
     loading: boolean;
     error: string,
@@ -33,6 +33,7 @@ export interface UserState {
     }
     accessToken: string;
     shouldRenderApp: boolean;
+    showDemoCredentials: boolean;
 }
 
 const initialState: UserState = {
@@ -42,6 +43,7 @@ const initialState: UserState = {
     signIn: { inProgress: false, error: null },
     accessToken: null,
     shouldRenderApp: false,
+    showDemoCredentials: false,
 }
 
 export const signUp = createAsyncThunk('user/signUp', async (props: SignUpProps) => {
@@ -74,6 +76,9 @@ export const userSlice = createSlice({
         setShouldRenderApp: (state, action: PayloadAction<boolean>) => {
             state.shouldRenderApp = action.payload;
         },
+        setShowDemoCredentials: (state, action: PayloadAction<boolean>) => {
+            state.showDemoCredentials = action.payload;
+        },
         signOut: (state) => {
             state.userInfo = null;
             state.shouldFetchData = false;
@@ -95,7 +100,7 @@ export const userSlice = createSlice({
             state.userInfo = {
                 userId: action.payload.id,
                 email: action.payload.email,
-                isAdmin: action.payload.role === 'admin',
+                role: action.payload.role,
                 loggedIn: true,
                 loading: false,
                 error: '',
@@ -119,7 +124,7 @@ export const userSlice = createSlice({
             state.userInfo = {
                 userId: action.payload.id,
                 email: action.payload.email,
-                isAdmin: action.payload.role === 'admin',
+                role: action.payload.role,
                 loggedIn: true,
                 loading: false,
                 error: '',
@@ -157,7 +162,7 @@ export const userSlice = createSlice({
             state.userInfo = {
                 userId: action.payload.id,
                 email: action.payload.email,
-                isAdmin: action.payload.role === 'admin',
+                role: action.payload.role,
                 loggedIn: true,
                 loading: false,
                 error: '',
@@ -174,17 +179,19 @@ export const userSlice = createSlice({
     }
 })
 
-export const { setShouldFetchData, setShouldRenderApp, signOut } = userSlice.actions
+export const { setShouldFetchData, setShouldRenderApp, setShowDemoCredentials, signOut } = userSlice.actions
 
 const selectUserState = (state: RootState) => state.user;
 export const selectShouldFetchData = createSelector([selectUserState], userState => userState.shouldFetchData);
+export const selectShowDemoCredentials = createSelector([selectUserState], userState => userState.showDemoCredentials);
 
 export const selectUserInfo = createSelector([selectUserState], userState => userState.userInfo);
 export const selectShouldRenderApp = createSelector([selectUserState], userState => userState.shouldRenderApp);
 export const selectLoggedIn = createSelector([selectUserInfo], userInfo => userInfo?.loggedIn ?? false);
 export const selectUserId = createSelector([selectUserInfo], userInfo => userInfo?.userId ?? null);
 export const selectUserEmail = createSelector([selectUserInfo], userInfo => userInfo?.email) ?? null;
-export const selectUserIsAdmin = createSelector([selectUserInfo], userInfo => userInfo?.isAdmin ?? false);
+export const selectUserIsAdmin = createSelector([selectUserInfo], userInfo => userInfo?.role === 'admin');
+export const selectUserIsDemo = createSelector([selectUserInfo], userInfo => userInfo?.role === 'demo');
 export const selectUserAccessToken = createSelector([selectUserState], userState => userState?.accessToken ?? null);
 export const selectUserLoading = createSelector([selectUserInfo], userInfo => userInfo?.loading ?? false);
 export const selectUserError = createSelector([selectUserInfo], userInfo => userInfo?.error ?? null);

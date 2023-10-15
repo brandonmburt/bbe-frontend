@@ -7,6 +7,7 @@ export interface Player {
     lastName: string;
     pos: string;
     team: string;
+    manualPlayerId: string;
 }
 
 export interface PlayerInputOption {
@@ -29,6 +30,9 @@ export interface ExposureData {
     clv: number;
     percentDrafted: number;
     timesDrafted: number;
+    resurrectionPosRank?: string;
+    resurrectionAdp?: number;
+    resurrectionClv?: number;
 }
 
 export interface SelectedPlayer {

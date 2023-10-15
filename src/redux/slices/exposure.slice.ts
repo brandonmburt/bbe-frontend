@@ -24,6 +24,7 @@ export interface ExposureState {
     }
     uploadTimestamps: string[][], // [exposureType, exposureDisplay, timestamp][]
     shouldRefreshData: boolean,
+    redirectPathOnLogin: string,
 }
 
 const initialState: ExposureState = {
@@ -46,12 +47,15 @@ const initialState: ExposureState = {
     },
     uploadTimestamps: [],
     shouldRefreshData: false,
+    redirectPathOnLogin: null,
 }
 
 // first argument is the action type, second argument is the async function which returns a promise
-export const uploadExposure = createAsyncThunk('user/uploadFile', async (obj: any) => { // TODO: Define type
-    const { uid, accessToken, csvFile, exposureType } = obj;
-    return await ApiService.uploadExposure(uid, accessToken, csvFile, exposureType);
+export const uploadExposure = createAsyncThunk('user/uploadFile', async (obj: any, { getState }) => { // TODO: Define type
+    const { csvFile, exposureType } = obj;
+    let state: any = getState();
+    let token = state.user.accessToken;
+    return await ApiService.uploadExposure(token, csvFile, exposureType);
 });
 
 export const deleteExposure = createAsyncThunk('user/deleteExposure', async (obj: any, { getState }) => { // TODO: define type
@@ -61,8 +65,10 @@ export const deleteExposure = createAsyncThunk('user/deleteExposure', async (obj
     return await ApiService.deleteExposure(token, exposureType);
 });
 
-export const fetchExposureData = createAsyncThunk('user/fetchExposureData', async (obj: any) => { // TODO: define type
-    return await ApiService.getExposureData(obj.uid);
+export const fetchExposureData = createAsyncThunk('user/fetchExposureData', async (obj: any, { getState }) => { // TODO: define type
+    let state: any = getState();
+    let token = state.user.accessToken;
+    return await ApiService.getExposureData(token);
 });
 
 export const exposureSlice = createSlice({
@@ -100,9 +106,9 @@ export const exposureSlice = createSlice({
         // fetchExposureData
         builder.addCase(fetchExposureData.pending, (state) => {
             state.loadingExposureData = true;
+            state.redirectPathOnLogin = null;
         })
         builder.addCase(fetchExposureData.fulfilled, (state, action) => {
-            state.loadingExposureData = false;
             state.exposureDataError = null;
 
             const exposureMap = new Map<string, Exposure>();
@@ -157,11 +163,17 @@ export const exposureSlice = createSlice({
             if (responseExposureTypes.length > 0) {
                 state.exposureTypes.userUploadedTypes = responseExposureTypes;
                 state.exposureTypes.selectedType = responseExposureTypes[0][0];
+                state.redirectPathOnLogin = '/';
+            } else {
+                state.exposureTypes.userUploadedTypes = null;
+                state.exposureTypes.selectedType = null;
+                state.redirectPathOnLogin = '/uploadExposure';
             }
         })
         builder.addCase(fetchExposureData.rejected, (state, action) => {
             state.loadingExposureData = false;
             state.exposureDataError = action.error.message;
+            state.redirectPathOnLogin = null;
         })
         // deleteExposure
         builder.addCase(deleteExposure.pending, (state) => {
@@ -192,6 +204,7 @@ export const selectUserUploadedTypes = createSelector([selectExposure], exposure
 export const selectUploadTimestamps = createSelector([selectExposure], exposure => exposure.uploadTimestamps);
 export const selectShouldRefreshData = createSelector([selectExposure], exposure => exposure.shouldRefreshData);
 export const selectUploadMessage = createSelector([selectExposure], exposure => exposure.uploadMessage);
+export const selectRedirectPathOnLogin = createSelector([selectExposure], exposure => exposure.redirectPathOnLogin);
 
 export const selectExposureMap = createSelector([state => state.exposure.exposureMap], exposureMap => deserializeMap(exposureMap));
 export const selectExposureByType = createSelector([selectExposureMap, selectExposureType], (exposureMap, type) => {

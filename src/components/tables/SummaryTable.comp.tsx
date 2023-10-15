@@ -14,12 +14,12 @@ export function SummaryTable(props) {
                 <TableBody>
                     <TableRow>
                         <TableCell><TrendingUpIcon sx={{ fontSize: '40px', color: 'navy' }} /></TableCell>
-                        <TableCell sx={{textAlign: 'center'}}>Total Drafts</TableCell>
+                        <TableCell sx={{textAlign: 'center'}}>Drafts</TableCell>
                         <TableCell sx={{textAlign: 'right'}}>{props.totalDraftsEntered}</TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell><AttachMoneyIcon sx={{ fontSize: '40px', color: 'darkgreen' }} /></TableCell>
-                        <TableCell sx={{textAlign: 'center'}}>Total Entry Fees</TableCell>
+                        <TableCell sx={{textAlign: 'center'}}>Entry Fees</TableCell>
                         <TableCell sx={{textAlign: 'right'}}>{formatAsMoney(props.totalEntryFees)}</TableCell>
                     </TableRow>
                     <TableRow>

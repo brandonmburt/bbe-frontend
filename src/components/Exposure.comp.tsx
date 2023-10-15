@@ -4,11 +4,10 @@ import { selectDraftedPlayers, selectNumDrafts, selectTournaments, selectDrafted
 import Box from '@mui/material/Box';
 import { Player } from '../models/player.model';
 import { selectPlayersMap } from '../redux/slices/players.slice';
-import { deserializeMap } from '../redux/utils/serialize.utils';
 import { Adp } from '../models/adp.model';
 import { selectAdpMapByType } from '../redux/slices/adps.slice';
 import { DraftedPlayer, Tournament, DraftedTeam } from '../models/exposure.model';
-import { Stack, Typography } from '@mui/material';
+import { FormControlLabel, FormGroup, Stack, Switch, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { CardComp } from './CardComp.comp';
 import PlayerExposure from './Player.comp';
@@ -20,6 +19,9 @@ import { generateInputOptions, getPlayerExposureRows, getPlayerExposureByTournam
 import { PlayerInputOption, ExposureData, SelectedPlayer } from '../models/player.model';
 import { selectExposureType } from '../redux/slices/exposure.slice';
 import { UniquePlayers } from './tables/UniquePlayersTable.comp';
+import { selectResurrectionAdpMap } from '../redux/slices/adps.slice';
+import Tooltip from '@mui/material/Tooltip';
+import InfoIcon from '@mui/icons-material/Info';
 
 interface ExposureSnapshot {
     totalDrafts: number,
@@ -45,7 +47,10 @@ export default function Exposure() {
     const [filteredDraftedPlayers, setFilteredDraftedPlayers] = useState<DraftedPlayer[]>(null); // contains teams for the selected tournament
     const [filteredNumDrafts, setFilteredNumDrafts] = useState<number>(null); // contains the number of drafts for the selected tournament
 
-    const [playersMap] = useState<Map<string, Player>>(deserializeMap(useAppSelector(selectPlayersMap)));
+    const [playersMap] = useState<Map<string, Player>>(useAppSelector(selectPlayersMap));
+    const [resurrectionMap] = useState<Map<string, Adp>>(useAppSelector(selectResurrectionAdpMap));
+
+    const [resurrectionToggle, setResurrectionToggle] = useState<boolean>(false);
     
     // Autocomplete data
     const [playerId, setPlayerId] = useState<string>(null);
@@ -66,6 +71,7 @@ export default function Exposure() {
         setRows(null);
         setExposureSnapshot(null);
         setInputOptions(null);
+        setResurrectionToggle(false);
     }, [exposureType]);
 
     useEffect(() => {
@@ -90,7 +96,6 @@ export default function Exposure() {
             filteredDraftedPlayers.find(({ playerId: pId }) => pId === playerId) :
             draftedPlayers.find(({ playerId: pId }) => pId === playerId);
         const tournamentInfo = tournaments.find(({ id }) => id === tournamentId);
-        console.log(tournamentInfo)
         setPlayerData({
             playerInfo,
             playerAdp: Number(adp) ?? 216, // TODO: handle case when ADP isn't a number
@@ -114,7 +119,9 @@ export default function Exposure() {
             let exposurePlayers: DraftedPlayer[] = tournamentId === null ? draftedPlayers : filteredDraftedPlayers;
             let draftQuantity: number = tournamentId === null ? numDrafts : filteredNumDrafts;
 
-            const gridRows = getPlayerExposureRows(playersMap, adpMap, exposurePlayers, draftQuantity);
+            const gridRows = resurrectionToggle && exposureType === '2023season' ?
+                getPlayerExposureRows(playersMap, adpMap, exposurePlayers, draftQuantity, resurrectionMap) : 
+                getPlayerExposureRows(playersMap, adpMap, exposurePlayers, draftQuantity);
             const snapshot: ExposureSnapshot = {
                 totalDrafts: draftQuantity,
                 uniquePlayers: { qbs: 0, rbs: 0, wrs: 0, tes: 0 }
@@ -128,7 +135,7 @@ export default function Exposure() {
             setExposureSnapshot(snapshot);
             setRows(gridRows);
         }
-    }, [playersMap, adpMap, draftedPlayers, numDrafts, filteredDraftedPlayers, filteredNumDrafts]);
+    }, [playersMap, adpMap, draftedPlayers, numDrafts, filteredDraftedPlayers, filteredNumDrafts, resurrectionToggle]);
 
     useEffect(() => {
         setPlayerId(null);
@@ -148,7 +155,7 @@ export default function Exposure() {
                     <Box>
                         <CardComp body={<>
                             <Grid container spacing={{ xs: 2, sm: 4 }} >
-                                <Grid xs={12} md={5} >
+                                <Grid xs={12} md={5} sx={{ pb: 0, pt: 1 }}>
                                     <Stack>
                                         <Autocomplete
                                             style={{textAlign: "center"}}
@@ -159,58 +166,78 @@ export default function Exposure() {
                                             sx={{ width: { xs: '100%', md: 225, lg: 300 } }}
                                             renderInput={(params) => <TextField {...params} label="Tournament" />}
                                         />
-                                        <Typography sx={{ ml: 1, mb: { xs: 0, md: 1 }}} variant='caption'>
+                                        <Typography sx={{ ml: 1, my: 0 }} variant='caption'>
                                             {numDrafts && tournamentId === null ? numDrafts : filteredNumDrafts} Drafts
                                         </Typography>
                                     </Stack>
                                 </Grid>
-                                <Grid xs={12} md={7} sx={{ pt: { xs: 0, md: 1 } }}>
+                                <Grid xs={12} md={7} sx={{ pb: 0, pt: 1 }}>
                                     <Box sx= {{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' } }}>
                                         {exposureSnapshot && <UniquePlayers snapshot={exposureSnapshot} /> }
                                     </Box>
                                 </Grid>
+                                {exposureType === '2023season' &&
+                                    <Grid xs={12} sx={{ py: 0, my: 0 }}>
+                                        <Box sx={{ width: 1, flexDirection: 'row', display: 'flex', justifyContent: 'right', fontSize: '12px' }}>
+                                            <FormGroup>
+                                                <FormControlLabel
+                                                    label={<span style={{ fontSize: '14px' }}>Show Resurrection Data</span>}
+                                                    labelPlacement='start'
+                                                    control={
+                                                        <Switch checked={resurrectionToggle} onChange={() => setResurrectionToggle(!resurrectionToggle)} />
+                                                    } />
+                                            </FormGroup>
+                                            <Tooltip title={'Resurrection is a best ball tournament which began on week 6 of the 2023 NFL season. The Resurrection ADPs reflect a player\'s perceived value through the first five weeks of the season.'} placement="top" arrow>
+                                                <InfoIcon sx={{ ml: '5px', mt: '7px', color: 'lightgrey' }} />
+                                            </Tooltip>
+                                        </Box>
+                                    </Grid>
+                                }
                             </Grid>
-                            <Box sx={{ mb: 1, w: 1, height: 500 }}>
-                                <PlayerExposureGrid handleViewPlayer={handleViewPlayer} rows={rows} />
+                            <Box sx={{ mb: 1, mt: 3, w: 1, height: 500 }}>
+                                <PlayerExposureGrid handleViewPlayer={handleViewPlayer} rows={rows} showResurrectionColumns={resurrectionToggle}/>
                             </Box>
                         </>}/>
                     </Box>
                 </Grid>
 
-                <Grid xs={12} >
-                    <Box>
-                        <CardComp title={'Player Exposure'} tooltip={'Available for players drafted two or more times'} body={<>
-                            <div ref={playerRef} style={{width: '100%', display: 'block', justifyContent: 'center'}}>
-                                <Stack>
-                                    <Autocomplete
-                                        style={{textAlign: "center"}}
-                                        value={playerId}
-                                        onChange={(e, newVal) => setPlayerId(newVal) }
-                                        options={inputOptions.map((option) => option.playerId)}
-                                        getOptionLabel={(option) => playersMap.get(option)?.name ?? ''}
-                                        sx={{ width: { xs: '100%', md: 300 } }}
-                                        renderInput={(params) => <TextField {...params} label="Player" />}
-                                    />
-                                    
-                                    {playerId && playerData ? (
-                                        <Typography sx={{ ml: 1 }} variant='caption'>
-                                            Showing data for {playerData.tournamentTitle ?? 'all drafts'}
-                                        </Typography>
-                                    ) : (
-                                        <Typography sx={{ ml: 1 }} variant='caption'>
-                                            Select a player to view more exposure data
-                                        </Typography>
-                                    )}
-                                </Stack>
-                            </div>
-                            <div style={{width: '100%'}}>
-                                {playerId && playerData &&
-                                    <PlayerExposure data={playerData} />
-                                }
-                            </div>
-                        </>}/>
-                    </Box>
-                </Grid>
+                {/* Hide the View Player feature when resurrection switch is enabled */}
+                {!resurrectionToggle &&
+                    <Grid xs={12} >
+                        <Box>
+                            <CardComp title={'Player Exposure'} tooltip={'Available for players drafted two or more times'} body={<>
+                                <div ref={playerRef} style={{width: '100%', display: 'block', justifyContent: 'center'}}>
+                                    <Stack>
+                                        <Autocomplete
+                                            style={{textAlign: "center"}}
+                                            value={playerId}
+                                            onChange={(e, newVal) => setPlayerId(newVal) }
+                                            options={inputOptions.map((option) => option.playerId)}
+                                            getOptionLabel={(option) => playersMap.get(option)?.name ?? ''}
+                                            sx={{ width: { xs: '100%', md: 300 } }}
+                                            renderInput={(params) => <TextField {...params} label="Player" />}
+                                        />
+                                        
+                                        {playerId && playerData ? (
+                                            <Typography sx={{ ml: 1 }} variant='caption'>
+                                                Showing data for {playerData.tournamentTitle ?? 'all drafts'}
+                                            </Typography>
+                                        ) : (
+                                            <Typography sx={{ ml: 1 }} variant='caption'>
+                                                Select a player to view more exposure data
+                                            </Typography>
+                                        )}
+                                    </Stack>
+                                </div>
+                                <div style={{width: '100%'}}>
+                                    {playerId && playerData &&
+                                        <PlayerExposure data={playerData} />
+                                    }
+                                </div>
+                            </>}/>
+                        </Box>
+                    </Grid>
+                }
             </Grid>
         </Box>
     ) : null;

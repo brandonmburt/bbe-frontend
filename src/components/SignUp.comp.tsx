@@ -28,13 +28,6 @@ export default function SignUp() {
     const [passwordError, setPasswordError] = useState<string>('');
     const [disableForm, setDisableForm] = useState<boolean>(false);
 
-    /* 
-        setFirstName('');
-        setLastName('');
-        setEmail('');
-        setPassword('');
-    */
-
     const enableSubmit = () => !!(firstName && lastName && email && password && !emailError && !passwordError && !disableForm);
     const handleFirstNameChange = (event) => setFirstName(event.target.value);
     const handleLastNameChange = (event) => setLastName(event.target.value);

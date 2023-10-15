@@ -6,7 +6,7 @@ import { deserializeMap } from '../redux/utils/serialize.utils';
 import { Player } from '../models/player.model';
 import { Adp } from '../models/adp.model';
 import { selectAdpMapByType } from '../redux/slices/adps.slice';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid';
 import { selectPlayersMap } from '../redux/slices/players.slice';
 import { formatAsMoney } from '../utils/format.utils';
 import { CardComp } from './CardComp.comp';
@@ -29,6 +29,7 @@ export function DraftedRoster() {
     const adpMap: Map<string, Adp> = useAppSelector(selectAdpMapByType);
     const draftedTeams: DraftedTeam[] = useAppSelector(selectDraftedTeams);
     const exposureType: string = useAppSelector(selectExposureType);
+    const adpDateString: string = exposureType === '2023resurrection' ? '10/12/2023' : '9/07/2023';
 
     const [draftedTeamsData, setDraftedTeamsData] = useState<DraftedTeamRowData[]>(null);
     const [selectedTeamData, setSelectedTeamData] = useState<DraftedTeamRowData>(null);
@@ -49,20 +50,95 @@ export function DraftedRoster() {
 
     // TODO: create component for grid
     const columns: GridColDef[] = [
-        { field: 'entryType', headerName: 'Badges', minWidth: 125, type: 'string', headerAlign: 'center', align: 'center',
+        {
+            field: 'entryType',
+            headerName: 'Badges',
+            minWidth: 125,
+            type: 'string',
+            headerAlign: 'center',
+            align: 'center',
             renderCell(params) {
                 return (<DraftBadge type={params.row.entryType}  />);
             }
         },
-        { field: 'title', headerName: 'Title', minWidth: 150, type: 'string', headerAlign: 'center', align: 'center' },
-        { field: 'draftType', headerName: 'Draft Type', minWidth: 75, type: 'string', headerAlign: 'center', align: 'center' },
-        { field: 'entryFee', headerName: 'Entry Fee', minWidth: 100, type: 'number', valueFormatter: ({ value }) => !value ? null : formatAsMoney(value), headerAlign: 'center', align: 'center' },
-        { field: 'totalCLV', headerName: 'Total CLV', minWidth: 100, type: 'number', align: 'center', headerAlign: 'center' },
-        { field: 'draftSize', headerName: 'Draft Size', minWidth: 100, type: 'number', align: 'center', headerAlign: 'center' },
-        { field: 'startDate', headerName: 'Draft Date', minWidth: 100, type: 'string', valueFormatter: ({ value }) => value.split(' ')[0], align: 'center', headerAlign: 'center' },
-        { field: 'tournamentSize', headerName: 'Tournament Size', minWidth: 150, type: 'number', align: 'center', headerAlign: 'center' },
-        { field: 'tournamentPrizes', headerName: 'Prize Pool', minWidth: 100, type: 'number', align: 'center', valueFormatter: ({ value }) => !value ? null : formatAsMoney(value), headerAlign: 'center' },
-        { field: 'id', headerName: '', minWidth: 100, type: 'number', align: 'center', sortable: false, filterable: false, hideable: false, disableColumnMenu: true,
+        {
+            field: 'title',
+            headerName: 'Title',
+            minWidth: 150,
+            type: 'string',
+            headerAlign: 'center',
+            align: 'center'
+        },
+        {
+            field: 'draftType',
+            headerName: 'Draft Type',
+            minWidth: 75,
+            type: 'string',
+            headerAlign: 'center',
+            align: 'center'
+        },
+        {
+            field: 'entryFee',
+            headerName: 'Entry Fee',
+            minWidth: 100,
+            type: 'number',
+            valueFormatter: ({ value }) => !value ? null : formatAsMoney(value),
+            headerAlign: 'center',
+            align: 'center'
+        },
+        {
+            field: 'totalCLV',
+            headerName: 'Total CLV',
+            minWidth: 100,
+            type: 'number',
+            align: 'center',
+            headerAlign: 'center',
+            description: 'Total Closing Line Value for Drafted Team. Closing Line Value for each player is calculated as follows: Pick Number - Average Draft Position (as of ' + adpDateString + ')',
+        },
+        {
+            field: 'draftSize',
+            headerName: 'Draft Size',
+            minWidth: 100,
+            type: 'number',
+            align: 'center',
+            headerAlign: 'center'
+        },
+        {
+            field: 'startDate',
+            headerName: 'Draft Date',
+            minWidth: 100,
+            type: 'string',
+            valueFormatter: ({ value }) => value.split(' ')[0],
+            align: 'center',
+            headerAlign: 'center'
+        },
+        {
+            field: 'tournamentSize',
+            headerName: 'Tournament Size',
+            minWidth: 150,
+            type: 'number',
+            align: 'center',
+            headerAlign: 'center'
+        },
+        {
+            field: 'tournamentPrizes',
+            headerName: 'Prize Pool',
+            minWidth: 100,
+            type: 'number',
+            align: 'center',
+            valueFormatter: ({ value }) => !value ? null : formatAsMoney(value),
+            headerAlign: 'center'
+        },
+        {
+            field: 'id',
+            headerName: '',
+            minWidth: 100,
+            type: 'number',
+            align: 'center',
+            sortable: false,
+            filterable: false,
+            hideable: false,
+            disableColumnMenu: true,
             renderCell({row}) {
                 return (<Button onClick={() => handleViewTeam(row.id)} variant="contained" color="primary">View</Button>);
             }
@@ -75,7 +151,7 @@ export function DraftedRoster() {
         setDraftedTeamsData(arr);
     }, [draftedTeams, adpMap]);
 
-    const selectedRosterTable = !selectedTeamData ? null : <RosterTable selectedTeamData={selectedTeamData} />;
+    const selectedRosterTable = !selectedTeamData ? null : <RosterTable selectedTeamData={selectedTeamData} adpDateString={adpDateString} />;
     const playoffStacksTable = !playoffStacks ? null : <GameStacksTable playoffStacks={playoffStacks} />;
 
     return (
@@ -84,7 +160,16 @@ export function DraftedRoster() {
                 <Box sx={{ padding: { xs: '10px', sm: '20px 40px' }, width: '100%' }}>
                     <Grid container spacing={{ xs: 2, sm: 4 }} >
                         <Grid xs={12} >
-                            <CardComp title='Drafted Teams' body={<div style={{ height: '500px', width: '100%'}}><DataGrid rowSelection={false} rows={draftedTeamsData} columns={columns} /></div>} />
+                            <CardComp title='Drafted Teams' body={
+                                <div style={{ height: '500px', width: '100%'}}>
+                                    <DataGrid
+                                        rowSelection={false}
+                                        rows={draftedTeamsData}
+                                        columns={columns}
+                                        slots={{ toolbar: GridToolbar }}
+                                        slotProps={{ toolbar: { printOptions: { disableToolbarButton: true } } }}/>
+                                </div>
+                            } />
                         </Grid>
                     </Grid>
                 </Box>

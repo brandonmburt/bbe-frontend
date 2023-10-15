@@ -45,7 +45,7 @@ export default function Dashboard() {
     useToken();
     useFetchData();
 
-    const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch();
 
     const isAdmin = useAppSelector<boolean>(selectUserIsAdmin);
     const isLoggedIn = useAppSelector<boolean>(selectLoggedIn);
@@ -106,8 +106,7 @@ export default function Dashboard() {
                 </Box>
             }
         </Box>
-
-    )
+    );
 
     const mainLinks: LinkObj[] = [
         { name: 'Home', path: '/', icon: <HomeIcon /> },
@@ -117,12 +116,15 @@ export default function Dashboard() {
 
     const accountLinks: LinkObj[] = isLoggedIn ? [
         { name: 'Upload Exposure', path: '/uploadExposure', icon: <UploadFileIcon /> },
-        { name: 'Admin: Upload ADPs', path: '/uploadADPs', icon: <UploadFileIcon /> }, // TODO: handle admin
         { name: 'Sign Out', path: '/signOut', icon: <LogoutIcon /> }
     ] : [
         { name: 'Sign In', path: '/signIn', icon: <LoginIcon /> },
         { name: 'Sign Up', path: '/signUp', icon: <AccountCircleIcon /> },
     ];
+
+    if (isAdmin) {
+        accountLinks.splice(1, 0, { name: 'Upload ADPs', path: '/uploadADPs', icon: <UploadFileIcon /> });
+    }
 
     const updateSelectedLink = (name: string) => {
         setSelectedLink(name);

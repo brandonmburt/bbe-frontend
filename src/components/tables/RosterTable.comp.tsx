@@ -2,12 +2,13 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from
 import { formatAsMoney } from '../../utils/format.utils';
 import { TeamBadge } from '../badges/TeamBadge.comp';
 import React from 'react';
+import Tooltip from '@mui/material/Tooltip';
 
 export function RosterTable(props) {
 
     if (!props.selectedTeamData) return (<></>);
 
-    const { selectedTeamData } = props;
+    const { selectedTeamData, adpDateString } = props;
 
     const tableCols: string[] = ['Draft Size', 'Entry Fee', 'Total CLV'];
     const tableData = [
@@ -30,7 +31,11 @@ export function RosterTable(props) {
                     <TableHead>
                         <TableRow>
                             {tableCols.map((col, i) => {
-                                return (
+                                return col === 'Total CLV' ? (
+                                    <Tooltip key={'header'+i} title={'Total Closing Line Value for Drafted Team. Closing Line Value for each player is calculated as follows: Pick Number - Average Draft Position (as of ' + adpDateString + ')'} placement="top" arrow>
+                                        <TableCell key={'headercell'+i} style={{ width: tableWidth }} align="center">{col}</TableCell>
+                                    </Tooltip>
+                                ) : (
                                     <TableCell key={'header'+i} style={{ width: tableWidth }} align="center">{col}</TableCell>
                                 )
                             })}
@@ -53,8 +58,12 @@ export function RosterTable(props) {
                         <TableRow sx={{textAlign: 'center'}}>
                             <TableCell></TableCell>
                             <TableCell>Pick</TableCell>
-                            <TableCell>ADP</TableCell>
-                            <TableCell>CLV</TableCell>
+                            <Tooltip title={'Average Draft Position (as of ' + adpDateString + ')'} placement="top" arrow>
+                                <TableCell>ADP</TableCell>
+                            </Tooltip>
+                            <Tooltip title={'Closing Line Value: Pick Number - Average Draft Position (as of ' + adpDateString + ')'} placement="top" arrow>
+                                <TableCell>CLV</TableCell>
+                            </Tooltip>
                         </TableRow>
                     </TableHead>
                     <TableBody>

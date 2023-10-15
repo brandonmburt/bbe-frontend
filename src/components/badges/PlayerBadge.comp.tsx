@@ -17,7 +17,7 @@ export function PlayerBadge(props) {
                     fontWeight: 'bold',
                     borderRadius: '15px',
                 }}
-                label={props.posRank ? props.posRank : position}
+                label={props.posRank && props.posRank.length < 5 ? props.posRank : position}
             />
         </>
     );

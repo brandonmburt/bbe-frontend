@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import { uploadExposure, selectUploadTimestamps, deleteExposure, selectUploadMessage } from '../redux/slices/exposure.slice';
-import { Avatar, Box, Input, InputLabel, Button, Container, CssBaseline, Typography, FormControl, MenuItem, Select, TableContainer, Table, TableBody, TableCell, TableRow, TableHead, Divider } from '@mui/material';
+import { Avatar, Box, Input, InputLabel, Button, Container, CssBaseline, Typography, FormControl, MenuItem, Select, List, ListItem, ListItemText } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -9,14 +9,25 @@ import StepLabel from '@mui/material/StepLabel';
 import CircularProgress from '@mui/material/CircularProgress';
 import { EXPOSURE_TYPES } from '../constants/types.constants';
 import useLoginRedirect from '../hooks/useLoginRedirect';
-import { selectLoggedIn, selectUserAccessToken, selectUserId } from '../redux/slices/user.slice';
+import { selectLoggedIn, selectUserId, selectUserIsDemo } from '../redux/slices/user.slice';
 import { ExposureUploadTable } from './tables/ExposureUploadInfo.comp';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const steps: string[] = [
     'Specify Type',
     'Select CSV File',
     'Confirm Inputs',
     'Submit',
+];
+
+const instructions: string[] = [
+    'Identify the exposure type you want to upload',
+    'Select \'Email exposure CSV\'',
+    'Download the CSV file sent to your email',
+    'Upload the CSV file above',
 ];
 
 export function UploadExposureForm() {
@@ -26,9 +37,9 @@ export function UploadExposureForm() {
 
     const [loggedIn] = useState<boolean>(useAppSelector(selectLoggedIn));
     const [userId] = useState<string>(useAppSelector(selectUserId));
-    const [accessToken] = useState<string>(useAppSelector(selectUserAccessToken));
     const uploadTimestamps: string[][] = useAppSelector(selectUploadTimestamps);
     const uploadMessage: string = useAppSelector(selectUploadMessage);
+    const isDemo: boolean = useAppSelector(selectUserIsDemo);
 
     const [file, setFile] = useState<File>(null);
     const [fileName, setFileName] = useState<string>(null);
@@ -101,17 +112,19 @@ export function UploadExposureForm() {
     };
 
     const handleUpload = () => {
-        if (loggedIn && file !== null && EXPOSURE_TYPES.find(type => type[0] === exposureUploadType) ) {
+        if (loggedIn && file !== null && EXPOSURE_TYPES.find(type => type[0] === exposureUploadType) && !isDemo) {
             // TODO: more validations here
             setWaitingForResponse(true);
-            dispatch(uploadExposure({ csvFile: file, uid: userId, accessToken: accessToken, exposureType: exposureUploadType }))
+            dispatch(uploadExposure({ csvFile: file, uid: userId, exposureType: exposureUploadType }))
+        } else if (isDemo) {
+            setError('Error: Cannot upload files in demo mode');
         } else {
             setError('Error: You must be logged in to upload a file');
         }
     };
 
     const handleDelete = (exposureType) => {
-        dispatch(deleteExposure({ exposureType: exposureType }));
+        if (!isDemo) dispatch(deleteExposure({ exposureType: exposureType }));
     }
 
     const resetForm = () => {
@@ -123,7 +136,6 @@ export function UploadExposureForm() {
 
     if (!loggedIn) return null;
     return (
-        <>
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
                 <Box sx={{ my: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }} >
@@ -163,7 +175,7 @@ export function UploadExposureForm() {
                                     {EXPOSURE_TYPES.map(([value, label], index) =>
                                         <MenuItem key={index} value={value}>
                                             <img style={{ height: '24px', marginRight: '10px' }} src="/logos/uf-logo-small.png" alt="Underdog Fantasy" />
-                                            {label}
+                                            {label + (value === '2023season' ? ' (Most Popular)' : '')}
                                         </MenuItem>
                                     )}
                                 </Select>
@@ -179,7 +191,7 @@ export function UploadExposureForm() {
                                     sx={{display: 'none'}}
                                 />
                                 <label htmlFor="file-upload">
-                                    <Button fullWidth variant='outlined' component="span">
+                                    <Button fullWidth variant='outlined' component="span" startIcon={<UploadFileIcon />}>
                                         Choose File
                                     </Button>
                                 </label>
@@ -226,9 +238,10 @@ export function UploadExposureForm() {
                                         <Button
                                             sx={{ width: 1 }}
                                             variant='contained'
-                                            disabled={steps[stepNumber] !== 'Submit' || waitingForResponse || deleteInProgress}
+                                            disabled={steps[stepNumber] !== 'Submit' || waitingForResponse || deleteInProgress || isDemo}
+                                            
                                             onClick={handleUpload} >
-                                            {waitingForResponse ? <CircularProgress size={24} color="inherit" /> : 'Submit'}
+                                            {isDemo ? 'submission disabled' : waitingForResponse ? <CircularProgress size={24} color="inherit" /> : 'Submit'}
                                         </Button>
                                     </Box>
                                     <Box sx={{ width: 1, textAlign: 'center' }} >
@@ -243,19 +256,47 @@ export function UploadExposureForm() {
                                 </>
                             )}
                             <Box sx={{ width: 1, my: 5 }}>
-                                <Typography variant="body2">
-                                    TODO: Instructions
-                                </Typography>
+                                
+                                <Accordion disableGutters sx={{backgroundColor: 'white'}}>
+                                    <AccordionSummary expandIcon={<ExpandMoreIcon />} >
+                                        <Typography>Instructions</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails sx={{backgroundColor: '#FAF9F6'}} >
+                                        <Typography variant='h6' sx={{mt: 1}}>Underdog Fantasy</Typography>
+                                        <List dense sx={{ }}>
+                                            <ListItem>
+                                                <ListItemText primary={
+                                                    <>
+                                                    {'Upcoming Contests: Navigate to Drafts > Completed'}
+                                                    <br />
+                                                    {'Active Contests: Navigate to Live > Best Ball > NFL'}
+                                                  </>
+                                                } />
+                                            </ListItem>
+                                            {instructions.map((text, index) => (
+                                                <ListItem key={index}><ListItemText primary={text} /></ListItem>
+                                            ))}
+                                        </List>
+                                                
+                                    </AccordionDetails>
+                                </Accordion>
+
+                                {uploadTimestamps &&
+                                    <Accordion disableGutters sx={{backgroundColor: 'white'}}>
+                                        <AccordionSummary expandIcon={<ExpandMoreIcon />} >
+                                            <Typography>Upload History</Typography>
+                                        </AccordionSummary>
+                                        <AccordionDetails sx={{backgroundColor: '#FAF9F6'}} >
+                                            <ExposureUploadTable uploadTimestamps={uploadTimestamps} handleDelete={handleDelete} disableDeletion={disableDeletion} isDemo={isDemo} />
+                                        </AccordionDetails>
+                                    </Accordion>
+                                }
+
                             </Box>
-                            {/* <Divider /> */}
-                            {uploadTimestamps &&
-                                <ExposureUploadTable uploadTimestamps={uploadTimestamps} handleDelete={handleDelete} disableDeletion={disableDeletion} />
-                            }
                         </Box>
                     }
                     
                 </Box>
             </Container>
-        </>
     );
 }

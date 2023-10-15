@@ -48,15 +48,20 @@ class ApiService {
             .then(res => res.data);
     }
 
-    async getExposureData(uid: string) {
-        return axios.get(this.baseUrl + '/exposure', { params: { 'userId': uid } })
+    async getExposureData(accessToken: string) {
+        const headersObj = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + accessToken,
+            }
+        }
+        return axios.get(this.baseUrl + '/exposure', headersObj)
            .then(res => res.data);
     }
 
-    async uploadExposure(uid: string, accessToken: string, csvFile: File, exposureType: string) {
+    async uploadExposure(accessToken: string, csvFile: File, exposureType: string) {
         const formData = new FormData();
         formData.append('file', csvFile);
-        formData.append('userId', uid);
         formData.append('exposureType', exposureType);
         const headersObj = {
             headers: {
@@ -81,10 +86,9 @@ class ApiService {
             .then(res => res.data);
     }
 
-    async uploadAdps(uid: string, accessToken: string, csvFile: File, exposureType: string) {
+    async uploadAdps(accessToken: string, csvFile: File, exposureType: string) {
         const formData = new FormData();
         formData.append('file', csvFile);
-        formData.append('userId', uid);
         formData.append('exposureType', exposureType);
         const headersObj = {
             headers: {
@@ -96,8 +100,8 @@ class ApiService {
             .then(res => res.data);
     }
 
-    async getAdps() {
-        return axios.get(this.baseUrl + '/adp')
+    async getAdps(accessToken: string) {
+        return axios.get(this.baseUrl + '/adp', { headers: { 'Authorization': 'Bearer ' + accessToken } })
             .then(res => res.data);
     }
 

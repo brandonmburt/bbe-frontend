@@ -11,22 +11,30 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
-import { selectLoggedIn, signIn } from '../redux/slices/user.slice';
+import { selectLoggedIn, signIn, selectShowDemoCredentials, setShowDemoCredentials } from '../redux/slices/user.slice';
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import { validateEmail, validatePassword } from '../utils/validators.utils'; // TODO
+import { selectRedirectPathOnLogin } from '../redux/slices/exposure.slice';
 
-export default function SignIn() {
+export default function SignIn(props: { demo?: boolean }) {
 
     const loggedIn = useAppSelector(selectLoggedIn);
+    const showDemoCredentials = useAppSelector(selectShowDemoCredentials);
+    const redirectPathOnLogin = useAppSelector<string>(selectRedirectPathOnLogin);
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (loggedIn) {
-          navigate('/');
+        if (props.demo) dispatch(setShowDemoCredentials(true));
+    }, [props]);
+
+    useEffect(() => {
+        if (loggedIn && redirectPathOnLogin !== null) {
+            console.log(loggedIn, redirectPathOnLogin);
+            navigate(redirectPathOnLogin);
         }
-      }, [loggedIn, navigate]);
+      }, [loggedIn, navigate, redirectPathOnLogin]);
 
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -70,6 +78,7 @@ export default function SignIn() {
                         autoComplete="email"
                         autoFocus
                         disabled={loggedIn}
+                        defaultValue={showDemoCredentials ? 'testy@test.com' : ''}
                     />
                     <TextField
                         margin="normal"
@@ -81,6 +90,7 @@ export default function SignIn() {
                         id="password"
                         autoComplete="current-password"
                         disabled={loggedIn}
+                        defaultValue={showDemoCredentials ? 'password' : ''}
                     />
                     <FormControlLabel
                         control={<Checkbox name='remember' disabled={loggedIn} value="remember" color="primary" />}

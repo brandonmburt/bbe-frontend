@@ -2,13 +2,13 @@ import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRo
 import { EXPOSURE_TYPES } from '../../constants/types.constants';
 import { convertTimestampToDate } from '../../utils/date.utils';
 import ClearIcon from '@mui/icons-material/Clear';
+import Tooltip from '@mui/material/Tooltip';
 
 export function ExposureUploadTable(props) {
 
-
     if (!props.uploadTimestamps) return (<></>);
 
-    const { uploadTimestamps, handleDelete, disableDeletion } = props;
+    const { uploadTimestamps, handleDelete, disableDeletion, isDemo } = props;
 
     return (
         <TableContainer>
@@ -35,10 +35,14 @@ export function ExposureUploadTable(props) {
                             </TableCell>
                             <TableCell align="right">
                                 {uploadTimestamps.find(timestamp => timestamp[0] === value) ?
-                                    <Button sx={{ color: 'red', minWidth: '20px' }} onClick={() => handleDelete(value)} disabled={disableDeletion}>
-                                        <ClearIcon />
-                                    </Button> :
-                                    <Typography sx={{ color: 'grey', minWidth: '20px', padding: '6px 8px' }}><ClearIcon /></Typography>
+                                    <Tooltip title={isDemo ? 'Deletion Disabled' : 'Delete exposure data'} placement='top' arrow>
+                                        <span>
+                                            <Button sx={{ color: 'red', minWidth: '20px' }} onClick={() => handleDelete(value)} disabled={disableDeletion || isDemo}>
+                                                <ClearIcon />
+                                            </Button>
+                                        </span>
+                                    </Tooltip> :
+                                    <Typography sx={{ color: 'rgb(185, 185, 182)', minWidth: '20px', padding: '6px 8px' }}><ClearIcon /></Typography>
                                 }
                             </TableCell>
                         </TableRow>

@@ -14,54 +14,58 @@ import Exposure from './components/Exposure.comp';
 import { UploadAdp } from './components/UploadAdp.comp';
 import { DraftedRoster } from './components/DraftedRoster.comp';
 import SignOut from './components/SignOut.comp';
- 
+
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Dashboard />,
-    errorElement: <NotFound />, 
-    children: [
-        {
-            path: "/",
-            element: <Home />,
-        },
-        {
-            path: "/exposure",
-            element: <Exposure />,
-        },
-        {
-            path: "/uploadExposure",
-            element: <UploadExposureForm />,
-        },
-        {
-            path: "/signIn",
-            element: <SignIn />,
-        },
-        {
-            path: "/signUp",
-            element: <SignUp />,
-        },
-        {
-            path: "/uploadADPs",
-            element: <UploadAdp />,
-        },
-        {
-            path: "/drafts",
-            element: <DraftedRoster />,
-        },
-        {
-            path: "/signOut",
-            element: <SignOut />,
-        }
-    ],
-  },
+    {
+        path: "/",
+        element: <Dashboard />,
+        errorElement: <NotFound />,
+        children: [
+            {
+                path: "/",
+                element: <Home />,
+            },
+            {
+                path: "/exposure",
+                element: <Exposure />,
+            },
+            {
+                path: "/uploadExposure",
+                element: <UploadExposureForm />,
+            },
+            {
+                path: "/demo",
+                element: <SignIn demo={true} />,
+            },
+            {
+                path: "/signIn",
+                element: <SignIn />,
+            },
+            {
+                path: "/signUp",
+                element: <SignUp />,
+            },
+            {
+                path: "/uploadADPs",
+                element: <UploadAdp />,
+            },
+            {
+                path: "/drafts",
+                element: <DraftedRoster />,
+            },
+            {
+                path: "/signOut",
+                element: <SignOut />,
+            }
+        ],
+    },
 ]);
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+    document.getElementById('root') as HTMLElement
 );
 root.render(
-  <Provider store={store}>
-    <RouterProvider router={router} />
-  </Provider>
+    <Provider store={store}>
+        <RouterProvider router={router} />
+    </Provider>
 );

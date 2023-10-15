@@ -16,9 +16,9 @@ const useFetchData = () => {
 
     useEffect(() => {
         if (loggedIn && userId && (shouldFetchData || shouldRefreshData) && accessToken) {
-            dispatch(fetchExposureData({uid: userId}));
-            dispatch(fetchADPs());
-            dispatch(fetchPlayers({accessToken: accessToken}));
+            dispatch(fetchExposureData({}));
+            dispatch(fetchADPs({}));
+            dispatch(fetchPlayers({}));
             dispatch(setShouldFetchData(false));
             dispatch(setShouldRefreshData(false));
         }

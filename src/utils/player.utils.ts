@@ -21,14 +21,15 @@ export const generateInputOptions = (draftedPlayers: DraftedPlayer[]): PlayerInp
  * @param adpMap 
  * @param draftedPlayers 
  * @param numDrafts 
+ * @param ResurrectionAdps: Map<string, Adp> - optional param of resurgence adps
  * @returns 
  */
-export const getPlayerExposureRows = (playersMap: Map<string, Player>, adpMap: Map<string, Adp>, draftedPlayers: DraftedPlayer[], numDrafts: number): ExposureData[] => {
+export const getPlayerExposureRows = (playersMap: Map<string, Player>, adpMap: Map<string, Adp>, draftedPlayers: DraftedPlayer[], numDrafts: number, resurrectionAdps?: Map<string, Adp>): ExposureData[] => {
     let rows: ExposureData[] = [];
     draftedPlayers.forEach(({ avgPickNumber, name, playerId, sumEntryFees, timesDrafted }) => {
-        const { adp, posRank } = adpMap.get(playerId) ?? { adp: 0, posRank: '' };
+        const { adp, posRank} = adpMap.get(playerId) ?? { adp: 0, posRank: '' };
         const { team, pos } = playersMap.get(playerId) ?? { team: '', pos: '' };
-        rows.push({
+        const rowObj: ExposureData = {
             id: playerId,
             name: name,
             team,
@@ -40,10 +41,20 @@ export const getPlayerExposureRows = (playersMap: Map<string, Player>, adpMap: M
             clv: Number((avgPickNumber - adp).toFixed(1)),
             percentDrafted: Number((timesDrafted/numDrafts*100).toFixed(1)),
             timesDrafted
-        });
+        }
+        if (!!resurrectionAdps) {
+            const { manualPlayerId } = playersMap.get(playerId);
+            const { adp: resurrectionAdp, posRank: resurrectionPosRank } = resurrectionAdps.get(manualPlayerId) ?? { adp: -1, posRank: '' };
+            const resurrectionClv = Number((avgPickNumber - resurrectionAdp).toFixed(1));
+            rowObj.resurrectionAdp = resurrectionAdp;
+            rowObj.resurrectionPosRank = resurrectionPosRank;
+            rowObj.resurrectionClv = resurrectionClv;
+        }
+        rows.push(rowObj);
     });
     rows.sort((a, b) => b.percentDrafted - a.percentDrafted);
-    return rows;
+    rows.forEach((row, i) => row.resurrectionAdp === -1 && console.log(row)); // sanity check
+    return rows.filter(x => x.resurrectionAdp !== -1); // hacky way to exclude players whose information is different between ADP and Resurgence ADP files
 }
 
 /**

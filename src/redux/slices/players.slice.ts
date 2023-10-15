@@ -18,8 +18,10 @@ const initialState: PlayersState = {
     playerMap: null,
 }
 
-export const fetchPlayers = createAsyncThunk('players/fetchPlayers', async (props: { accessToken: string }) => {
-    return await ApiService.getPlayers(props.accessToken);
+export const fetchPlayers = createAsyncThunk('players/fetchPlayers', async (obj: any, { getState }) => {
+    let state: any = getState();
+    let token = state.user.accessToken;
+    return await ApiService.getPlayers(token);
 });
 
 export const playersSlice = createSlice({
@@ -40,6 +42,7 @@ export const playersSlice = createSlice({
                     lastName: x.last_name,
                     pos: x.pos,
                     team: x.team,
+                    manualPlayerId: x.manual_player_id,
                 }
             });
             const playersMap = new Map<string, Player>();
