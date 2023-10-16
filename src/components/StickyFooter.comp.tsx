@@ -33,7 +33,7 @@ export default function StickyFooter() {
             }}
         >
             <Container>
-                <Link target="_blank" color="inherit" href="https://twitter.com/">
+                <Link target="_blank" color="inherit" href="https://twitter.com/bestballexplore">
                     <TwitterIcon sx={{ lineHeight: 0, color: '#1DA1F2', fontSize: '30px' }} />
                 </Link>
                 <Typography fontSize={14} variant="body1" color="text.secondary">
