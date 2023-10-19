@@ -53,8 +53,8 @@ export default function PlayerExposure(props) {
 
     const getTooltipStr = (label: string, val: string): string => [label, ' (', val, ')'].join('');
 
-    const generateScatterData = (selectionInfo: [string, number, string][]): ScatterData[] => {
-        return selectionInfo.map(([, pickNum, datetime]) => {
+    const generateScatterData = (selectionInfo: [number, string, string][]): ScatterData[] => {
+        return selectionInfo.map(([pickNum, , datetime]) => {
             return {
                 y: pickNum,
                 x: getNumbericalDate(datetime),

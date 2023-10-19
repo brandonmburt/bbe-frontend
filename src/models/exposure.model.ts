@@ -1,6 +1,7 @@
 export interface Exposure {
     draftSpots: DraftSpots,
     draftedPlayers: DraftedPlayer[],
+    draftedPlayersMap?: Map<string, DraftedPlayer>, // TODO: optional?
     draftedTeams: DraftedTeam[],
     posPicksByRound: PosPicksByRound[],
     draftEntriesRunningTotals: RunningTotals[],
@@ -49,10 +50,13 @@ export interface PositionData {
 export interface DraftedPlayer {
     playerId: string,
     name: string,
+    team: string,
+    position: string,
     avgPickNumber: number,
     sumEntryFees: number,
     timesDrafted: number,
-    selectionInfo: [string, number, string][], // [Draft Entry, Pick Number, Picked At][]
+    selectionInfo: SelectionArr[], // [Pick Number, Draft Entry, Picked At][]
+    additionalKeys: string[],
 }
 
 export interface DraftedTeam {

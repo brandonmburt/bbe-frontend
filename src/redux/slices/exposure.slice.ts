@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk, createSelector } from '@reduxjs/toolkit'
-import { Exposure, EntryBreakdown, DraftedTeam } from '../../models/exposure.model';
+import { Exposure, EntryBreakdown, DraftedTeam, DraftedPlayer } from '../../models/exposure.model';
 import { EXPOSURE_TYPES } from '../../constants/types.constants';
 import { deserializeMap, serializeMap } from '../utils/serialize.utils';
 import ApiService from '../api/api.service';
@@ -116,7 +116,13 @@ export const exposureSlice = createSlice({
             let timestampInfo = [];
             EXPOSURE_TYPES.forEach(exposureType => {
                 if (exposureResponse.hasOwnProperty(exposureType[0])) {
-                    const exposureObj = { ...exposureResponse[exposureType[0]] }
+                    
+                    const exposureObj = { ...exposureResponse[exposureType[0]] };
+                    const draftedPlayersMap = new Map<string, DraftedPlayer>();
+                    exposureObj.draftedPlayers.forEach(player => {
+                        draftedPlayersMap.set(player.playerId, player);
+                    });
+                    exposureObj.draftedPlayersMap = serializeMap(draftedPlayersMap);
                     const numTeams: number = exposureObj.draftSpots.totalNumDrafts;
                     const numTeamsStr: string = numTeams.toString() + (numTeams === 1 ? ' Draft' : ' Drafts');
                     responseExposureTypes.push([exposureType[0], numTeamsStr]);
@@ -216,6 +222,7 @@ export const selectNumDrafts = createSelector([selectExposureByType], (exposure)
 export const selectPosPicksByRound = createSelector([selectExposureByType], (exposure) => exposure?.posPicksByRound ?? null);
 export const selectRunningTotals = createSelector([selectExposureByType], (exposure) => exposure?.draftEntriesRunningTotals ?? null);
 export const selectDraftedPlayers = createSelector([selectExposureByType], (exposure) => exposure?.draftedPlayers ?? null);
+export const selectDraftedPlayersMap = createSelector([selectExposureByType], (exposure) => deserializeMap(exposure?.draftedPlayersMap ?? []));
 export const selectTournaments = createSelector([selectExposureByType], (exposure) => exposure?.tournaments ?? null);
 
 export default exposureSlice.reducer

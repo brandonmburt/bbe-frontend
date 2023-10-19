@@ -3,7 +3,11 @@ export interface Adp {
     playerId: string,
     adp: number,
     posRank: string,
-    manualPlayerId: string, // concat(firstName, lastName, pos, team)
+    firstName: string,
+    lastName: string,
+    team: string,
+    pos: string,
+    additionalKeys: string[],
 }
 
-export type SelectionArr = [number, string, string][]; // [Draft Entry, Pick Number, Picked At][]
+export type SelectionArr = [number, string, string][]; // [Pick Number, Draft Entry, Picked At][]

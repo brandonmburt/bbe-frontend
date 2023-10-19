@@ -2,6 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk, createSelector, createAct
 import type { RootState } from '../store'
 import ApiService from '../api/api.service';
 import Cookies from 'js-cookie';
+import { ReplacementRule } from '../../models/player.model';
 
 // TODO: move to models
 interface SignUpProps {
@@ -34,6 +35,7 @@ export interface UserState {
     accessToken: string;
     shouldRenderApp: boolean;
     showDemoCredentials: boolean;
+    replacementRules?: ReplacementRule[];
 }
 
 const initialState: UserState = {
@@ -64,6 +66,29 @@ export const invalidateRefreshToken = createAsyncThunk('user/invalidateRefreshTo
 export const checkToken = createAsyncThunk('user/checkToken', async (props: { token: string, refresh: boolean }) => {
     const { token, refresh } = props;
     return await ApiService.checkToken(token, refresh);
+});
+
+export const addReplacementRule = createAsyncThunk('user/addReplacementRule', async (props: { fName: string, lName: string, fNameReplacement: string, lNameReplacement: string }, { getState }) => {
+    const { fName, lName, fNameReplacement, lNameReplacement } = props;
+    let state: any = getState();
+    let token = state.user.accessToken;
+    if (state.user.userInfo.role !== 'admin') console.error('Unauthorized to upload ADPs');
+    return await ApiService.addReplacementRule(token, fName, lName, fNameReplacement, lNameReplacement);
+});
+
+export const deleteReplacementRule = createAsyncThunk('user/deleteReplacementRule', async (props: { id: string }, { getState }) => {
+    const { id } = props;
+    let state: any = getState();
+    let token = state.user.accessToken;
+    if (state.user.userInfo.role !== 'admin') console.error('Unauthorized to upload ADPs');
+    return await ApiService.deleteReplacementRule(token, id);
+});
+
+export const fetchReplacementRules = createAsyncThunk('user/fetchReplacementRules', async (obj: any, { getState }) => {
+    let state: any = getState();
+    let token = state.user.accessToken;
+    if (state.user.userInfo.role !== 'admin') console.log('Unauthorized to fetch replacement rules');
+    return await ApiService.getReplacementRules(token);
 });
 
 export const userSlice = createSlice({
@@ -176,6 +201,29 @@ export const userSlice = createSlice({
             Cookies.remove('accessToken');
             Cookies.remove('refreshToken');
         })
+        // addReplacementRule
+        builder.addCase(addReplacementRule.pending, (state) => {
+        })
+        builder.addCase(addReplacementRule.fulfilled, (state, action) => {
+        })
+        builder.addCase(addReplacementRule.rejected, (state, action) => {
+        })
+        // deleteReplacementRule
+        builder.addCase(deleteReplacementRule.pending, (state) => {
+        })
+        builder.addCase(deleteReplacementRule.fulfilled, (state, action) => {
+        })
+        builder.addCase(deleteReplacementRule.rejected, (state, action) => {
+        })
+        // fetchReplacementRules
+        builder.addCase(fetchReplacementRules.pending, (state) => {
+        })
+        builder.addCase(fetchReplacementRules.fulfilled, (state, action) => {
+            const rules: ReplacementRule[] = action.payload.rules;
+            state.replacementRules = rules;
+        })
+        builder.addCase(fetchReplacementRules.rejected, (state, action) => {
+        })
     }
 })
 
@@ -195,5 +243,8 @@ export const selectUserIsDemo = createSelector([selectUserInfo], userInfo => use
 export const selectUserAccessToken = createSelector([selectUserState], userState => userState?.accessToken ?? null);
 export const selectUserLoading = createSelector([selectUserInfo], userInfo => userInfo?.loading ?? false);
 export const selectUserError = createSelector([selectUserInfo], userInfo => userInfo?.error ?? null);
+export const selectReplacementRules = createSelector([selectUserState, selectUserIsAdmin], (userState, isAdmin) => {
+    return isAdmin ? userState?.replacementRules ?? null : null;
+});
 
 export default userSlice.reducer

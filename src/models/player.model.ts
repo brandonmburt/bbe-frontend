@@ -1,19 +1,10 @@
 import { DraftedPlayer } from "../models/exposure.model";
-
-export interface Player {
-    id: string;
-    name: string;
-    firstName: string;
-    lastName: string;
-    pos: string;
-    team: string;
-    manualPlayerId: string;
-}
+import { SelectionArr } from "./exposure.model";
 
 export interface PlayerInputOption {
     label: string;
     playerId: string;
-    selectionInfo: [string, number, string][];
+    selectionInfo: SelectionArr[];
     avgPick: number;
     timesDrafted: number;
 }
@@ -42,4 +33,13 @@ export interface SelectedPlayer {
     team: string;
     pos: string;
     tournamentTitle: string;
+}
+
+export interface ReplacementRule {
+    id: string,
+    firstNameMatch: string,
+    lastNameMatch: string,
+    firstNameReplacement: string,
+    lastNameReplacement: string,
+    createdAt: string,
 }

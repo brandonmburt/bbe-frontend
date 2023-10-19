@@ -14,6 +14,7 @@ import Exposure from './components/Exposure.comp';
 import { UploadAdp } from './components/UploadAdp.comp';
 import { DraftedRoster } from './components/DraftedRoster.comp';
 import SignOut from './components/SignOut.comp';
+import { ReplacementValues } from './components/ReplacementValues.comp';
 
 const router = createBrowserRouter([
     {
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
             {
                 path: "/signOut",
                 element: <SignOut />,
+            },
+            {
+                path: "/replacementValues",
+                element: <ReplacementValues />,
             }
         ],
     },

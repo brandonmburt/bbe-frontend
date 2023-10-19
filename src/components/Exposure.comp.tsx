@@ -1,11 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAppSelector } from '../redux/hooks'
-import { selectDraftedPlayers, selectNumDrafts, selectTournaments, selectDraftedTeams } from '../redux/slices/exposure.slice';
+import { selectDraftedPlayers, selectNumDrafts, selectTournaments, selectDraftedTeams, selectDraftedPlayersMap } from '../redux/slices/exposure.slice';
 import Box from '@mui/material/Box';
-import { Player } from '../models/player.model';
-import { selectPlayersMap } from '../redux/slices/players.slice';
 import { Adp } from '../models/adp.model';
-import { selectAdpMapByType } from '../redux/slices/adps.slice';
+import { selectAdpMap, selectAdditionalKeysMap } from '../redux/slices/adps.slice';
 import { DraftedPlayer, Tournament, DraftedTeam } from '../models/exposure.model';
 import { FormControlLabel, FormGroup, Stack, Switch, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -22,6 +20,7 @@ import { UniquePlayers } from './tables/UniquePlayersTable.comp';
 import { selectResurrectionAdpMap } from '../redux/slices/adps.slice';
 import Tooltip from '@mui/material/Tooltip';
 import InfoIcon from '@mui/icons-material/Info';
+import { getAdpObj } from '../utils/adp.utils';
 
 interface ExposureSnapshot {
     totalDrafts: number,
@@ -39,7 +38,8 @@ export default function Exposure() {
     const playerRef = useRef(null);
 
     const numDrafts: number = useAppSelector(selectNumDrafts); // Quantity of drafts for current exposure type
-    const adpMap: Map<string, Adp> = useAppSelector(selectAdpMapByType);
+    const adpMap: Map<string, Adp> = useAppSelector(selectAdpMap);
+    const playerKeysMap: Map<string, string> = useAppSelector(selectAdditionalKeysMap);
     const draftedPlayers: DraftedPlayer[] = useAppSelector(selectDraftedPlayers);
     const tournaments: Tournament[] = useAppSelector(selectTournaments);
     const draftedTeams: DraftedTeam[] = useAppSelector(selectDraftedTeams);
@@ -47,7 +47,7 @@ export default function Exposure() {
     const [filteredDraftedPlayers, setFilteredDraftedPlayers] = useState<DraftedPlayer[]>(null); // contains teams for the selected tournament
     const [filteredNumDrafts, setFilteredNumDrafts] = useState<number>(null); // contains the number of drafts for the selected tournament
 
-    const [playersMap] = useState<Map<string, Player>>(useAppSelector(selectPlayersMap));
+    const draftedPlayersMap: Map<string, DraftedPlayer> = useAppSelector(selectDraftedPlayersMap);
     const [resurrectionMap] = useState<Map<string, Adp>>(useAppSelector(selectResurrectionAdpMap));
 
     const [resurrectionToggle, setResurrectionToggle] = useState<boolean>(false);
@@ -82,15 +82,17 @@ export default function Exposure() {
             return;
         };
         const { entryFee } = tournament;
-        const [filteredPlayers, filteredNumDrafts] = getPlayerExposureByTournamentId(tournamentId, entryFee, draftedTeams, playersMap);
+        const [filteredPlayers, filteredNumDrafts] = getPlayerExposureByTournamentId(tournamentId, entryFee, draftedTeams, draftedPlayersMap);
         setFilteredDraftedPlayers(filteredPlayers);
         setFilteredNumDrafts(filteredNumDrafts);
     }, [tournamentId]);
 
     useEffect(() => {
-        if (!playerId || !playersMap || !adpMap || !inputOptions.find(({ playerId: pId }) => pId === playerId)) return;
-        let { adp, posRank } = adpMap.get(playerId) ?? { adp: null, posRank: null };
-        let { pos, team } = playersMap.get(playerId) ?? { pos: null, team: null };
+        if (!playerId || !adpMap || !inputOptions.find(({ playerId: pId }) => pId === playerId)) return;
+        let draftedPlayer = draftedPlayersMap.get(playerId);
+        let { adp, posRank } = getAdpObj(draftedPlayer, adpMap, playerKeysMap) ?? { adp: null, posRank: null };
+
+        let { position, team } = draftedPlayersMap.get(playerId) ?? { position: null, team: null };
         // Retreive relevant data depending on whether a tournament is selected
         const playerInfo = (tournamentId !== null && filteredDraftedPlayers !== null) ?
             filteredDraftedPlayers.find(({ playerId: pId }) => pId === playerId) :
@@ -101,7 +103,7 @@ export default function Exposure() {
             playerAdp: Number(adp) ?? 216, // TODO: handle case when ADP isn't a number
             posRank,
             team,
-            pos,
+            pos: position,
             tournamentTitle: tournamentInfo === undefined ? null : tournamentInfo.title,
         });
     }, [playerId]);
@@ -113,15 +115,15 @@ export default function Exposure() {
     }
 
     useEffect(() => {
-        if (playersMap && adpMap && draftedPlayers && numDrafts) {
+        if (adpMap && draftedPlayers && numDrafts && draftedPlayersMap) {
             setPlayerId(null);
 
             let exposurePlayers: DraftedPlayer[] = tournamentId === null ? draftedPlayers : filteredDraftedPlayers;
             let draftQuantity: number = tournamentId === null ? numDrafts : filteredNumDrafts;
 
             const gridRows = resurrectionToggle && exposureType === '2023season' ?
-                getPlayerExposureRows(playersMap, adpMap, exposurePlayers, draftQuantity, resurrectionMap) : 
-                getPlayerExposureRows(playersMap, adpMap, exposurePlayers, draftQuantity);
+                getPlayerExposureRows(adpMap, playerKeysMap, exposurePlayers, draftQuantity, resurrectionMap) : 
+                getPlayerExposureRows(adpMap, playerKeysMap, exposurePlayers, draftQuantity);
             const snapshot: ExposureSnapshot = {
                 totalDrafts: draftQuantity,
                 uniquePlayers: { qbs: 0, rbs: 0, wrs: 0, tes: 0 }
@@ -135,7 +137,7 @@ export default function Exposure() {
             setExposureSnapshot(snapshot);
             setRows(gridRows);
         }
-    }, [playersMap, adpMap, draftedPlayers, numDrafts, filteredDraftedPlayers, filteredNumDrafts, resurrectionToggle]);
+    }, [adpMap, draftedPlayers, numDrafts, filteredDraftedPlayers, filteredNumDrafts, resurrectionToggle]);
 
     useEffect(() => {
         setPlayerId(null);
@@ -147,7 +149,7 @@ export default function Exposure() {
         }
     }, [draftedPlayers, filteredDraftedPlayers]);
 
-    return numDrafts && adpMap && draftedPlayers && rows && inputOptions && playersMap ? (
+    return numDrafts && adpMap && draftedPlayers && rows && inputOptions ? (
         <Box sx={{ padding: { xs: '10px', sm: '20px 40px' } }}>
             <Grid container spacing={{ xs: 2, sm: 4 }} >
 
@@ -213,7 +215,7 @@ export default function Exposure() {
                                             value={playerId}
                                             onChange={(e, newVal) => setPlayerId(newVal) }
                                             options={inputOptions.map((option) => option.playerId)}
-                                            getOptionLabel={(option) => playersMap.get(option)?.name ?? ''}
+                                            getOptionLabel={(option) => draftedPlayersMap.get(option)?.name ?? ''}
                                             sx={{ width: { xs: '100%', md: 300 } }}
                                             renderInput={(params) => <TextField {...params} label="Player" />}
                                         />

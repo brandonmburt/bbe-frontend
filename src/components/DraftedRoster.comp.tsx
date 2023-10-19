@@ -1,13 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAppSelector } from '../redux/hooks'
-import { selectDraftedTeams, selectExposureType, selectTournaments } from '../redux/slices/exposure.slice';
-import { DraftedTeam, Tournament } from '../models/exposure.model';
-import { deserializeMap } from '../redux/utils/serialize.utils'; 
-import { Player } from '../models/player.model';
+import { selectDraftedTeams, selectExposureType, selectTournaments, selectDraftedPlayersMap } from '../redux/slices/exposure.slice';
+import { DraftedPlayer, DraftedTeam, Tournament } from '../models/exposure.model';
 import { Adp } from '../models/adp.model';
-import { selectAdpMapByType } from '../redux/slices/adps.slice';
+import { selectAdpMap, selectAdditionalKeysMap } from '../redux/slices/adps.slice';
 import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid';
-import { selectPlayersMap } from '../redux/slices/players.slice';
 import { formatAsMoney } from '../utils/format.utils';
 import { CardComp } from './CardComp.comp';
 import { Box, Button } from '@mui/material';
@@ -25,8 +22,9 @@ export function DraftedRoster() {
     const rosterRef = useRef(null);
 
     const tournaments: Tournament[] = useAppSelector(selectTournaments);
-    const playersMap: Map<string, Player> = deserializeMap(useAppSelector(selectPlayersMap));
-    const adpMap: Map<string, Adp> = useAppSelector(selectAdpMapByType);
+    const draftedPlayersMap: Map<string, DraftedPlayer> = useAppSelector(selectDraftedPlayersMap);
+    const adpMap: Map<string, Adp> = useAppSelector(selectAdpMap);
+    const playerKeysMap: Map<string, string> = useAppSelector(selectAdditionalKeysMap);
     const draftedTeams: DraftedTeam[] = useAppSelector(selectDraftedTeams);
     const exposureType: string = useAppSelector(selectExposureType);
     const adpDateString: string = exposureType === '2023resurrection' ? '10/12/2023' : '9/07/2023';
@@ -146,10 +144,10 @@ export function DraftedRoster() {
     ];
 
     useEffect(() => {
-        if (!draftedTeams || !adpMap) return;
-        let arr: DraftedTeamRowData[] = getDraftedRosters(draftedTeams, adpMap, playersMap, tournaments);
+        if (!draftedTeams || !adpMap || !playerKeysMap || !draftedPlayersMap) return;
+        let arr: DraftedTeamRowData[] = getDraftedRosters(draftedTeams, adpMap, playerKeysMap, draftedPlayersMap, tournaments);
         setDraftedTeamsData(arr);
-    }, [draftedTeams, adpMap]);
+    }, [draftedTeams, adpMap, draftedPlayersMap, playerKeysMap]);
 
     const selectedRosterTable = !selectedTeamData ? null : <RosterTable selectedTeamData={selectedTeamData} adpDateString={adpDateString} />;
     const playoffStacksTable = !playoffStacks ? null : <GameStacksTable playoffStacks={playoffStacks} />;

@@ -9,7 +9,6 @@ import { selectLoggedIn, selectUserIsAdmin } from '../redux/slices/user.slice';
 export function UploadAdp() {
     useLoginRedirect();
 
-    const [loggedIn] = useState<boolean>(useAppSelector(selectLoggedIn));
     const [file, setFile] = useState(null);
     const [exposureUploadType, setExposureUploadType] = useState<string>('');
 
@@ -37,7 +36,7 @@ export function UploadAdp() {
         }
     };
 
-    if (!loggedIn || !isAdmin) return null;
+    if (!isLoggedIn || !isAdmin) return null;
     return (
         <>
             <Container component="main" maxWidth="xs">

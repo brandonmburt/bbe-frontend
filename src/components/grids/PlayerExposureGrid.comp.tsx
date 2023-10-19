@@ -2,6 +2,7 @@ import Button from '@mui/material/Button';
 import { DataGrid, GridColDef, GridColumnGroupingModel, GridToolbar } from '@mui/x-data-grid';
 import { PlayerBadge } from '../badges/PlayerBadge.comp';
 import { TeamBadge } from '../badges/TeamBadge.comp';
+import Tooltip from '@mui/material/Tooltip';
 
 export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurrectionColumns }) {
 
@@ -135,13 +136,17 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
             field: 'id', headerName: '', minWidth: 100, align: 'center', sortable: false, filterable: false, hideable: false, disableColumnMenu: true,
             renderCell({row}) {
                 return (
-                    <Button
-                        disabled={row.timesDrafted < 2}
-                        onClick={() => handleViewPlayer(row.id)}
-                        variant="contained"
-                        color="primary">
-                            View
-                    </Button>
+                    <Tooltip arrow placement='top' title={row.timesDrafted < 2 ? 'Available for players drafted two or more times' : ''}>
+                        <span>
+                            <Button
+                            disabled={row.timesDrafted < 2}
+                            onClick={() => handleViewPlayer(row.id)}
+                            variant="contained"
+                            color="primary">
+                                View
+                            </Button>
+                        </span>
+                    </Tooltip>
                 );
             }
         })

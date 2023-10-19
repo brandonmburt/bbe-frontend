@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { selectLoggedIn, selectUserId, selectShouldFetchData, selectUserAccessToken } from '../redux/slices/user.slice';
+import { selectLoggedIn, selectUserId, selectShouldFetchData, selectUserAccessToken, fetchReplacementRules } from '../redux/slices/user.slice';
 import { setShouldFetchData } from '../redux/slices/user.slice';
-import { fetchPlayers } from '../redux/slices/players.slice';
 import { fetchADPs } from '../redux/slices/adps.slice';
 import { fetchExposureData, selectShouldRefreshData, setShouldRefreshData } from '../redux/slices/exposure.slice';
 
@@ -18,7 +17,7 @@ const useFetchData = () => {
         if (loggedIn && userId && (shouldFetchData || shouldRefreshData) && accessToken) {
             dispatch(fetchExposureData({}));
             dispatch(fetchADPs({}));
-            dispatch(fetchPlayers({}));
+            dispatch(fetchReplacementRules({}));
             dispatch(setShouldFetchData(false));
             dispatch(setShouldRefreshData(false));
         }

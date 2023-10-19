@@ -1,6 +1,7 @@
 import { Adp } from "../models/adp.model";
 import { DraftedPlayer, DraftedTeam } from "../models/exposure.model";
-import { ExposureData, Player, PlayerInputOption } from "../models/player.model";
+import { ExposureData, PlayerInputOption } from "../models/player.model";
+import { getAdpObj } from '../utils/adp.utils';
 
 /**
  * Returns an array which is used to populate the player exposure autocomplete
@@ -17,23 +18,23 @@ export const generateInputOptions = (draftedPlayers: DraftedPlayer[]): PlayerInp
 
 /**
  * Returns an array of ExposureData objects which is used to populate the player exposure table
- * @param playersMap 
  * @param adpMap 
+ * @param playerKeysMap
  * @param draftedPlayers 
  * @param numDrafts 
  * @param ResurrectionAdps: Map<string, Adp> - optional param of resurgence adps
  * @returns 
  */
-export const getPlayerExposureRows = (playersMap: Map<string, Player>, adpMap: Map<string, Adp>, draftedPlayers: DraftedPlayer[], numDrafts: number, resurrectionAdps?: Map<string, Adp>): ExposureData[] => {
+export const getPlayerExposureRows = (adpMap: Map<string, Adp>, playerKeysMap: Map<string, string>, draftedPlayers: DraftedPlayer[], numDrafts: number, resurrectionAdps?: Map<string, Adp>): ExposureData[] => {
     let rows: ExposureData[] = [];
-    draftedPlayers.forEach(({ avgPickNumber, name, playerId, sumEntryFees, timesDrafted }) => {
-        const { adp, posRank} = adpMap.get(playerId) ?? { adp: 0, posRank: '' };
-        const { team, pos } = playersMap.get(playerId) ?? { team: '', pos: '' };
+    draftedPlayers.forEach(player => {
+        const { avgPickNumber, name, playerId, sumEntryFees, timesDrafted, team, position } = player;
+        const { adp, posRank} = getAdpObj(player, adpMap, playerKeysMap) ?? { adp: -1, posRank: '' };
         const rowObj: ExposureData = {
             id: playerId,
             name: name,
             team,
-            pos,
+            pos: position,
             fees: sumEntryFees,
             avgPick: Number(avgPickNumber.toFixed(1)),
             adp,
@@ -42,14 +43,15 @@ export const getPlayerExposureRows = (playersMap: Map<string, Player>, adpMap: M
             percentDrafted: Number((timesDrafted/numDrafts*100).toFixed(1)),
             timesDrafted
         }
-        if (!!resurrectionAdps) {
-            const { manualPlayerId } = playersMap.get(playerId);
-            const { adp: resurrectionAdp, posRank: resurrectionPosRank } = resurrectionAdps.get(manualPlayerId) ?? { adp: -1, posRank: '' };
-            const resurrectionClv = Number((avgPickNumber - resurrectionAdp).toFixed(1));
-            rowObj.resurrectionAdp = resurrectionAdp;
-            rowObj.resurrectionPosRank = resurrectionPosRank;
-            rowObj.resurrectionClv = resurrectionClv;
-        }
+        // TODO
+        // if (!!resurrectionAdps) {
+        //     const { manualPlayerId } = playersMap.get(playerId);
+        //     const { adp: resurrectionAdp, posRank: resurrectionPosRank } = resurrectionAdps.get(manualPlayerId) ?? { adp: -1, posRank: '' };
+        //     const resurrectionClv = Number((avgPickNumber - resurrectionAdp).toFixed(1));
+        //     rowObj.resurrectionAdp = resurrectionAdp;
+        //     rowObj.resurrectionPosRank = resurrectionPosRank;
+        //     rowObj.resurrectionClv = resurrectionClv;
+        // }
         rows.push(rowObj);
     });
     rows.sort((a, b) => b.percentDrafted - a.percentDrafted);
@@ -61,11 +63,12 @@ export const getPlayerExposureRows = (playersMap: Map<string, Player>, adpMap: M
  * Filters draftedTeams by the provided tournamentId and generates player exposure data for that subset of teams
  * @param tournamentId: tournament ID
  * @param entryFee: tournament entry fee
- * @param draftedTeams 
+ * @param draftedTeams
+ * @param draftedPlayersMap - Map of drafted players
  * @returns [DraftedPlayer[], number] - array of DraftedPlayers and number of drafts for the current tournament
  * TODO: should refactor tournaments slice to contain the number of drafts for each tournament
  */
-export const getPlayerExposureByTournamentId = (tournamentId: string, entryFee: number,  draftedTeams: DraftedTeam[], playersMap: Map<string, Player>): [DraftedPlayer[], number] => {
+export const getPlayerExposureByTournamentId = (tournamentId: string, entryFee: number,  draftedTeams: DraftedTeam[], draftedPlayersMap: Map<string, DraftedPlayer>): [DraftedPlayer[], number] => {
     const exposureMap = new Map();
     let numDrafts = 0; // number of drafts for the current tournament
     draftedTeams.forEach(team => {
@@ -77,18 +80,20 @@ export const getPlayerExposureByTournamentId = (tournamentId: string, entryFee: 
                     timesDrafted: 0,
                     sumPickNumber: 0,
                     selectionInfo: [],
-                    name: playersMap.get(playerId)?.name ?? '',
+                    name: draftedPlayersMap.get(playerId)?.name ?? '',
+                    team: draftedPlayersMap.get(playerId)?.team ?? '',
+                    position: draftedPlayersMap.get(playerId)?.position ?? '',
                     playerId,
                 });
                 exposureMap.get(playerId).timesDrafted++;
                 exposureMap.get(playerId).sumPickNumber += pickNumber;
-                exposureMap.get(playerId).selectionInfo.push([team.draftEntry, pickNumber, timestamp]);
+                exposureMap.get(playerId).selectionInfo.push([pickNumber, team.draftEntry, timestamp]);
             });
         }
     });
     const draftedPlayers: DraftedPlayer[] = [];
     exposureMap.forEach((v, k) => {
-        const { timesDrafted, sumPickNumber, selectionInfo, name, playerId } = v;
+        const { timesDrafted, sumPickNumber, selectionInfo, name, playerId, team, position, additionalKeys } = v;
         draftedPlayers.push({
             timesDrafted,
             avgPickNumber: Number((sumPickNumber/timesDrafted).toFixed(1)),
@@ -96,6 +101,9 @@ export const getPlayerExposureByTournamentId = (tournamentId: string, entryFee: 
             selectionInfo,
             name,
             playerId,
+            team,
+            position,
+            additionalKeys,
         });
     });
     draftedPlayers.sort((a, b) => b.timesDrafted - a.timesDrafted);

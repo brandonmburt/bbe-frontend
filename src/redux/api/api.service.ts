@@ -43,11 +43,6 @@ class ApiService {
         return axios.get(this.baseUrl + '/tournaments').then(res => res.data);
     }
 
-    async getPlayers(accessToken: string) {
-        return axios.get(this.baseUrl + '/players', { headers: { 'Authorization': 'Bearer ' + accessToken } })
-            .then(res => res.data);
-    }
-
     async getExposureData(accessToken: string) {
         const headersObj = {
             headers: {
@@ -127,6 +122,40 @@ class ApiService {
             }
         }
         return axios.post(this.baseUrl + '/deleteToken', formData, headersObj)
+            .then(res => res.data);
+    }
+
+    async addReplacementRule(token: string, fName: string, lName: string, fNameReplacement: string, lNameReplacement: string) {
+        const formData = new FormData();
+        formData.append('fName', fName);
+        formData.append('lName', lName);
+        formData.append('fNameReplacement', fNameReplacement);
+        formData.append('lNameReplacement', lNameReplacement);
+        const headersObj = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            }
+        }
+        return axios.post(this.baseUrl + '/admin/addReplacementRule', formData, headersObj)
+            .then(res => res.data);
+    }
+
+    async deleteReplacementRule(token: string, id: string) {
+        const formData = new FormData();
+        formData.append('id', id);
+        const headersObj = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            }
+        }
+        return axios.post(this.baseUrl + '/admin/deleteReplacementRule', formData, headersObj)
+            .then(res => res.data);
+    }
+
+    async getReplacementRules(token: string) {
+        return axios.get(this.baseUrl + '/admin/replacementRules', { headers: { 'Authorization': 'Bearer ' + token } })
             .then(res => res.data);
     }
     

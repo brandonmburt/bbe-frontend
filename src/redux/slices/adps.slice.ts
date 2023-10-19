@@ -11,7 +11,7 @@ export interface AdpState {
     error: string,
     uploadInProgress: boolean,
     uploadError: string,
-    adpMap: [string, [string, Adp][]][]; // serializion required for redux-persist
+    adps: [string, { adpMap: [string, Adp][], additionalKeysMap: [string, string][] }][]; // serializion required for redux-persist
     resurrectionAdpMap: [string, Adp][]; // this map is unique in that the key is manualPlayerId
 }
 
@@ -20,7 +20,7 @@ const initialState: AdpState = {
     error: '',
     uploadInProgress: false,
     uploadError: '',
-    adpMap: null,
+    adps: null,
     resurrectionAdpMap: null,
 }
 
@@ -66,25 +66,31 @@ export const adpsSlice = createSlice({
             state.loading = false;
             state.error = '';
 
-            const adpResponse = action.payload;
-            const adpTypeMap: Map<string, [string, Adp][]> = new Map();
+            const adpResponse = JSON.parse(action.payload);
+            const adpTypeMap: Map<string, { adpMap: [string, Adp][], additionalKeysMap: [string, string][] }> = new Map();
 
             EXPOSURE_TYPES.forEach(([type, ]) => {
                 if (adpResponse.hasOwnProperty(type)) {
-                    let currAdpMap: Map<string, Adp> = new Map();
-                    let currAdpArr = adpResponse[type];
-                    currAdpArr.forEach((item: Adp) => currAdpMap.set(item.playerId, { ...item, adp: item.adp === null ? 216 : item.adp })); // TODO: can't blindly apply 216
-                    let currSerializedMap: [string, Adp][] = serializeMap(currAdpMap);
-                    adpTypeMap.set(type, currSerializedMap);
-                    if (type === '2023resurrection') {
-                        const resurrectionMap: Map<string, Adp> = new Map();
-                        currAdpArr.forEach((item: Adp) => resurrectionMap.set(item.manualPlayerId, { ...item, adp: item.adp === null ? 216 : item.adp }));
-                        state.resurrectionAdpMap = serializeMap(resurrectionMap);
-                    }
+                    const { adps, additionalKeysArr } = adpResponse[type];
+                    let adpMap: Map<string, Adp> = new Map();
+                    adps.forEach((x: Adp) => adpMap.set(x.playerId, { ...x, adp: x.adp === null ? 216 : x.adp })); // TODO: can't blindly apply 216
+                    let additionalKeysMap: Map<string, string> = new Map();
+                    additionalKeysArr.forEach(([key, value]) => additionalKeysMap.set(key, value));
+                    let serializedAdpMap: [string, Adp][] = serializeMap(adpMap);
+                    let serializedAdditionalKeysMap: [string, string][] = serializeMap(additionalKeysMap);
+                    adpTypeMap.set(type, {
+                        adpMap: serializedAdpMap,
+                        additionalKeysMap: serializedAdditionalKeysMap
+                    });
+                    // if (type === '2023resurrection') {
+                    //     const resurrectionMap: Map<string, Adp> = new Map();
+                    //     currAdpArr.forEach((item: Adp) => resurrectionMap.set(item.manualPlayerId, { ...item, adp: item.adp === null ? 216 : item.adp }));
+                    //     state.resurrectionAdpMap = serializeMap(resurrectionMap);
+                    // }
                 }
             });
 
-            state.adpMap = serializeMap(adpTypeMap);            
+            state.adps = serializeMap(adpTypeMap);            
         })
         builder.addCase(fetchADPs.rejected, (state, action) => {
             state.loading = false;
@@ -94,7 +100,19 @@ export const adpsSlice = createSlice({
 })
 
 export const selectAdpState = (state: RootState) => state.adps;
-export const selectAdpMap = createSelector([state => state.adps.adpMap], adpMap => deserializeMap(adpMap));
+export const selectAdps = createSelector([selectAdpState], adpState => deserializeMap(adpState.adps));
+export const selectAdpMap = createSelector([selectAdps, selectExposureType], (adps, type) => {
+    if (!adps) return null;
+    const adpByType = adps.get(type);
+    if (!adpByType) return null;
+    return deserializeMap(adpByType.adpMap);
+});
+export const selectAdditionalKeysMap = createSelector([selectAdps, selectExposureType], (adps, type) => {
+    if (!adps) return null;
+    const adpByType = adps.get(type);
+    if (!adpByType) return null;
+    return deserializeMap(adpByType.additionalKeysMap);
+});
 export const selectResurrectionAdpMap = createSelector([selectAdpState], adpState => deserializeMap(adpState.resurrectionAdpMap));
 
 export const selectAdpMapByType = createSelector([selectAdpMap, selectExposureType], (adpMap, type) => {

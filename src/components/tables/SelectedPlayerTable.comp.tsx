@@ -11,7 +11,7 @@ export function SelectedPlayerTable(props) {
         'Times Drafted',
         'Entry Fees',
         'Avg Pick',
-        'Current ADP',
+        'ADP',
         'CLV'
     ];
 
