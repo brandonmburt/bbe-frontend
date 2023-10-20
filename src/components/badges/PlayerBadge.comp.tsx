@@ -3,7 +3,10 @@ import { POS_COLORS } from '../../constants/colors.constants';
 
 export function PlayerBadge(props) {
 
-    const position = props.pos.toUpperCase();
+    const { pos, posRank } = props;
+
+    // extract the position from the posRank string (e.g. 'rb1' --> 'RB' or 'wr1' --> 'WR')
+    const position = posRank ? posRank.substring(0, 2).toUpperCase() : pos.toUpperCase();
 
     return (
         <>

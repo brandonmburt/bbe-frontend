@@ -1,12 +1,12 @@
 import { Adp } from "../models/adp.model";
-import { DraftedPlayer, DraftedTeam } from "../models/exposure.model";
-import { ExposureData, PlayerInputOption } from "../models/player.model";
+import { DraftedPlayer, DraftedTeam, ExposureSnapshot, SelectionArr, Tournament } from "../models/exposure.model";
+import { ExposureData, PlayerInputOption, SelectedPlayer } from "../models/player.model";
 import { getAdpObj } from '../utils/adp.utils';
 
 /**
  * Returns an array which is used to populate the player exposure autocomplete
- * @param draftedPlayers: DraftedPlayer[] - array of drafted players for the current exposure type
- * @returns PlayerInputOption[] - array of PlayerInputOptions
+ * @param {DraftedPlayer[]} draftedPlayers - array of drafted players
+ * @returns {PlayerInputOption[]} - array of PlayerInputOptions
  */
 export const generateInputOptions = (draftedPlayers: DraftedPlayer[]): PlayerInputOption[] => {
     // Excluding players that were only drafted once, as the scatterplot wont properly populate
@@ -17,19 +17,20 @@ export const generateInputOptions = (draftedPlayers: DraftedPlayer[]): PlayerInp
 }
 
 /**
- * Returns an array of ExposureData objects which is used to populate the player exposure table
- * @param adpMap 
- * @param playerKeysMap
- * @param draftedPlayers 
- * @param numDrafts 
- * @param ResurrectionAdps: Map<string, Adp> - optional param of resurgence adps
- * @returns 
+ * Returns an array of ExposureData objects which are used to populate the player exposure table
+ * @param {Map<string, Adp>} adpMap - Map of adps { playerId: Adp }
+ * @param {Map<string, string>} playerKeysMap - Map of additional keys { key: playerId }
+ * @param {DraftedPlayer[]} draftedPlayers - array of drafted players
+ * @param {number} numDrafts - number of drafts
+ * @returns {ExposureData[]} - array of ExposureData objects
  */
-export const getPlayerExposureRows = (adpMap: Map<string, Adp>, playerKeysMap: Map<string, string>, draftedPlayers: DraftedPlayer[], numDrafts: number, resurrectionAdps?: Map<string, Adp>): ExposureData[] => {
+export const getPlayerExposureRows = (adpMap: Map<string, Adp>, playerKeysMap: Map<string, string>,
+    draftedPlayers: DraftedPlayer[], numDrafts: number): ExposureData[] => {
+    
     let rows: ExposureData[] = [];
     draftedPlayers.forEach(player => {
-        const { avgPickNumber, name, playerId, sumEntryFees, timesDrafted, team, position } = player;
-        const { adp, posRank} = getAdpObj(player, adpMap, playerKeysMap) ?? { adp: -1, posRank: '' };
+        const { avgPickNumber, name, playerId, sumEntryFees, timesDrafted, team, position, additionalKeys } = player;
+        const { adp, posRank } = getAdpObj(player, adpMap, playerKeysMap) ?? { adp: -1, posRank: '' };
         const rowObj: ExposureData = {
             id: playerId,
             name: name,
@@ -41,71 +42,126 @@ export const getPlayerExposureRows = (adpMap: Map<string, Adp>, playerKeysMap: M
             posRank,
             clv: Number((avgPickNumber - adp).toFixed(1)),
             percentDrafted: Number((timesDrafted/numDrafts*100).toFixed(1)),
-            timesDrafted
+            timesDrafted,
+            additionalKeys,
         }
-        // TODO
-        // if (!!resurrectionAdps) {
-        //     const { manualPlayerId } = playersMap.get(playerId);
-        //     const { adp: resurrectionAdp, posRank: resurrectionPosRank } = resurrectionAdps.get(manualPlayerId) ?? { adp: -1, posRank: '' };
-        //     const resurrectionClv = Number((avgPickNumber - resurrectionAdp).toFixed(1));
-        //     rowObj.resurrectionAdp = resurrectionAdp;
-        //     rowObj.resurrectionPosRank = resurrectionPosRank;
-        //     rowObj.resurrectionClv = resurrectionClv;
-        // }
         rows.push(rowObj);
     });
     rows.sort((a, b) => b.percentDrafted - a.percentDrafted);
-    rows.forEach((row, i) => row.resurrectionAdp === -1 && console.log(row)); // sanity check
-    return rows.filter(x => x.resurrectionAdp !== -1); // hacky way to exclude players whose information is different between ADP and Resurgence ADP files
+    return rows;
+}
+
+/**
+ * Adds resurrection data to the previously generated ExposureData objects
+ * @param {ExposureData[]} rows - array of ExposureData objects generated for the exposure grid
+ * @param {Map<string, Adp>} resurrectionAdps - Map of resurrection adps { playerId: Adp }
+ * @param {Map<string, string>} resurrectionKeysMap - Map of additional resurrection keys
+ */
+export const addResurrectionData = (rows: ExposureData[], resurrectionAdps: Map<string, Adp>,
+    resurrectionKeysMap: Map<string, string>): void => {
+    
+    rows.forEach((rowObj: ExposureData) => {
+        const { id, additionalKeys, avgPick } = rowObj;
+        const draftedPlayer: Partial<DraftedPlayer> = { playerId: id, additionalKeys };
+        const { adp: resAdp, posRank: resPosRank } = getAdpObj(draftedPlayer, resurrectionAdps, resurrectionKeysMap) ?? { adp: -1, posRank: '' };
+        const resurrectionClv = Number((avgPick - resAdp).toFixed(1));
+        rowObj.resurrectionAdp = resAdp;
+        rowObj.resurrectionPosRank = resPosRank;
+        rowObj.resurrectionClv = resurrectionClv;
+    });
 }
 
 /**
  * Filters draftedTeams by the provided tournamentId and generates player exposure data for that subset of teams
- * @param tournamentId: tournament ID
- * @param entryFee: tournament entry fee
- * @param draftedTeams
- * @param draftedPlayersMap - Map of drafted players
- * @returns [DraftedPlayer[], number] - array of DraftedPlayers and number of drafts for the current tournament
- * TODO: should refactor tournaments slice to contain the number of drafts for each tournament
+ * @param {Tournament} tournament - tournament to filter exposure data on
+ * @param {DraftedTeam[]} draftedTeams - array of drafted teams
+ * @param {Map<string, DraftedPlayer>} draftedPlayersMap - Map of drafted players
+ * @returns {[DraftedPlayer[], number]} - array of DraftedPlayers and number of drafts
  */
-export const getPlayerExposureByTournamentId = (tournamentId: string, entryFee: number,  draftedTeams: DraftedTeam[], draftedPlayersMap: Map<string, DraftedPlayer>): [DraftedPlayer[], number] => {
-    const exposureMap = new Map();
+export const getPlayerExposureByTournamentId = (tournament: Tournament, draftedTeams: DraftedTeam[],
+    draftedPlayersMap: Map<string, DraftedPlayer>): [DraftedPlayer[], number] => {
+
+    const { id: tournamentId, entryFee } = tournament;
+    const filteredMap: Map<string, DraftedPlayer> = new Map();
     let numDrafts = 0; // number of drafts for the current tournament
-    draftedTeams.forEach(team => {
-        if (team.tournamentId === tournamentId || team.weeklyWinnerId === tournamentId) {
+    draftedTeams.forEach((t: DraftedTeam) => {
+        if (t.tournamentId === tournamentId || t.weeklyWinnerId === tournamentId) {
             numDrafts++;
-            team.qbs.concat(team.rbs, team.wrs, team.tes).forEach(p => {
-                const [ pickNumber, playerId, timestamp ] = p;
-                if (!exposureMap.has(playerId)) exposureMap.set(playerId, {
-                    timesDrafted: 0,
-                    sumPickNumber: 0,
-                    selectionInfo: [],
-                    name: draftedPlayersMap.get(playerId)?.name ?? '',
-                    team: draftedPlayersMap.get(playerId)?.team ?? '',
-                    position: draftedPlayersMap.get(playerId)?.position ?? '',
-                    playerId,
-                });
-                exposureMap.get(playerId).timesDrafted++;
-                exposureMap.get(playerId).sumPickNumber += pickNumber;
-                exposureMap.get(playerId).selectionInfo.push([pickNumber, team.draftEntry, timestamp]);
+            t.qbs.concat(t.rbs, t.wrs, t.tes).forEach(([ pickNumber, playerId, timestamp ]) => {
+                if (!filteredMap.has(playerId)) {
+                    const { additionalKeys, name, team, position } = draftedPlayersMap.get(playerId);
+                    filteredMap.set(playerId, {
+                        playerId, additionalKeys, name, team, position,
+                        timesDrafted: 1,
+                        avgPickNumber: pickNumber, // Temporarily storing the sum of pick numbers here
+                        sumEntryFees: entryFee,
+                        selectionInfo: [[pickNumber, t.draftEntry, timestamp]],
+                    });
+                } else {
+                    const exposureObj = filteredMap.get(playerId);
+                    exposureObj.timesDrafted++;
+                    exposureObj.avgPickNumber += pickNumber;
+                    exposureObj.sumEntryFees += entryFee;
+                    exposureObj.selectionInfo.push([pickNumber, t.draftEntry, timestamp]);
+                }
             });
         }
     });
-    const draftedPlayers: DraftedPlayer[] = [];
-    exposureMap.forEach((v, k) => {
-        const { timesDrafted, sumPickNumber, selectionInfo, name, playerId, team, position, additionalKeys } = v;
-        draftedPlayers.push({
-            timesDrafted,
-            avgPickNumber: Number((sumPickNumber/timesDrafted).toFixed(1)),
-            sumEntryFees: Number((entryFee*timesDrafted).toFixed(1)),
-            selectionInfo,
-            name,
-            playerId,
-            team,
-            position,
-            additionalKeys,
+    const filteredPlayers: DraftedPlayer[] = [];
+    filteredMap.forEach((v, k) => {
+        const { timesDrafted, avgPickNumber, sumEntryFees } = v;
+        filteredPlayers.push({
+            ...v,
+            avgPickNumber: Number((avgPickNumber/timesDrafted).toFixed(1)),
+            sumEntryFees: Number(sumEntryFees.toFixed(1)),
         });
     });
-    draftedPlayers.sort((a, b) => b.timesDrafted - a.timesDrafted);
-    return [draftedPlayers, numDrafts];
+    filteredPlayers.sort((a, b) => b.timesDrafted - a.timesDrafted);
+    return [filteredPlayers, numDrafts];
+}
+
+/**
+ * Generate unique players snapshot
+ * @param {ExposureData[]} gridRows - array of ExposureData objects
+ * @param {number} draftQuantity - number of drafts
+ * @returns {ExposureSnapshot} - ExposureSnapshot object
+ */
+export const generateExposureSnapshot = (gridRows: ExposureData[], draftQuantity: number): ExposureSnapshot => {
+    const snapshot: ExposureSnapshot = {
+        totalDrafts: draftQuantity,
+        uniquePlayers: { qbs: 0, rbs: 0, wrs: 0, tes: 0 }
+    }
+    gridRows.forEach(({ pos }) => {
+        if (pos === 'QB') snapshot.uniquePlayers.qbs++;
+        else if (pos === 'RB') snapshot.uniquePlayers.rbs++;
+        else if (pos === 'WR') snapshot.uniquePlayers.wrs++;
+        else if (pos === 'TE') snapshot.uniquePlayers.tes++;
+    });
+    return snapshot;
+}
+
+/**
+ * Get necessary data to populate the selected player section
+ * @param {DraftedPlayer} draftedPlayer
+ * @param {Map<string, Adp>} adpMap - Map of adps { playerId: Adp }
+ * @param {Map<string, string>} playerKeysMap - Map of additional keys { key: playerId }
+ * @param {DraftedPlayer[]} players - array of drafted players
+ * @param {Tournament} tournament - tournament info, or null if no tournament selected
+ * @returns {SelectedPlayer} - SelectedPlayer object
+ */
+export const getSelectedPlayerData = (draftedPlayer: DraftedPlayer, adpMap: Map<string, Adp>, playerKeysMap: Map<string, string>,
+    players: DraftedPlayer[], tournament: Tournament): SelectedPlayer => {
+    
+    let { adp, posRank } = getAdpObj(draftedPlayer, adpMap, playerKeysMap) ?? { adp: -1, posRank: null };
+    let { position, team } = draftedPlayer ?? { position: null, team: null };
+    /* Important becuase players might be a filtered subset of all drafted players data */
+    const playerInfo = players.find(({ playerId: pId }) => pId === draftedPlayer.playerId);
+    return {
+        playerInfo,
+        playerAdp: Number(adp) ?? 216, // TODO: handle case when ADP isn't a number
+        posRank,
+        team,
+        pos: position,
+        tournamentTitle: tournament?.title ?? null,
+    };
 }

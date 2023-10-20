@@ -12,7 +12,6 @@ export interface AdpState {
     uploadInProgress: boolean,
     uploadError: string,
     adps: [string, { adpMap: [string, Adp][], additionalKeysMap: [string, string][] }][]; // serializion required for redux-persist
-    resurrectionAdpMap: [string, Adp][]; // this map is unique in that the key is manualPlayerId
 }
 
 const initialState: AdpState = {
@@ -21,7 +20,6 @@ const initialState: AdpState = {
     uploadInProgress: false,
     uploadError: '',
     adps: null,
-    resurrectionAdpMap: null,
 }
 
 export const uploadADPs = createAsyncThunk('admin/uploadADPs', async (obj: any, { getState }) => { // TODO: Define type
@@ -113,10 +111,18 @@ export const selectAdditionalKeysMap = createSelector([selectAdps, selectExposur
     if (!adpByType) return null;
     return deserializeMap(adpByType.additionalKeysMap);
 });
-export const selectResurrectionAdpMap = createSelector([selectAdpState], adpState => deserializeMap(adpState.resurrectionAdpMap));
 
-export const selectAdpMapByType = createSelector([selectAdpMap, selectExposureType], (adpMap, type) => {
-    return adpMap.has(type) ? deserializeMap(adpMap.get(type)) : null;
+export const selectResurrectionAdpMap = createSelector([selectAdps], adps => {
+    if (!adps) return null;
+    const adpByType = adps.get('2023resurrection');
+    if (!adpByType) return null;
+    return deserializeMap(adpByType.adpMap);
+});
+export const selectResurrectionAdditionalKeysMap = createSelector([selectAdps], adps => {
+    if (!adps) return null;
+    const adpByType = adps.get('2023resurrection');
+    if (!adpByType) return null;
+    return deserializeMap(adpByType.additionalKeysMap);
 });
 
 export default adpsSlice.reducer

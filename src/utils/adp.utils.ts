@@ -2,11 +2,13 @@ import { DraftedPlayer } from "../models/exposure.model";
 import { Adp } from "../models/adp.model";
 
 /**
- * TODO: description
- * @param picks: Array of pick numbers
- * @returns 
+ * Retreives the ADP object for a given player
+ * @param {DraftedPlayer} draftedPlayer - player
+ * @param {Map<string, Adp>} adpMap - Map of adps { playerId: Adp }
+ * @param {Map<string, string>} playerKeysMap - Map of additional keys { key: playerId }
+ * @returns {Adp} - Adp object
  */
-export const getAdpObj = (draftedPlayer: DraftedPlayer, adpMap: Map<string, Adp>, playerKeysMap: Map<string, string>): Adp => {
+export const getAdpObj = (draftedPlayer: Partial<DraftedPlayer>, adpMap: Map<string, Adp>, playerKeysMap: Map<string, string>): Adp => {
     const { playerId, additionalKeys } = draftedPlayer;
     if (adpMap.has(playerId)) {
         return adpMap.get(playerId);
@@ -24,8 +26,9 @@ export const getAdpObj = (draftedPlayer: DraftedPlayer, adpMap: Map<string, Adp>
 }
 
 /**
- * description
- * @param index: Array of pick numbers
+ * Debug helper function
+ * @param index - index of additional key
+ * @param key - additional key
  */
 const logMessage = (index: number, key: string): void => {
     if (index === 0) {

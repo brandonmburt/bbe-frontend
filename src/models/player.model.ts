@@ -21,6 +21,7 @@ export interface ExposureData {
     clv: number;
     percentDrafted: number;
     timesDrafted: number;
+    additionalKeys?: string[];
     resurrectionPosRank?: string;
     resurrectionAdp?: number;
     resurrectionClv?: number;

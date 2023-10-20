@@ -55,7 +55,7 @@ export interface DraftedPlayer {
     avgPickNumber: number,
     sumEntryFees: number,
     timesDrafted: number,
-    selectionInfo: SelectionArr[], // [Pick Number, Draft Entry, Picked At][]
+    selectionInfo: any[], // SelectionArr[]
     additionalKeys: string[],
 }
 
@@ -93,5 +93,15 @@ export interface Tournament {
     tournamentSize: number;
     totalPrizes: number;
 }
+
+export interface ExposureSnapshot {
+    totalDrafts: number,
+    uniquePlayers: {
+        qbs: number,
+        rbs: number,
+        wrs: number,
+        tes: number
+    }
+} 
 
 export type SelectionArr = [number, string, string][]; // [Pick Number, Draft Entry, Picked At][]
