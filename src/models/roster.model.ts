@@ -10,7 +10,7 @@ export interface DraftedTeamRowData {
     startDate: string; // timestamp of first pick
     tournamentSize: number; // if tournament or WW, number of entries; otherwise 0
     tournamentPrizes: number; // if tournament or WW, total prizes; otherwise 0
-    draftType: string; // fast or slow
+    draftType: string; // fast, slow, or instant
 }
 
 export interface PickInfo {

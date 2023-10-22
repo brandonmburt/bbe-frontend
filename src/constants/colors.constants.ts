@@ -17,6 +17,8 @@ export const DRAFT_COLORS = {
     NFL: 'rgb(23, 95, 199)', // nfl #175fc7
     BB: 'rgb(23, 95, 199)', // best ball #175fc7
     T: 'rgb(224, 180, 0)', // tournament #e0b400
+    SLOW: '#e67e22', // slow #e67e22
+    INSTANT: '#b40dbf', // instant #b40dbf
 }
 
 export const TEAM_COLORS = {

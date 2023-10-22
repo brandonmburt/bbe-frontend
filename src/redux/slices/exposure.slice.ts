@@ -145,20 +145,20 @@ export const exposureSlice = createSlice({
                 totalEntryFees += exposure.draftSpots.totalDollarSum;
                 exposure.draftedTeams.forEach((team: DraftedTeam) => {
                     const { weeklyWinnerId, tournamentId, draftEntryFee, draftType } = team;
-                    if (tournamentId != '') {
+                    if (tournamentId !== '') {
                         breakdown.tournaments.quantity++;
                         breakdown.tournaments.fees += draftEntryFee;
-                        breakdown.tournaments.fastDrafts += draftType === 'fast' ? 1 : 0;
+                        breakdown.tournaments.fastDrafts += (draftType === 'fast' || draftType === 'instant') ? 1 : 0;
                         breakdown.tournaments.slowDrafts += draftType === 'slow' ? 1 : 0;
-                    } else if (weeklyWinnerId != '') {
+                    } else if (weeklyWinnerId !== '') {
                         breakdown.weeklyWinners.quantity++;
                         breakdown.weeklyWinners.fees += draftEntryFee;
-                        breakdown.weeklyWinners.fastDrafts += draftType === 'fast' ? 1 : 0;
+                        breakdown.weeklyWinners.fastDrafts += (draftType === 'fast' || draftType === 'instant') ? 1 : 0;
                         breakdown.weeklyWinners.slowDrafts += draftType === 'slow' ? 1 : 0;
                     } else {
                         breakdown.sitAndGos.quantity++;
                         breakdown.sitAndGos.fees += draftEntryFee;
-                        breakdown.sitAndGos.fastDrafts += draftType === 'fast' ? 1 : 0;
+                        breakdown.sitAndGos.fastDrafts += (draftType === 'fast' || draftType === 'instant') ? 1 : 0;
                         breakdown.sitAndGos.slowDrafts += draftType === 'slow' ? 1 : 0;
                     }
                 });

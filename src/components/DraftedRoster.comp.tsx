@@ -54,9 +54,9 @@ export function DraftedRoster() {
             minWidth: 125,
             type: 'string',
             headerAlign: 'center',
-            align: 'center',
+            align: 'left',
             renderCell(params) {
-                return (<DraftBadge type={params.row.entryType}  />);
+                return (<DraftBadge type={params.row.entryType} draftType={params.row.draftType} />);
             }
         },
         {
@@ -181,7 +181,8 @@ export function DraftedRoster() {
                                 <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} >
                                     <CardComp title={
                                             <>
-                                                {selectedTeamData.title} <DraftBadge type={selectedTeamData.entryType} /><span style={{color: 'grey', fontWeight: 'normal', fontSize: '16px'}}>{selectedTeamData.startDate.split(' ')[0]}</span>
+                                                {selectedTeamData.title} <DraftBadge type={selectedTeamData.entryType} draftType={selectedTeamData.draftType} />
+                                                <span style={{color: 'grey', fontWeight: 'normal', fontSize: '16px'}}>{selectedTeamData.startDate.split(' ')[0]}</span>
                                             </>
                                         } body={selectedRosterTable} />
                                 </Box>
