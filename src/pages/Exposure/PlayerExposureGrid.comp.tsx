@@ -1,7 +1,7 @@
 import Button from '@mui/material/Button';
 import { DataGrid, GridColDef, GridColumnGroupingModel, GridToolbar } from '@mui/x-data-grid';
-import { PlayerBadge } from '../badges/PlayerBadge.comp';
-import { TeamBadge } from '../badges/TeamBadge.comp';
+import { PlayerBadge } from '../../components/badges/PlayerBadge.comp';
+import { TeamBadge } from '../../components/badges/TeamBadge.comp';
 import Tooltip from '@mui/material/Tooltip';
 
 export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurrectionColumns }) {

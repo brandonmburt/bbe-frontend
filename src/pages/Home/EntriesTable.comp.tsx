@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { formatAsMoney } from '../../utils/format.utils';
-import { DraftBadge } from '../badges/DraftBadge.comp';
+import { DraftBadge } from '../../components/badges/DraftBadge.comp';
 
 export function EntriesTable(props) {
 

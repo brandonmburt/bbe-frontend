@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { calcuateScatterRange, calculateLineOfBestFit } from '../utils/math.utils';
-import { SelectedPlayerTable } from './tables/SelectedPlayerTable.comp';
-import { PlayerScatterPlotChart } from './charts/PlayerScatterPlot.comp';
+import { calcuateScatterRange, calculateLineOfBestFit } from '../../utils/math.utils';
+import { SelectedPlayerTable } from './SelectedPlayerTable.comp';
+import { PlayerScatterPlotChart } from '../../components/charts/PlayerScatterPlot.comp';
+import { ScatterData } from '../../models/charts.model';
 
 interface PlayerData {
     playerAvg: number;
@@ -12,14 +13,6 @@ interface PlayerData {
     timesDrafted: number;
     sumEntryFees: number;
     tournamentTitle: string;
-}
-
-interface ScatterData {
-    x: number;
-    y?: number;
-    dateShort?: string;
-    dateLong?: string;
-    bestFit?: number;
 }
 
 export default function PlayerExposure(props) {

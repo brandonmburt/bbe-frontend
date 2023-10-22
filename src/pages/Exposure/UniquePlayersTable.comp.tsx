@@ -1,5 +1,5 @@
 import { Box, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
-import { PlayerBadge } from '../badges/PlayerBadge.comp';
+import { PlayerBadge } from '../../components/badges/PlayerBadge.comp';
 
 export function UniquePlayers(props) {
 

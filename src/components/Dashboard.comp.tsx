@@ -126,7 +126,7 @@ export default function Dashboard() {
     if (isAdmin) {
         accountLinks.splice(1, 0, 
             { name: 'Upload ADPs', path: '/uploadADPs', icon: <UploadFileIcon /> },
-            { name: 'Player Name Rules', path: '/replacementValues', icon: <EditNoteIcon /> }
+            { name: 'Player Name Rules', path: '/replacement', icon: <EditNoteIcon /> }
         );
     }
 

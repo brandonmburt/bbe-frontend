@@ -1,22 +1,22 @@
 import { useState, useEffect, useRef } from 'react';
-import { useAppSelector } from '../redux/hooks'
-import { selectDraftedTeams, selectExposureType, selectTournaments, selectDraftedPlayersMap } from '../redux/slices/exposure.slice';
-import { DraftedPlayer, DraftedTeam, Tournament } from '../models/exposure.model';
-import { Adp } from '../models/adp.model';
-import { selectAdpMap, selectAdditionalKeysMap } from '../redux/slices/adps.slice';
+import { useAppSelector } from '../../redux/hooks'
+import { selectDraftedTeams, selectExposureType, selectTournaments, selectDraftedPlayersMap } from '../../redux/slices/exposure.slice';
+import { DraftedPlayer, DraftedTeam, Tournament } from '../../models/exposure.model';
+import { Adp } from '../../models/adp.model';
+import { selectAdpMap, selectAdditionalKeysMap } from '../../redux/slices/adps.slice';
 import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid';
-import { formatAsMoney } from '../utils/format.utils';
-import { CardComp } from './CardComp.comp';
+import { formatAsMoney } from '../../utils/format.utils';
+import { CardComp } from '../../components/CardComp.comp';
 import { Box, Button } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { DraftBadge } from './badges/DraftBadge.comp';
-import useLoginRedirect from '../hooks/useLoginRedirect';
-import { RosterTable } from './tables/RosterTable.comp';
-import { GameStacksTable } from './tables/GameStacksTable.comp';
-import { DraftedTeamRowData, PlayoffStack } from '../models/roster.model';
-import { getDraftedRosters, getPlayoffStacks } from '../utils/roster.utils';
+import { DraftBadge } from '../../components/badges/DraftBadge.comp';
+import useLoginRedirect from '../../hooks/useLoginRedirect';
+import { RosterTable } from './RosterTable.comp';
+import { GameStacksTable } from './GameStacksTable.comp';
+import { DraftedTeamRowData, PlayoffStack } from '../../models/roster.model';
+import { getDraftedRosters, getPlayoffStacks } from '../../utils/roster.utils';
 
-export function DraftedRoster() {
+export function Drafts() {
     useLoginRedirect();
 
     const rosterRef = useRef(null);
@@ -147,7 +147,7 @@ export function DraftedRoster() {
         if (!draftedTeams || !adpMap || !playerKeysMap || !draftedPlayersMap) return;
         let arr: DraftedTeamRowData[] = getDraftedRosters(draftedTeams, adpMap, playerKeysMap, draftedPlayersMap, tournaments);
         setDraftedTeamsData(arr);
-    }, [draftedTeams, adpMap, draftedPlayersMap, playerKeysMap]);
+    }, [draftedTeams, adpMap, draftedPlayersMap, playerKeysMap, tournaments]);
 
     const selectedRosterTable = !selectedTeamData ? null : <RosterTable selectedTeamData={selectedTeamData} adpDateString={adpDateString} />;
     const playoffStacksTable = !playoffStacks ? null : <GameStacksTable playoffStacks={playoffStacks} />;

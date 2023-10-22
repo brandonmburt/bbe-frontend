@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { formatAsMoney } from '../../utils/format.utils';
-import { TeamBadge } from '../badges/TeamBadge.comp';
-import { PlayerBadge } from '../badges/PlayerBadge.comp';
+import { TeamBadge } from '../../components/badges/TeamBadge.comp';
+import { PlayerBadge } from '../../components/badges/PlayerBadge.comp';
 
 export function SelectedPlayerTable(props) {
 

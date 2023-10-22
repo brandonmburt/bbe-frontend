@@ -6,15 +6,15 @@ import { Provider } from 'react-redux'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Dashboard from './components/Dashboard.comp';
 import NotFound from './components/NotFound.comp';
-import { UploadExposureForm } from './components/UploadExposure.comp';
-import SignIn from './components/SignIn.comp';
-import SignUp from './components/SignUp.comp';
-import { Home } from './components/Home.comp';
-import Exposure from './components/Exposure.comp';
-import { UploadAdp } from './components/UploadAdp.comp';
-import { DraftedRoster } from './components/DraftedRoster.comp';
+import { UploadExposureForm } from './pages/Upload Exposure';
+import SignIn from './pages/Sign In';
+import SignUp from './pages/Sign Up';
+import { Home } from './pages/Home';
+import Exposure from './pages/Exposure';
+import { UploadAdp } from './pages/admin/Upload Adp';
+import { Drafts } from './pages/Drafts';
 import SignOut from './components/SignOut.comp';
-import { ReplacementValues } from './components/ReplacementValues.comp';
+import { ReplacementRules } from './pages/admin/Replacement Rules';
 
 const router = createBrowserRouter([
     {
@@ -52,15 +52,15 @@ const router = createBrowserRouter([
             },
             {
                 path: "/drafts",
-                element: <DraftedRoster />,
+                element: <Drafts />,
             },
             {
                 path: "/signOut",
                 element: <SignOut />,
             },
             {
-                path: "/replacementValues",
-                element: <ReplacementValues />,
+                path: "/replacement",
+                element: <ReplacementRules />,
             }
         ],
     },

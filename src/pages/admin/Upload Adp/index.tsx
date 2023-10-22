@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useAppSelector, useAppDispatch } from '../redux/hooks';
-import { uploadADPs } from '../redux/slices/adps.slice';
-import { EXPOSURE_TYPES } from '../constants/types.constants';
+import { useAppSelector, useAppDispatch } from '../../../redux/hooks';
+import { uploadADPs } from '../../../redux/slices/adps.slice';
+import { EXPOSURE_TYPES } from '../../../constants/types.constants';
 import { FormControl, InputLabel, Select, MenuItem, Box, Container, CssBaseline } from '@mui/material';
-import useLoginRedirect from '../hooks/useLoginRedirect';
-import { selectLoggedIn, selectUserIsAdmin } from '../redux/slices/user.slice';
+import useLoginRedirect from '../../../hooks/useLoginRedirect';
+import { selectLoggedIn, selectUserIsAdmin } from '../../../redux/slices/user.slice';
 
 export function UploadAdp() {
     useLoginRedirect();

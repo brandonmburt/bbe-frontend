@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { formatAsMoney } from '../../utils/format.utils';
-import { TeamBadge } from '../badges/TeamBadge.comp';
+import { TeamBadge } from '../../components/badges/TeamBadge.comp';
 import React from 'react';
 import Tooltip from '@mui/material/Tooltip';
 

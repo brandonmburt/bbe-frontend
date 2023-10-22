@@ -9,10 +9,10 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { useAppSelector, useAppDispatch } from '../redux/hooks';
-import { signUp } from '../redux/slices/user.slice';
+import { useAppSelector, useAppDispatch } from '../../redux/hooks';
+import { signUp } from '../../redux/slices/user.slice';
 import { Link } from "react-router-dom";
-import { validateEmail, validatePassword } from '../utils/validators.utils';
+import { validateEmail, validatePassword } from '../../utils/validators.utils';
 import CircularProgress from '@mui/material/CircularProgress';
 
 

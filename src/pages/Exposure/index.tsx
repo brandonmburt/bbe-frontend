@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import { useAppSelector } from '../redux/hooks'
-import { selectDraftedPlayers,selectNumDrafts, selectTournaments, selectDraftedTeams, selectDraftedPlayersMap } from '../redux/slices/exposure.slice';
-import { Adp } from '../models/adp.model';
-import { selectAdpMap, selectAdditionalKeysMap, selectResurrectionAdpMap, selectResurrectionAdditionalKeysMap } from '../redux/slices/adps.slice';
-import { DraftedPlayer, Tournament, DraftedTeam, ExposureSnapshot } from '../models/exposure.model';
+import { useAppSelector } from '../../redux/hooks'
+import { selectDraftedPlayers,selectNumDrafts, selectTournaments, selectDraftedTeams, selectDraftedPlayersMap } from '../../redux/slices/exposure.slice';
+import { Adp } from '../../models/adp.model';
+import { selectAdpMap, selectAdditionalKeysMap, selectResurrectionAdpMap, selectResurrectionAdditionalKeysMap } from '../../redux/slices/adps.slice';
+import { DraftedPlayer, Tournament, DraftedTeam, ExposureSnapshot } from '../../models/exposure.model';
 import { FormControlLabel, FormGroup, Stack, Switch, Typography, Box, TextField, Autocomplete, Tooltip } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { CardComp } from './CardComp.comp';
+import { CardComp } from '../../components/CardComp.comp';
 import PlayerExposure from './Player.comp';
-import useLoginRedirect from '../hooks/useLoginRedirect';
-import PlayerExposureGrid from './grids/PlayerExposureGrid.comp';
+import useLoginRedirect from '../../hooks/useLoginRedirect';
+import PlayerExposureGrid from './PlayerExposureGrid.comp';
 import {
     generateInputOptions,
     getPlayerExposureRows,
@@ -17,10 +17,10 @@ import {
     getPlayerExposureByTournamentId,
     generateExposureSnapshot,
     getSelectedPlayerData,
-} from '../utils/player.utils';
-import { PlayerInputOption, ExposureData, SelectedPlayer } from '../models/player.model';
-import { selectExposureType } from '../redux/slices/exposure.slice';
-import { UniquePlayers } from './tables/UniquePlayersTable.comp';
+} from '../../utils/player.utils';
+import { PlayerInputOption, ExposureData, SelectedPlayer } from '../../models/player.model';
+import { selectExposureType } from '../../redux/slices/exposure.slice';
+import { UniquePlayers } from './UniquePlayersTable.comp';
 import InfoIcon from '@mui/icons-material/Info';
 
 export default function Exposure() {

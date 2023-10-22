@@ -10,12 +10,12 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { useAppSelector, useAppDispatch } from '../redux/hooks';
-import { selectLoggedIn, signIn, selectShowDemoCredentials, setShowDemoCredentials } from '../redux/slices/user.slice';
+import { useAppSelector, useAppDispatch } from '../../redux/hooks';
+import { selectLoggedIn, signIn, selectShowDemoCredentials, setShowDemoCredentials } from '../../redux/slices/user.slice';
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
-import { validateEmail, validatePassword } from '../utils/validators.utils'; // TODO
-import { selectRedirectPathOnLogin } from '../redux/slices/exposure.slice';
+import { validateEmail, validatePassword } from '../../utils/validators.utils'; // TODO
+import { selectRedirectPathOnLogin } from '../../redux/slices/exposure.slice';
 
 export default function SignIn(props: { demo?: boolean }) {
 

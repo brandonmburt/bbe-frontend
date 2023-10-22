@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useAppSelector } from '../redux/hooks'
-import { DraftSpots, EntryBreakdown, PosPicksByRound, RunningTotals } from '../models/exposure.model';
+import { useAppSelector } from '../../redux/hooks';
+import useLoginRedirect from '../../hooks/useLoginRedirect';
+import { DraftSpots, EntryBreakdown, PosPicksByRound, RunningTotals } from '../../models/exposure.model';
 import {
     selectDraftSpots,
     selectEntryBreakdown,
@@ -8,36 +9,21 @@ import {
     selectRunningTotals,
     selectTotalDraftsEntered,
     selectTotalEntryFees,
-} from '../redux/slices/exposure.slice';
+} from '../../redux/slices/exposure.slice';
 import Grid from '@mui/material/Unstable_Grid2';
 import { Box } from '@mui/material';
-import { CardComp } from './CardComp.comp';
-import { DraftPositionChart } from './charts/DraftPositionChart.comp';
-import { DraftsEnteredAreaChart } from './charts/DraftsEnteredAreaChart.comp';
-import { PickTendenciesAreaChart } from './charts/PickTendenciesAreaChart.comp';
-import useLoginRedirect from '../hooks/useLoginRedirect';
-import { selectExposureType } from '../redux/slices/exposure.slice';
-import { getNumbericalDate } from '../utils/date.utils';
-import { SummaryTable } from './tables/SummaryTable.comp';
-import { EntriesTable } from './tables/EntriesTable.comp';
-
-interface BarChartData {
-    draftPosition: string;
-    frequency: number;
-    entryFees: number;
-}
-
-interface AreaChartData {
-    date: string;
-    numberDate: number;
-    draftsRunningTotal: number;
-    feesRunningTotal: number;
-}
+import { CardComp } from '../../components/CardComp.comp';
+import { DraftPositionChart } from '../../components/charts/DraftPositionChart.comp';
+import { DraftsEnteredAreaChart } from '../../components/charts/DraftsEnteredAreaChart.comp';
+import { PickTendenciesAreaChart } from '../../components/charts/PickTendenciesAreaChart.comp';
+import { getNumbericalDate } from '../../utils/date.utils';
+import { SummaryTable } from './SummaryTable.comp';
+import { EntriesTable } from './EntriesTable.comp';
+import { BarChartData, AreaChartData } from '../../models/charts.model';
 
 export function Home() {
     useLoginRedirect();
 
-    const selectedExposureType = useAppSelector(selectExposureType); // TODO: might want this for adding labels to chart titles?
     const draftSpotsData: DraftSpots = useAppSelector(selectDraftSpots);
     const posPicksByRound: PosPicksByRound[] = useAppSelector(selectPosPicksByRound);
     const runningTotals: RunningTotals[] = useAppSelector(selectRunningTotals);
@@ -65,10 +51,7 @@ export function Home() {
         setRunningTotalsData(runningTotalsArr);
     }, [runningTotals]);
 
-    const entriesContent = !entryBreakdown ? null : (
-        <EntriesTable entryBreakdown={entryBreakdown} />
-    );
-
+    const entriesContent = !entryBreakdown ? null : <EntriesTable entryBreakdown={entryBreakdown} />;
     const summaryTable = !totalDraftsEntered || !totalEntryFees ? null : (
         <SummaryTable totalDraftsEntered={totalDraftsEntered} totalEntryFees={totalEntryFees} />
     );

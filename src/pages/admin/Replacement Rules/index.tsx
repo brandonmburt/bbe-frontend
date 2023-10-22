@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { useAppSelector, useAppDispatch } from '../redux/hooks';
+import { useAppSelector, useAppDispatch } from '../../../redux/hooks';
 import { Box, Container, CssBaseline, TextField, Button, Typography, TableBody, Table, TableCell, TableHead, TableRow } from '@mui/material';
-import useLoginRedirect from '../hooks/useLoginRedirect';
-import { selectLoggedIn, selectUserIsAdmin, addReplacementRule, selectReplacementRules, deleteReplacementRule } from '../redux/slices/user.slice';
-import { ReplacementRule } from '../models/player.model';
-import { convertTimestampToDate } from '../utils/date.utils';
+import useLoginRedirect from '../../../hooks/useLoginRedirect';
+import { selectLoggedIn, selectUserIsAdmin, addReplacementRule, selectReplacementRules, deleteReplacementRule } from '../../../redux/slices/user.slice';
+import { ReplacementRule } from '../../../models/player.model';
+import { convertTimestampToDate } from '../../../utils/date.utils';
 import ClearIcon from '@mui/icons-material/Clear';
 
-export function ReplacementValues() {
+export function ReplacementRules() {
     useLoginRedirect();
 
     const dispatch = useAppDispatch();
