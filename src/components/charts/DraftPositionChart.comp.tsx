@@ -7,6 +7,7 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import InfoIcon from '@mui/icons-material/Info';
 import { Tooltip as MUIToolTip } from '@mui/material';
+import { TOOLTIPS } from '../../constants/tooltips.constants';
 
 export function DraftPositionChart (props) {
 
@@ -45,7 +46,7 @@ export function DraftPositionChart (props) {
                 <Box sx={{ width: .5 }}>
                     <Typography variant="h5" sx={{ fontSize: { xs: '20px', md: '24px' } }}>
                         Draft Position Distribution
-                        <MUIToolTip title={'Generated using data for the selected exposure type'} placement="top" arrow>
+                        <MUIToolTip title={TOOLTIPS.SELECTED_TYPE_DATA} placement="top" arrow>
                             <InfoIcon sx={{ marginLeft: '5px', color: 'lightgrey', lineHeight: 1, verticalAlign: 'middle' }} />
                         </MUIToolTip>
                     </Typography>        

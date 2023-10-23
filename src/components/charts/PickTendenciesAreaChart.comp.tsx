@@ -4,6 +4,7 @@ import { POS_COLORS } from '../../constants/colors.constants';
 import { Box, Typography } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import { Tooltip as MUIToolTip } from '@mui/material';
+import { TOOLTIPS } from '../../constants/tooltips.constants';
 
 export function PickTendenciesAreaChart(props) {
 
@@ -15,7 +16,7 @@ export function PickTendenciesAreaChart(props) {
                 <Box sx={{ width: 1 }}>
                     <Typography variant="h5" sx={{ marginBottom: { xs: '10px', sm: '20px' }, fontSize: { xs: '20px', md: '24px' } }}>
                         Pick Tendencies By Round
-                        <MUIToolTip title={'Generated using data for the selected exposure type'} placement="top" arrow>
+                        <MUIToolTip title={TOOLTIPS.SELECTED_TYPE_DATA} placement="top" arrow>
                             <InfoIcon sx={{ marginLeft: '5px', color: 'lightgrey', lineHeight: 1, verticalAlign: 'middle' }} />
                         </MUIToolTip>
                     </Typography>

@@ -4,6 +4,7 @@ import { DOMES } from '../../constants/domes.constants';
 import StadiumIcon from '@mui/icons-material/Stadium'; // TODO: used to indicate dome games
 import React from 'react';
 import Tooltip from '@mui/material/Tooltip';
+import { TOOLTIPS } from '../../constants/tooltips.constants';
 
 export function GameStacksTable(props) {
 
@@ -37,7 +38,7 @@ export function GameStacksTable(props) {
                                                 <span style={{ fontSize: '12px' }}> @ </span>
                                                 <TeamBadge mr={0} team={home[0].team} />
                                                 {DOMES[home[0].team] &&
-                                                    <Tooltip title={'Dome game'} placement="top" arrow>
+                                                    <Tooltip title={TOOLTIPS.DOME_GAME} placement="top" arrow>
                                                         <StadiumIcon sx={{ height: '20px', position: 'absolute', color: 'grey' }}/>
                                                     </Tooltip>
                                                 }

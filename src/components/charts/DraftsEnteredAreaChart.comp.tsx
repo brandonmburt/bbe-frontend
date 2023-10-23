@@ -5,6 +5,7 @@ import { ToggleButtonGroup, ToggleButton, Typography, Box } from '@mui/material'
 import { formatAsMoney } from '../../utils/format.utils';
 import InfoIcon from '@mui/icons-material/Info';
 import { Tooltip as MUIToolTip } from '@mui/material';
+import { TOOLTIPS } from '../../constants/tooltips.constants';
 
 export function DraftsEnteredAreaChart(props) {
 
@@ -34,7 +35,7 @@ export function DraftsEnteredAreaChart(props) {
                 <Box sx={{ width: .55 }}>
                     <Typography variant="h5" sx={{ fontSize: { xs: '20px', md: '24px' } }}>
                         Cumulative <span style={{ whiteSpace: 'nowrap' }}>Drafts
-                        <MUIToolTip title={'Generated using data for the selected exposure type'} placement="top" arrow>
+                        <MUIToolTip title={TOOLTIPS.SELECTED_TYPE_DATA} placement="top" arrow>
                             <InfoIcon sx={{ marginLeft: '5px', color: 'lightgrey', lineHeight: 1, verticalAlign: 'middle' }} />
                         </MUIToolTip>
                         </span>

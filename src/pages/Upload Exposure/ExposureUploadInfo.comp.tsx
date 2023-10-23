@@ -3,6 +3,7 @@ import { EXPOSURE_TYPES } from '../../constants/types.constants';
 import { convertTimestampToDate } from '../../utils/date.utils';
 import ClearIcon from '@mui/icons-material/Clear';
 import Tooltip from '@mui/material/Tooltip';
+import { TOOLTIPS } from '../../constants/tooltips.constants';
 
 export function ExposureUploadTable(props) {
 
@@ -35,7 +36,7 @@ export function ExposureUploadTable(props) {
                             </TableCell>
                             <TableCell align="right">
                                 {uploadTimestamps.find(timestamp => timestamp[0] === value) ?
-                                    <Tooltip title={isDemo ? 'Deletion Disabled' : 'Delete exposure data'} placement='top' arrow>
+                                    <Tooltip title={isDemo ? TOOLTIPS.DELETE_DISABLED : TOOLTIPS.DELETE_EXPOSURE} placement='top' arrow>
                                         <span>
                                             <Button sx={{ color: 'red', minWidth: '20px' }} onClick={() => handleDelete(value)} disabled={disableDeletion || isDemo}>
                                                 <ClearIcon />

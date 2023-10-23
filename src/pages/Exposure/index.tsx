@@ -22,6 +22,7 @@ import { PlayerInputOption, ExposureData, SelectedPlayer } from '../../models/pl
 import { selectExposureType } from '../../redux/slices/exposure.slice';
 import { UniquePlayers } from './UniquePlayersTable.comp';
 import InfoIcon from '@mui/icons-material/Info';
+import { TOOLTIPS } from '../../constants/tooltips.constants';
 
 export default function Exposure() {
     useLoginRedirect();
@@ -67,6 +68,7 @@ export default function Exposure() {
     }, [exposureType]);
 
     useEffect(() => {
+        if (!tournaments) return;
         const tournament: Tournament = tournaments.find(({ id }) => id === tournamentId);
         if (!tournament) {
             setFilteredDraftedPlayers(null);
@@ -153,7 +155,7 @@ export default function Exposure() {
                                                         <Switch checked={resurrectionToggle} onChange={() => setResurrectionToggle(!resurrectionToggle)} />
                                                     } />
                                             </FormGroup>
-                                            <Tooltip title={'Resurrection is a best ball tournament which began on week 6 of the 2023 NFL season. The Resurrection ADPs reflect a player\'s perceived value through the first five weeks of the season.'} placement="top" arrow>
+                                            <Tooltip title={TOOLTIPS.RESURRECTION} placement="top" arrow>
                                                 <InfoIcon sx={{ ml: '5px', mt: '7px', color: 'lightgrey' }} />
                                             </Tooltip>
                                         </Box>
@@ -171,7 +173,7 @@ export default function Exposure() {
                 {!resurrectionToggle &&
                     <Grid xs={12} >
                         <Box>
-                            <CardComp title={'Player Exposure'} tooltip={'Available for players drafted two or more times'} body={<>
+                            <CardComp title={'Player Exposure'} tooltip={TOOLTIPS.PLAYER_EXPOSURE} body={<>
                                 <div ref={playerRef} style={{width: '100%', display: 'block', justifyContent: 'center'}}>
                                     <Stack>
                                         <Autocomplete

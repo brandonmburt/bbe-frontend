@@ -3,6 +3,7 @@ import { formatAsMoney } from '../../utils/format.utils';
 import { TeamBadge } from '../../components/badges/TeamBadge.comp';
 import React from 'react';
 import Tooltip from '@mui/material/Tooltip';
+import { TOOLTIPS } from '../../constants/tooltips.constants';
 
 export function RosterTable(props) {
 
@@ -32,7 +33,7 @@ export function RosterTable(props) {
                         <TableRow>
                             {tableCols.map((col, i) => {
                                 return col === 'Total CLV' ? (
-                                    <Tooltip key={'header'+i} title={'Total Closing Line Value for Drafted Team. Closing Line Value for each player is calculated as follows: Pick Number - Average Draft Position (as of ' + adpDateString + ')'} placement="top" arrow>
+                                    <Tooltip key={'header'+i} title={TOOLTIPS.TOTAL_CLV + ' (as of ' + adpDateString + ')'} placement="top" arrow>
                                         <TableCell key={'headercell'+i} style={{ width: tableWidth }} align="center">{col}</TableCell>
                                     </Tooltip>
                                 ) : (
@@ -58,10 +59,10 @@ export function RosterTable(props) {
                         <TableRow sx={{textAlign: 'center'}}>
                             <TableCell></TableCell>
                             <TableCell>Pick</TableCell>
-                            <Tooltip title={'Average Draft Position (as of ' + adpDateString + ')'} placement="top" arrow>
+                            <Tooltip title={TOOLTIPS.ADP + ' (as of ' + adpDateString + ')'} placement="top" arrow>
                                 <TableCell>ADP</TableCell>
                             </Tooltip>
-                            <Tooltip title={'Closing Line Value: Pick Number - Average Draft Position (as of ' + adpDateString + ')'} placement="top" arrow>
+                            <Tooltip title={TOOLTIPS.CLV + ' (as of ' + adpDateString + ')'} placement="top" arrow>
                                 <TableCell>CLV</TableCell>
                             </Tooltip>
                         </TableRow>

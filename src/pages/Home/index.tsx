@@ -20,6 +20,7 @@ import { getNumbericalDate } from '../../utils/date.utils';
 import { SummaryTable } from './SummaryTable.comp';
 import { EntriesTable } from './EntriesTable.comp';
 import { BarChartData, AreaChartData } from '../../models/charts.model';
+import { TOOLTIPS } from '../../constants/tooltips.constants';
 
 export function Home() {
     useLoginRedirect();
@@ -65,12 +66,12 @@ export function Home() {
                             <Grid container spacing={{ xs: 2, sm: 4 }}>
                                 <Grid xs={12} md={6} lg={4} >
                                     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }} >
-                                        <CardComp sx={{ flexGrow: 1}} title='Overview' body={summaryTable} tooltip='Calculated using all uploaded exposure data'/>
+                                        <CardComp sx={{ flexGrow: 1}} title='Overview' body={summaryTable} tooltip={TOOLTIPS.ALL_TYPE_DATA}/>
                                     </Box>
                                 </Grid>
                                 <Grid xs={12} md={6} lg={8} >
                                     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }} >
-                                        <CardComp title='Entries' body={entriesContent} tooltip='Calculated using all uploaded exposure data' />
+                                        <CardComp title='Entries' body={entriesContent} tooltip={TOOLTIPS.ALL_TYPE_DATA} />
                                     </Box>
                                 </Grid>
                             </Grid>
