@@ -87,8 +87,11 @@ export const deleteReplacementRule = createAsyncThunk('user/deleteReplacementRul
 export const fetchReplacementRules = createAsyncThunk('user/fetchReplacementRules', async (obj: any, { getState }) => {
     let state: any = getState();
     let token = state.user.accessToken;
-    if (state.user.userInfo.role !== 'admin') console.log('Unauthorized to fetch replacement rules');
-    return await ApiService.getReplacementRules(token);
+    if (state.user.userInfo.role !== 'admin') {
+        console.log('Unauthorized to fetch replacement rules');
+        return { rules: null };
+    }
+    else return await ApiService.getReplacementRules(token);
 });
 
 export const userSlice = createSlice({
@@ -142,7 +145,6 @@ export const userSlice = createSlice({
             state.signIn.inProgress = true;
         })
         builder.addCase(signIn.fulfilled, (state, action) => {
-            // console.log(action.payload)
             state.signIn.inProgress = false;
             state.signIn.error = null;
 

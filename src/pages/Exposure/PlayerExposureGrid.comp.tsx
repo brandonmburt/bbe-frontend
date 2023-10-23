@@ -3,11 +3,20 @@ import { DataGrid, GridColDef, GridColumnGroupingModel, GridToolbar } from '@mui
 import { PlayerBadge } from '../../components/badges/PlayerBadge.comp';
 import { TeamBadge } from '../../components/badges/TeamBadge.comp';
 import Tooltip from '@mui/material/Tooltip';
+import { TOOLTIPS } from '../../constants/tooltips.constants';
 
 export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurrectionColumns }) {
 
+    const renderError = () => {
+        return (
+            <Tooltip arrow placement='top' title={TOOLTIPS.GRID_ERROR}>
+                <span style={{ color: 'red' }}>ERROR</span>
+            </Tooltip>
+        )
+    }
+
      // TODO: What's the best way to store these column definitions
-     const columns: GridColDef[] = [
+    const columns: GridColDef[] = [
         {
             field: 'team',
             headerName: 'Team',
@@ -32,7 +41,9 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
             type: 'string',
             sortable: false,
             renderCell(params) {
-                return (<PlayerBadge pos={params.row.pos} posRank={params.row.posRank} />);
+                return params.row.adp === -1 ? renderError() : (
+                    <PlayerBadge pos={params.row.pos} posRank={params.row.posRank} />
+                );
             },
             align: 'center',
             headerAlign: 'center'
@@ -62,6 +73,7 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
             type: 'number',
             align: 'center',
             headerAlign: 'center',
+            renderCell(params) { return params.row.adp !== -1 ? params.row.adp : renderError() },
             description: 'Average Draft Position on 9/07/2023',
         },
         {
@@ -71,6 +83,7 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
             type: 'number',
             align: 'center',
             headerAlign: 'center',
+            renderCell(params) { return params.row.adp !== -1 ? params.row.adp : renderError() },
             description: 'Closing Line Value: Avg Pick - ADP',
         },
         {
@@ -108,7 +121,9 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
                 align: 'center',
                 headerAlign: 'center',
                 renderCell(params) {
-                    return (<PlayerBadge pos={params.row.pos} posRank={params.row.resurrectionPosRank} />)
+                    return params.row.resurrectionAdp === -1 ? renderError() : (
+                        <PlayerBadge pos={params.row.pos} posRank={params.row.resurrectionPosRank} />
+                    );
                 },
                 description: 'Resurrection Position Rank',
             },
@@ -119,6 +134,7 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
                 type: 'number',
                 align: 'center',
                 headerAlign: 'center',
+                renderCell(params) { return params.row.resurrectionAdp !== -1 ? params.row.resurrectionAdp : renderError() },
                 description: 'Resurrection Average Draft Position on 10/12/2023',
             },
             {
@@ -128,6 +144,7 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
                 type: 'number',
                 align: 'center',
                 headerAlign: 'center',
+                renderCell(params) { return params.row.resurrectionAdp !== -1 ? params.row.resurrectionClv : renderError() },
                 description: 'Closing Line Value: Avg Pick - Resurrection ADP',
             }
         );

@@ -49,7 +49,6 @@ export function ReplacementRules() {
     }
 
     const handleDelete = (id: string) => {
-        console.log(id);
         dispatch(deleteReplacementRule({id}));
     }
 
@@ -59,7 +58,7 @@ export function ReplacementRules() {
             <CssBaseline />
             <Box sx={{ my: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }} >
                 <Typography component="h1" variant="h5">
-                    Replacement Values
+                    Replacement Rules
                 </Typography>
                 <Box sx={{ my: 5, display: 'flex', flexDirection: 'column', alignItems: 'center' }} >
                     

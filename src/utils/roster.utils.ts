@@ -16,8 +16,8 @@ export const getDraftedRosters = (draftedTeams: DraftedTeam[], adpMap: Map<strin
             totalCLV += clv;
             const player = draftedPlayersMap.get(id);
             if (!player) {
-                console.log('player not found', id);
-                console.log(draftedTeam);
+                console.log('player not found: ', id);
+                console.log('team: ', draftedTeam);
                 return null;
             }
             const info: PickInfo = {
