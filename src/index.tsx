@@ -15,6 +15,7 @@ import { UploadAdp } from './pages/admin/Upload Adp';
 import { Drafts } from './pages/Drafts';
 import SignOut from './components/SignOut.comp';
 import { ReplacementRules } from './pages/admin/Replacement Rules';
+import ByeWeeks from './components/ByeWeeks.comp';
 
 const router = createBrowserRouter([
     {
@@ -31,7 +32,7 @@ const router = createBrowserRouter([
                 element: <Exposure />,
             },
             {
-                path: "/uploadExposure",
+                path: "/upload",
                 element: <UploadExposureForm />,
             },
             {
@@ -61,7 +62,11 @@ const router = createBrowserRouter([
             {
                 path: "/replacement",
                 element: <ReplacementRules />,
-            }
+            },
+            {
+                path: "/byes",
+                element: <ByeWeeks />,
+            },
         ],
     },
 ]);
