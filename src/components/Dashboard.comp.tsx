@@ -13,7 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import HomeIcon from '@mui/icons-material/Home';
 import ExposureIcon from '@mui/icons-material/Exposure';
@@ -56,11 +56,7 @@ export default function Dashboard() {
     const uploadTimestamps: string[] = useAppSelector(selectUploadTimestamps);
 
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [selectedLink, setSelectedLink] = useState<string>('');
 
-    useEffect(() => {
-        setSelectedLink(isLoggedIn ? 'Home' : 'Sign In');
-    }, [isLoggedIn]);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -116,7 +112,7 @@ export default function Dashboard() {
     ];
 
     const accountLinks: LinkObj[] = isLoggedIn ? [
-        { name: 'Upload Exposure', path: '/uploadExposure', icon: <UploadFileIcon /> },
+        { name: 'Upload File', path: '/upload', icon: <UploadFileIcon /> },
         { name: 'Sign Out', path: '/signOut', icon: <LogoutIcon /> }
     ] : [
         { name: 'Sign In', path: '/signIn', icon: <LoginIcon /> },
@@ -130,10 +126,7 @@ export default function Dashboard() {
         );
     }
 
-    const updateSelectedLink = (name: string) => {
-        setSelectedLink(name);
-        setMobileOpen(false);
-    }
+    const pathname = useLocation().pathname; // React Hook; returns relative path, without domain name
 
     const generateList = (linkObjArr: LinkObj[]) => {
         return (
@@ -141,7 +134,7 @@ export default function Dashboard() {
                 {linkObjArr.map(({ name, path, icon }) => (
                     <Link key={name} to={path} style={{ textDecoration: 'none' }} >
                         <ListItem disablePadding>
-                            <ListItemButton selected={selectedLink === name} onClick={() => updateSelectedLink(name)}>
+                            <ListItemButton selected={pathname === path} onClick={() => setMobileOpen(false)}>
                                 <ListItemIcon sx={{ color: '#FAF9F6' }}>{icon}</ListItemIcon>
                                 <ListItemText sx={{ color: '#FAF9F6' }} primary={name} />
                             </ListItemButton>

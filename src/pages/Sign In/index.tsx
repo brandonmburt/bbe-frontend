@@ -31,7 +31,6 @@ export default function SignIn(props: { demo?: boolean }) {
 
     useEffect(() => {
         if (loggedIn && redirectPathOnLogin !== null) {
-            console.log(loggedIn, redirectPathOnLogin);
             navigate(redirectPathOnLogin);
         }
       }, [loggedIn, navigate, redirectPathOnLogin]);
@@ -45,7 +44,6 @@ export default function SignIn(props: { demo?: boolean }) {
             password: data.get('password').toString(),
             rememberMe: data.get('remember') ? true : false,
         };
-        console.log(obj)
         // TODO: Validations
         dispatch(signIn(obj));
     };

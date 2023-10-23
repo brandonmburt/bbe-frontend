@@ -173,7 +173,7 @@ export const exposureSlice = createSlice({
             } else {
                 state.exposureTypes.userUploadedTypes = null;
                 state.exposureTypes.selectedType = null;
-                state.redirectPathOnLogin = '/uploadExposure';
+                state.redirectPathOnLogin = '/upload';
             }
         })
         builder.addCase(fetchExposureData.rejected, (state, action) => {
