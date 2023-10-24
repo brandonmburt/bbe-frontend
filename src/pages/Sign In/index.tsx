@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,17 +11,20 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { useAppSelector, useAppDispatch } from '../../redux/hooks';
-import { selectLoggedIn, signIn, selectShowDemoCredentials, setShowDemoCredentials } from '../../redux/slices/user.slice';
+import { selectLoggedIn, signIn, selectShowDemoCredentials, setShowDemoCredentials, selectSignInError, resetSignInError } from '../../redux/slices/user.slice';
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import { validateEmail, validatePassword } from '../../utils/validators.utils'; // TODO
 import { selectRedirectPathOnLogin } from '../../redux/slices/exposure.slice';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function SignIn(props: { demo?: boolean }) {
 
     const loggedIn = useAppSelector(selectLoggedIn);
     const showDemoCredentials = useAppSelector(selectShowDemoCredentials);
     const redirectPathOnLogin = useAppSelector<string>(selectRedirectPathOnLogin);
+    const signInError = useAppSelector<string>(selectSignInError);
+    const [loggingIn, setLoggingIn] = useState<boolean>(false);
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
@@ -30,10 +33,24 @@ export default function SignIn(props: { demo?: boolean }) {
     }, [props]);
 
     useEffect(() => {
-        if (loggedIn && redirectPathOnLogin !== null) {
-            navigate(redirectPathOnLogin);
+        // Reset sign in error on page load
+        dispatch(resetSignInError());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (loggingIn && loggedIn && redirectPathOnLogin !== null) { // indicates successful login
+            setTimeout(() => {
+                setLoggingIn(false);
+                navigate(redirectPathOnLogin);
+            }, 750);
+        } else if (loggingIn && signInError !== null) { // indicates failed login
+            setTimeout(() => {
+                setLoggingIn(false);
+            }, 500);
+        } else if (loggedIn && !loggingIn) { // user shouldn't be on this page if they're logged in
+            navigate('/');
         }
-      }, [loggedIn, navigate, redirectPathOnLogin]);
+      }, [loggedIn, navigate, redirectPathOnLogin, signInError]);
 
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -45,6 +62,7 @@ export default function SignIn(props: { demo?: boolean }) {
             rememberMe: data.get('remember') ? true : false,
         };
         // TODO: Validations
+        setLoggingIn(true);
         dispatch(signIn(obj));
     };
 
@@ -94,20 +112,18 @@ export default function SignIn(props: { demo?: boolean }) {
                         control={<Checkbox name='remember' disabled={loggedIn} value="remember" color="primary" />}
                         label="Remember me"
                     />
+                    {signInError && !loggingIn && <Typography sx={{color: 'red', fontSize: '14px'}}>{signInError}</Typography>}
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
-                        disabled={loggedIn}
-                    >
-                        Sign In
+                        disabled={loggedIn || loggingIn} >
+                            {loggingIn ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
                     </Button>
                     <Grid container>
                         <Grid item xs>
-                            {/* <Link style={{fontSize: '14px', color: '#1976d2'}} to={''} >
-                                Forgot password?
-                            </Link> */}
+                            {/* <Link style={{fontSize: '14px', color: '#1976d2'}} to={''} >Forgot password?</Link> */}
                         </Grid>
                         <Grid item>
                             <Link style={{fontSize: '14px', color: '#1976d2'}} to={'/signUp'} >

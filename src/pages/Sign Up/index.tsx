@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -10,8 +10,8 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { useAppSelector, useAppDispatch } from '../../redux/hooks';
-import { signUp } from '../../redux/slices/user.slice';
-import { Link } from "react-router-dom";
+import { signUp, signIn, selectSignUpError, selectSignUpSuccessful, resetSignUpError, selectLoggedIn } from '../../redux/slices/user.slice';
+import { Link, useNavigate } from "react-router-dom";
 import { validateEmail, validatePassword } from '../../utils/validators.utils';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -19,6 +19,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 export default function SignUp() {
 
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const [firstName, setFirstName] = useState<string>('');
     const [lastName, setLastName] = useState<string>('');
@@ -27,6 +28,29 @@ export default function SignUp() {
     const [password, setPassword] = useState<string>('');
     const [passwordError, setPasswordError] = useState<string>('');
     const [disableForm, setDisableForm] = useState<boolean>(false);
+
+    const isLoggedIn = useAppSelector<boolean>(selectLoggedIn);
+    const signUpError = useAppSelector<string>(selectSignUpError);
+    const signUpSuccessful = useAppSelector<boolean>(selectSignUpSuccessful);
+    const [waitingForResponse, setWaitingForResponse] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (!waitingForResponse) return;
+        else if (signUpSuccessful) {
+            dispatch(signIn({email: email, password: password, rememberMe: false}));
+        } else if (signUpError) {
+            setDisableForm(false);
+            setWaitingForResponse(false);
+        }
+    }, [signUpSuccessful, signUpError]);
+
+    useEffect(() => {
+        /* Indicates sucessful sign up and sign in */
+        if (signUpSuccessful && isLoggedIn) {
+            setWaitingForResponse(false);
+            setTimeout(() => navigate('/upload'), 750);
+        }
+    }, [signUpSuccessful, isLoggedIn, navigate]);
 
     const enableSubmit = () => !!(firstName && lastName && email && password && !emailError && !passwordError && !disableForm);
     const handleFirstNameChange = (event) => setFirstName(event.target.value);
@@ -69,11 +93,13 @@ export default function SignUp() {
                 email: email,
                 password: password,
             };
+            dispatch(resetSignUpError());
+            setWaitingForResponse(true);
             dispatch(signUp(obj));
         }
     };
 
-    return (
+    return isLoggedIn ? null : (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
             <Box
@@ -152,6 +178,7 @@ export default function SignUp() {
                             />
                         </Grid>
                     </Grid>
+                    {signUpError && <Typography sx={{color: 'red', fontSize: '14px'}}>{signUpError}</Typography>}
                     <Button
                         type="submit"
                         fullWidth
@@ -159,7 +186,7 @@ export default function SignUp() {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                     >
-                        {disableForm ? <CircularProgress size={24} color="inherit" /> : 'Sign Up'}
+                        {waitingForResponse ? <CircularProgress size={24} color="inherit" /> : 'Sign Up'}
                     </Button>
                     <Grid container justifyContent="flex-end">
                         <Grid item>

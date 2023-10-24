@@ -3,23 +3,7 @@ import type { RootState } from '../store'
 import ApiService from '../api/api.service';
 import Cookies from 'js-cookie';
 import { ReplacementRule } from '../../models/player.model';
-
-// TODO: move to models
-interface SignUpProps {
-    firstName: string,
-    lastName: string,
-    email: string,
-    password: string,
-    rememberMe?: boolean,
-}
-interface UserProps {
-    userId: string,
-    email: string,
-    role: string;
-    loggedIn: boolean;
-    loading: boolean;
-    error: string,
-}
+import { UserProps, SignUpProps } from '../../models/user.model';
 
 export interface UserState {
     shouldFetchData: boolean;
@@ -27,6 +11,7 @@ export interface UserState {
     signUp: {
         inProgress: boolean,
         error: string,
+        signUpSuccessful: boolean,
     },
     signIn: {
         inProgress: boolean,
@@ -41,7 +26,7 @@ export interface UserState {
 const initialState: UserState = {
     shouldFetchData: false,
     userInfo: null,
-    signUp: { inProgress: false, error: null },
+    signUp: { inProgress: false, error: null, signUpSuccessful: false },
     signIn: { inProgress: false, error: null },
     accessToken: null,
     shouldRenderApp: false,
@@ -87,10 +72,7 @@ export const deleteReplacementRule = createAsyncThunk('user/deleteReplacementRul
 export const fetchReplacementRules = createAsyncThunk('user/fetchReplacementRules', async (obj: any, { getState }) => {
     let state: any = getState();
     let token = state.user.accessToken;
-    if (state.user.userInfo.role !== 'admin') {
-        console.log('Unauthorized to fetch replacement rules');
-        return { rules: null };
-    }
+    if (state.user.userInfo.role !== 'admin') return { rules: null };
     else return await ApiService.getReplacementRules(token);
 });
 
@@ -107,6 +89,12 @@ export const userSlice = createSlice({
         setShowDemoCredentials: (state, action: PayloadAction<boolean>) => {
             state.showDemoCredentials = action.payload;
         },
+        resetSignInError: (state) => {
+            state.signIn.error = null;
+        },
+        resetSignUpError: (state) => {
+            state.signUp.error = null;
+        },
         signOut: (state) => {
             state.userInfo = null;
             state.shouldFetchData = false;
@@ -119,30 +107,21 @@ export const userSlice = createSlice({
         // signUp
         builder.addCase(signUp.pending, (state) => {
             state.signUp.inProgress = true;
+            state.signUp.error = null;
         })
         builder.addCase(signUp.fulfilled, (state, action) => {
-            console.log(action.payload)
             state.signUp.inProgress = false;
             state.signUp.error = null;
-
-            state.userInfo = {
-                userId: action.payload.id,
-                email: action.payload.email,
-                role: action.payload.role,
-                loggedIn: true,
-                loading: false,
-                error: '',
-            }
-            state.accessToken = action.payload.accessToken; // TODO
-            state.shouldFetchData = true;
+            state.signUp.signUpSuccessful = true;
         })
         builder.addCase(signUp.rejected, (state, action) => {
             state.signUp.inProgress = false;
-            state.signUp.error = action.error.message;
+            state.signUp.error = 'Email already in use';
         })
         // signIn
         builder.addCase(signIn.pending, (state) => {
             state.signIn.inProgress = true;
+            state.signIn.error = null;
         })
         builder.addCase(signIn.fulfilled, (state, action) => {
             state.signIn.inProgress = false;
@@ -169,7 +148,7 @@ export const userSlice = createSlice({
         })
         builder.addCase(signIn.rejected, (state, action) => {
             state.signIn.inProgress = false;
-            state.signIn.error = action.error.message;
+            state.signIn.error = 'Invalid email or password';
         })
         // invalidateRefreshToken
         builder.addCase(invalidateRefreshToken.pending, (state) => {
@@ -229,7 +208,7 @@ export const userSlice = createSlice({
     }
 })
 
-export const { setShouldFetchData, setShouldRenderApp, setShowDemoCredentials, signOut } = userSlice.actions
+export const { setShouldFetchData, setShouldRenderApp, setShowDemoCredentials, resetSignInError, resetSignUpError, signOut } = userSlice.actions
 
 const selectUserState = (state: RootState) => state.user;
 export const selectShouldFetchData = createSelector([selectUserState], userState => userState.shouldFetchData);
@@ -245,8 +224,11 @@ export const selectUserIsDemo = createSelector([selectUserInfo], userInfo => use
 export const selectUserAccessToken = createSelector([selectUserState], userState => userState?.accessToken ?? null);
 export const selectUserLoading = createSelector([selectUserInfo], userInfo => userInfo?.loading ?? false);
 export const selectUserError = createSelector([selectUserInfo], userInfo => userInfo?.error ?? null);
+export const selectSignInError = createSelector([selectUserState], userState => userState?.signIn?.error ?? null);
 export const selectReplacementRules = createSelector([selectUserState, selectUserIsAdmin], (userState, isAdmin) => {
     return isAdmin ? userState?.replacementRules ?? null : null;
 });
+export const selectSignUpError = createSelector([selectUserState], userState => userState?.signUp?.error ?? null);
+export const selectSignUpSuccessful = createSelector([selectUserState], userState => userState?.signUp?.signUpSuccessful ?? false);
 
 export default userSlice.reducer
