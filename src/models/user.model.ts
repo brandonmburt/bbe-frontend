@@ -7,7 +7,6 @@ export interface SignUpProps {
 }
 
 export interface UserProps {
-    userId: string,
     email: string,
     role: string;
     loggedIn: boolean;

@@ -128,7 +128,6 @@ export const userSlice = createSlice({
             state.signIn.error = null;
 
             state.userInfo = {
-                userId: action.payload.id,
                 email: action.payload.email,
                 role: action.payload.role,
                 loggedIn: true,
@@ -166,7 +165,6 @@ export const userSlice = createSlice({
         builder.addCase(checkToken.fulfilled, (state, action) => {
             state.accessToken = action.payload.accessToken;
             state.userInfo = {
-                userId: action.payload.id,
                 email: action.payload.email,
                 role: action.payload.role,
                 loggedIn: true,
@@ -217,7 +215,6 @@ export const selectShowDemoCredentials = createSelector([selectUserState], userS
 export const selectUserInfo = createSelector([selectUserState], userState => userState.userInfo);
 export const selectShouldRenderApp = createSelector([selectUserState], userState => userState.shouldRenderApp);
 export const selectLoggedIn = createSelector([selectUserInfo], userInfo => userInfo?.loggedIn ?? false);
-export const selectUserId = createSelector([selectUserInfo], userInfo => userInfo?.userId ?? null);
 export const selectUserEmail = createSelector([selectUserInfo], userInfo => userInfo?.email) ?? null;
 export const selectUserIsAdmin = createSelector([selectUserInfo], userInfo => userInfo?.role === 'admin');
 export const selectUserIsDemo = createSelector([selectUserInfo], userInfo => userInfo?.role === 'demo');

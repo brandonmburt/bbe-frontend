@@ -9,7 +9,7 @@ import StepLabel from '@mui/material/StepLabel';
 import CircularProgress from '@mui/material/CircularProgress';
 import { EXPOSURE_TYPES } from '../../constants/types.constants';
 import useLoginRedirect from '../../hooks/useLoginRedirect';
-import { selectLoggedIn, selectUserId, selectUserIsDemo } from '../../redux/slices/user.slice';
+import { selectLoggedIn, selectUserIsDemo } from '../../redux/slices/user.slice';
 import { ExposureUploadTable } from './ExposureUploadInfo.comp';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -36,7 +36,6 @@ export function UploadExposureForm() {
     const dispatch = useAppDispatch();
 
     const [loggedIn] = useState<boolean>(useAppSelector(selectLoggedIn));
-    const [userId] = useState<string>(useAppSelector(selectUserId));
     const uploadTimestamps: string[][] = useAppSelector(selectUploadTimestamps);
     const uploadMessage: string = useAppSelector(selectUploadMessage);
     const isDemo: boolean = useAppSelector(selectUserIsDemo);
@@ -115,7 +114,7 @@ export function UploadExposureForm() {
         if (loggedIn && file !== null && EXPOSURE_TYPES.find(type => type[0] === exposureUploadType) && !isDemo) {
             // TODO: more validations here
             setWaitingForResponse(true);
-            dispatch(uploadExposure({ csvFile: file, uid: userId, exposureType: exposureUploadType }))
+            dispatch(uploadExposure({ csvFile: file, exposureType: exposureUploadType }))
         } else if (isDemo) {
             setError('Error: Cannot upload files in demo mode');
         } else {
