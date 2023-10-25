@@ -10,6 +10,5 @@ export interface UserProps {
     email: string,
     role: string;
     loggedIn: boolean;
-    loading: boolean;
     error: string,
 }

@@ -131,7 +131,6 @@ export const userSlice = createSlice({
                 email: action.payload.email,
                 role: action.payload.role,
                 loggedIn: true,
-                loading: false,
                 error: '',
             }
             state.shouldFetchData = true;
@@ -168,14 +167,12 @@ export const userSlice = createSlice({
                 email: action.payload.email,
                 role: action.payload.role,
                 loggedIn: true,
-                loading: false,
                 error: '',
             }
             state.shouldFetchData = true;
             state.shouldRenderApp = true;
         })
         builder.addCase(checkToken.rejected, (state, action) => {
-            console.log('refresh token rejected; ', action.payload);
             state.shouldRenderApp = true;
             Cookies.remove('accessToken');
             Cookies.remove('refreshToken');
@@ -219,7 +216,6 @@ export const selectUserEmail = createSelector([selectUserInfo], userInfo => user
 export const selectUserIsAdmin = createSelector([selectUserInfo], userInfo => userInfo?.role === 'admin');
 export const selectUserIsDemo = createSelector([selectUserInfo], userInfo => userInfo?.role === 'demo');
 export const selectUserAccessToken = createSelector([selectUserState], userState => userState?.accessToken ?? null);
-export const selectUserLoading = createSelector([selectUserInfo], userInfo => userInfo?.loading ?? false);
 export const selectUserError = createSelector([selectUserInfo], userInfo => userInfo?.error ?? null);
 export const selectSignInError = createSelector([selectUserState], userState => userState?.signIn?.error ?? null);
 export const selectReplacementRules = createSelector([selectUserState, selectUserIsAdmin], (userState, isAdmin) => {
