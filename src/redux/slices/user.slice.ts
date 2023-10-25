@@ -140,7 +140,7 @@ export const userSlice = createSlice({
             if (action.payload.refreshToken) {
                 console.log('setting refresh token', action.payload.refreshToken);
                 // Set the access token in a cookie with a specific name and options (e.g., secure, httpOnly)
-                Cookies.set('refreshToken', action.payload.refreshToken, { secure: true, sameSite: 'strict', expires: 1 }); // TODO: look into options
+                Cookies.set('refreshToken', action.payload.refreshToken, { secure: true, sameSite: 'strict', expires: 30 });
             }
 
         })
