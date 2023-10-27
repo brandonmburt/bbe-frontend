@@ -261,14 +261,17 @@ export function UploadExposureForm() {
                                         <Typography>Instructions</Typography>
                                     </AccordionSummary>
                                     <AccordionDetails sx={{backgroundColor: '#FAF9F6'}} >
-                                        <Typography variant='h6' sx={{mt: 1}}>Underdog Fantasy</Typography>
-                                        <List dense sx={{ }}>
+                                        <Typography variant='body2' sx={{my: 1, color: 'red'}}>
+                                            <span style={{fontWeight: 'bold'}}>Important: </span>Uploading a CSV file will overwrite any existing exposure for the selected exposure type.
+                                        </Typography>
+                                        <Typography variant='h6'>Underdog Fantasy</Typography>
+                                        <List dense>
                                             <ListItem>
                                                 <ListItemText primary={
                                                     <>
-                                                    {'Upcoming Contests: Navigate to Drafts > Completed'}
+                                                    <span style={{fontWeight: 'bold'}}>Upcoming</span>{': Navigate to Drafts > Completed'}
                                                     <br />
-                                                    {'Active Contests: Navigate to Live > Best Ball > NFL'}
+                                                    <span style={{fontWeight: 'bold'}}>Active</span>{': Navigate to Live > Best Ball > NFL'}
                                                   </>
                                                 } />
                                             </ListItem>
