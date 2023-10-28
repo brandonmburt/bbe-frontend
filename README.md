@@ -1,4 +1,4 @@
-# UF App Frontend
+# Best Ball Explorer Frontend
 
 React app
 
