@@ -80,11 +80,6 @@ export const adpsSlice = createSlice({
                         adpMap: serializedAdpMap,
                         additionalKeysMap: serializedAdditionalKeysMap
                     });
-                    // if (type === '2023resurrection') {
-                    //     const resurrectionMap: Map<string, Adp> = new Map();
-                    //     currAdpArr.forEach((item: Adp) => resurrectionMap.set(item.manualPlayerId, { ...item, adp: item.adp === null ? 216 : item.adp }));
-                    //     state.resurrectionAdpMap = serializeMap(resurrectionMap);
-                    // }
                 }
             });
 

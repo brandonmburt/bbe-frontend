@@ -94,7 +94,7 @@ export default function SignIn(props: { demo?: boolean }) {
                         autoComplete="email"
                         autoFocus
                         disabled={loggedIn}
-                        defaultValue={props.demo || showDemoCredentials ? 'demo@THEDEMO.com' : ''}
+                        defaultValue={props.demo || showDemoCredentials ? 'demo@demo.com' : ''}
                     />
                     <TextField
                         margin="normal"
@@ -106,7 +106,7 @@ export default function SignIn(props: { demo?: boolean }) {
                         id="password"
                         autoComplete="current-password"
                         disabled={loggedIn}
-                        defaultValue={props.demo || showDemoCredentials ? 'password' : ''}
+                        defaultValue={props.demo || showDemoCredentials ? 'Password!1' : ''}
                     />
                     <FormControlLabel
                         control={<Checkbox name='remember' disabled={loggedIn} value="remember" color="primary" />}

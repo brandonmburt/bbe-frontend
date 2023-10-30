@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const baseURL: string = 'http://localhost:3000/api';
+// const baseURL: string = 'http://localhost:8080/api';
+const baseURL: string = 'https://dtauecfjkd.us-east-1.awsapprunner.com/api';
 
 class ApiService {
 
