@@ -37,7 +37,7 @@ export default function SignUp() {
     useEffect(() => {
         if (!waitingForResponse) return;
         else if (signUpSuccessful) {
-            dispatch(signIn({email: email, password: password, rememberMe: false}));
+            dispatch(signIn({email: email.toLowerCase(), password: password, rememberMe: false}));
         } else if (signUpError) {
             setDisableForm(false);
             setWaitingForResponse(false);

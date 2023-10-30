@@ -57,7 +57,7 @@ export default function SignIn(props: { demo?: boolean }) {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         let obj = {
-            email: data.get('email').toString(),
+            email: data.get('email').toString().toLowerCase(),
             password: data.get('password').toString(),
             rememberMe: data.get('remember') ? true : false,
         };
