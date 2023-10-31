@@ -12,7 +12,7 @@ export function UniquePlayers(props) {
 
     return (
         <>
-            <Box sx={{ width: '300px' }}>
+            <Box sx={{ width: { xs: '250px', lg: 1} }}>
                 <TableContainer>
                     <Table size='small'>
                         <TableBody>

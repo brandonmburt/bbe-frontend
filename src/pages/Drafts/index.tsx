@@ -164,6 +164,8 @@ export function Drafts() {
                                         rowSelection={false}
                                         rows={draftedTeamsData}
                                         columns={columns}
+                                        disableDensitySelector={true}
+                                        density="compact"
                                         slots={{ toolbar: GridToolbar }}
                                         slotProps={{ toolbar: { printOptions: { disableToolbarButton: true } } }}/>
                                 </div>

@@ -23,6 +23,7 @@ import { selectExposureType } from '../../redux/slices/exposure.slice';
 import { UniquePlayers } from './UniquePlayersTable.comp';
 import InfoIcon from '@mui/icons-material/Info';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
+import { PositionButtons } from './PositionButtons.comp';
 
 export default function Exposure() {
     useLoginRedirect();
@@ -44,6 +45,8 @@ export default function Exposure() {
     const [resurrectionKeysMap] = useState<Map<string, string>>(useAppSelector(selectResurrectionAdditionalKeysMap));
 
     const [resurrectionToggle, setResurrectionToggle] = useState<boolean>(false);
+    const [filteredPositions, setFilteredPositions] = useState<Set<string>>(new Set(['QB', 'RB', 'WR', 'TE']));
+    const [playerFilter, setPlayerFilter] = useState<string>('');
     
     // Autocomplete data
     const [playerId, setPlayerId] = useState<string>(null);
@@ -115,6 +118,9 @@ export default function Exposure() {
         else if (draftedPlayers && draftedPlayers.length > 0) setInputOptions(generateInputOptions(draftedPlayers));
     }, [draftedPlayers, filteredDraftedPlayers]);
 
+    const handlePositionsFilterChange = (positions: string[]) => setFilteredPositions(new Set(positions));
+    const handlePlayerFilterChange = (str: string) => setPlayerFilter(str);
+
     return numDrafts && adpMap && draftedPlayers && rows && inputOptions ? (
         <Box sx={{ padding: { xs: '10px', sm: '20px 40px' } }}>
             <Grid container spacing={{ xs: 2, sm: 4 }} >
@@ -123,15 +129,22 @@ export default function Exposure() {
                     <Box>
                         <CardComp body={<>
                             <Grid container spacing={{ xs: 2, sm: 4 }} >
-                                <Grid xs={12} md={5} sx={{ pb: 0, pt: 1 }}>
+                                <Grid xs={12} lg={5} sx={{ pb: 0, pt: 1 }}>
+                                    <PositionButtons
+                                        handlePositionsFilterChange={handlePositionsFilterChange}
+                                        handlePlayerFilterChange={handlePlayerFilterChange}
+                                    />
+                                </Grid>
+                                <Grid xs={12} md={6} lg={3} sx={{ pb: 0, pt: 1 }}>
                                     <Stack>
                                         <Autocomplete
                                             style={{textAlign: "center"}}
                                             value={tournamentId}
+                                            size='small'
                                             onChange={(e, newVal) => setTournamentId(newVal) }
                                             options={tournaments.map((option) => option.id)}
                                             getOptionLabel={(option) => tournaments.find(t => t.id === option)?.title ?? ''}
-                                            sx={{ width: { xs: '100%', md: 225, lg: 300 } }}
+                                            sx={{ width: 1 }}
                                             renderInput={(params) => <TextField {...params} label="Tournament" />}
                                         />
                                         <Typography sx={{ ml: 1, my: 0 }} variant='caption'>
@@ -139,7 +152,7 @@ export default function Exposure() {
                                         </Typography>
                                     </Stack>
                                 </Grid>
-                                <Grid xs={12} md={7} sx={{ pb: 0, pt: 1 }}>
+                                <Grid xs={12} md={6} lg={4} sx={{ pb: 0, pt: 0 }}>
                                     <Box sx= {{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' } }}>
                                         {exposureSnapshot && <UniquePlayers snapshot={exposureSnapshot} /> }
                                     </Box>
@@ -163,7 +176,14 @@ export default function Exposure() {
                                 }
                             </Grid>
                             <Box sx={{ mb: 1, mt: 3, w: 1, height: 500 }}>
-                                <PlayerExposureGrid handleViewPlayer={handleViewPlayer} rows={rows} showResurrectionColumns={resurrectionToggle}/>
+                                <PlayerExposureGrid
+                                    handleViewPlayer={handleViewPlayer}
+                                    rows={
+                                        playerFilter === '' ?
+                                        rows.filter(({ pos }) => filteredPositions.has(pos)) :
+                                        rows.filter(({ name }) => name.toLowerCase().includes(playerFilter.toLowerCase()))
+                                    }
+                                    showResurrectionColumns={resurrectionToggle} />
                             </Box>
                         </>}/>
                     </Box>

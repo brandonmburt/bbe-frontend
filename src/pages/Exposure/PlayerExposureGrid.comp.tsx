@@ -177,7 +177,9 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
             columnGroupingModel={columnGroupingModel}
             slots={{ toolbar: GridToolbar }}
             rowSelection={false}
+            disableDensitySelector={true}
             slotProps={{ toolbar: { printOptions: { disableToolbarButton: true } } }}
+            density="compact"
         />
     );
 }
