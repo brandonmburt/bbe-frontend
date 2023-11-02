@@ -102,6 +102,22 @@ export interface ExposureSnapshot {
         wrs: number,
         tes: number
     }
-} 
+}
+
+export interface PlayerStack {
+    playerId: string;
+    name: string;
+    team: string;
+    position: string;
+    entryFees: number;
+    timesDrafted: number;
+    playoffMatchupWeek: number; // 15, 16, 17, or null
+}
+
+export interface PlayoffMatchupInfo {
+    week: number;
+    home: string;
+    away: string;
+}
 
 export type SelectionArr = [number, string, string][]; // [Pick Number, Draft Entry, Picked At][]

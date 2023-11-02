@@ -1,7 +1,8 @@
 import { Adp } from "../models/adp.model";
-import { DraftedPlayer, DraftedTeam, ExposureSnapshot, SelectionArr, Tournament } from "../models/exposure.model";
+import { DraftedPlayer, DraftedTeam, ExposureSnapshot, PlayoffMatchupInfo, PlayerStack, Tournament } from "../models/exposure.model";
 import { ExposureData, PlayerInputOption, SelectedPlayer } from "../models/player.model";
 import { getAdpObj } from '../utils/adp.utils';
+import { PLAYOFF_MATCHUPS } from '../constants/playoffs.constants';
 
 /**
  * Returns an array which is used to populate the player exposure autocomplete
@@ -164,4 +165,62 @@ export const getSelectedPlayerData = (draftedPlayer: DraftedPlayer, adpMap: Map<
         pos: position,
         tournamentTitle: tournament?.title ?? null,
     };
+}
+
+/**
+ * Generate playoff matchup info for a given team
+ * @param {string} team - the team of the player we want to get playoff matchup info for
+ * @returns {Map<string, PlayoffMatchupInfo>} - Map of playoff matchup info { opponent_team: PlayoffMatchupInfo }
+ */
+export const getPlayoffMatchupInfoMap = (team: string): Map<string, PlayoffMatchupInfo> => {
+    const playoffMap: Map<string, PlayoffMatchupInfo> = new Map();
+    [15, 16, 17].forEach(week => {
+        const matchup = PLAYOFF_MATCHUPS[week].find(x => x.home === team || x.away === team);
+        if (matchup.home === team) playoffMap.set(matchup.away, { week, home: team, away: matchup.away });
+        else if (matchup.away === team) playoffMap.set(matchup.home, { week, home: matchup.home, away: team, });
+    });
+    return playoffMap;
+}
+
+/**
+ * Generate player stacks for a given player
+ * @param {DraftedPlayer} player - the player we want to get stacks for
+ * @param {DraftedPlayer[]} draftedPlayers - array of drafted players
+ * @param {DraftedTeam[]} draftedTeams - array of drafted teams
+ * @param {Map<string, PlayoffMatchupInfo>} playoffMap - Map of playoff matchup info { opponent_team: PlayoffMatchupInfo }
+ * @returns {PlayerStack[]} - array of PlayerStack objects
+ */
+export const generatePlayerStacks = (player: DraftedPlayer, draftedPlayers: DraftedPlayer[],
+    draftedTeams: DraftedTeam[], playoffMap: Map<string, PlayoffMatchupInfo>): PlayerStack[] => {
+    
+    const { selectionInfo, playerId: selectedPlayerId } = player;
+    const entryIds = selectionInfo.map(x => x[1]);
+    const entriesSet: Set<string> = new Set(entryIds);
+    const playersStack: Map<string, PlayerStack> = new Map();
+    draftedTeams.forEach(team => {
+        const { draftEntry, draftEntryFee, qbs, rbs, wrs, tes } = team;
+        if (!entriesSet.has(draftEntry)) return;
+        [...qbs, ...rbs, ...wrs, ...tes].forEach(([, playerId, ]) => {
+            if (playerId === selectedPlayerId) return;
+            if (!playersStack.has(playerId)) {
+                const { name, team, position } = draftedPlayers.find(p => p.playerId === playerId);
+                playersStack.set(playerId, {
+                    playerId, name, team, position,
+                    entryFees: draftEntryFee,
+                    timesDrafted: 1,
+                    playoffMatchupWeek: playoffMap.get(team)?.week ?? null,
+                });
+            } else {
+                playersStack.get(playerId).entryFees += draftEntryFee;
+                playersStack.get(playerId).timesDrafted += 1;
+            }
+        });
+    });
+    const playersArr = [];
+    playersStack.forEach((v, k) => playersArr.push(v));
+
+    return playersArr.sort((a, b) => {
+        if (a.timesDrafted !== b.timesDrafted) return b.timesDrafted - a.timesDrafted;
+        else return b.entryFees - a.entryFees;
+    });
 }

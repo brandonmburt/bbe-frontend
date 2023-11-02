@@ -3,7 +3,7 @@ import { useAppSelector } from '../../redux/hooks'
 import { selectDraftedPlayers,selectNumDrafts, selectTournaments, selectDraftedTeams, selectDraftedPlayersMap } from '../../redux/slices/exposure.slice';
 import { Adp } from '../../models/adp.model';
 import { selectAdpMap, selectAdditionalKeysMap, selectResurrectionAdpMap, selectResurrectionAdditionalKeysMap } from '../../redux/slices/adps.slice';
-import { DraftedPlayer, Tournament, DraftedTeam, ExposureSnapshot } from '../../models/exposure.model';
+import { DraftedPlayer, Tournament, DraftedTeam, ExposureSnapshot, PlayerStack, PlayoffMatchupInfo } from '../../models/exposure.model';
 import { FormControlLabel, FormGroup, Stack, Switch, Typography, Box, TextField, Autocomplete, Tooltip } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { CardComp } from '../../components/CardComp.comp';
@@ -17,6 +17,8 @@ import {
     getPlayerExposureByTournamentId,
     generateExposureSnapshot,
     getSelectedPlayerData,
+    getPlayoffMatchupInfoMap,
+    generatePlayerStacks,
 } from '../../utils/player.utils';
 import { PlayerInputOption, ExposureData, SelectedPlayer } from '../../models/player.model';
 import { selectExposureType } from '../../redux/slices/exposure.slice';
@@ -24,6 +26,7 @@ import { UniquePlayers } from './UniquePlayersTable.comp';
 import InfoIcon from '@mui/icons-material/Info';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
 import { PositionButtons } from './PositionButtons.comp';
+import { PlayerStacks } from './PlayerStacks.comp';
 
 export default function Exposure() {
     useLoginRedirect();
@@ -38,6 +41,7 @@ export default function Exposure() {
     const draftedTeams: DraftedTeam[] = useAppSelector(selectDraftedTeams);
     const exposureType: string = useAppSelector(selectExposureType);
     const [filteredDraftedPlayers, setFilteredDraftedPlayers] = useState<DraftedPlayer[]>(null); // contains teams for the selected tournament
+    const [filteredDraftedTeams, setFilteredDraftedTeams] = useState<DraftedTeam[]>(null); // contains teams for the selected tournament
     const [filteredNumDrafts, setFilteredNumDrafts] = useState<number>(null); // contains the number of drafts for the selected tournament
 
     const draftedPlayersMap: Map<string, DraftedPlayer> = useAppSelector(selectDraftedPlayersMap);
@@ -60,13 +64,22 @@ export default function Exposure() {
     const [rows, setRows] = useState<ExposureData[]>(null);
     const [exposureSnapshot, setExposureSnapshot] = useState<ExposureSnapshot>(null);
 
+    // Player stacks
+    const [stacks, setStacks] = useState<PlayerStack[]>(null);
+    const [playoffMatchupsMap, setPlayoffMatchupsMap] = useState<Map<string, PlayoffMatchupInfo>>(null);
+
     useEffect(() => {
         setTournamentId(null);
         setPlayerId(null);
         setPlayerData(null);
+        setInputOptions(null);
+        setFilteredDraftedPlayers(null);
+        setFilteredDraftedTeams(null);
+        setFilteredNumDrafts(null);
+        setStacks(null);
+        setPlayoffMatchupsMap(null);
         setRows(null);
         setExposureSnapshot(null);
-        setInputOptions(null);
         setResurrectionToggle(false);
     }, [exposureType]);
 
@@ -75,10 +88,12 @@ export default function Exposure() {
         const tournament: Tournament = tournaments.find(({ id }) => id === tournamentId);
         if (!tournament) {
             setFilteredDraftedPlayers(null);
+            setFilteredDraftedTeams(null);
             setFilteredNumDrafts(null);
         } else {
             const [ filteredPlayers, filteredNumDrafts ] = getPlayerExposureByTournamentId(tournament, draftedTeams, draftedPlayersMap);
             setFilteredDraftedPlayers(filteredPlayers);
+            setFilteredDraftedTeams(draftedTeams.filter(t => t.tournamentId === tournamentId || t.weeklyWinnerId === tournamentId));
             setFilteredNumDrafts(filteredNumDrafts);
         }
     }, [tournamentId]);
@@ -90,6 +105,13 @@ export default function Exposure() {
         const players: DraftedPlayer[] = filteredDraftedPlayers !== null ? filteredDraftedPlayers : draftedPlayers;
         const playerData: SelectedPlayer = getSelectedPlayerData(draftedPlayer, adpMap, playerKeysMap, players, tournament);
         setPlayerData(playerData);
+        if (draftedPlayer.team !== null && draftedPlayer.team !== '') {
+            const teams: DraftedTeam[] = filteredDraftedTeams !== null ? filteredDraftedTeams : draftedTeams;
+            const playoffMap = getPlayoffMatchupInfoMap(draftedPlayer.team);
+            const stacks = generatePlayerStacks(draftedPlayer, players, teams, playoffMap);
+            setPlayoffMatchupsMap(playoffMap);
+            setStacks(stacks);
+        }
     }, [playerId]);
 
     function handleViewPlayer (id: string) {
@@ -137,16 +159,19 @@ export default function Exposure() {
                                 </Grid>
                                 <Grid xs={12} md={6} lg={3} sx={{ pb: 0, pt: 1 }}>
                                     <Stack>
-                                        <Autocomplete
-                                            style={{textAlign: "center"}}
-                                            value={tournamentId}
-                                            size='small'
-                                            onChange={(e, newVal) => setTournamentId(newVal) }
-                                            options={tournaments.map((option) => option.id)}
-                                            getOptionLabel={(option) => tournaments.find(t => t.id === option)?.title ?? ''}
-                                            sx={{ width: 1 }}
-                                            renderInput={(params) => <TextField {...params} label="Tournament" />}
-                                        />
+                                        {/* Ensures rendering only occurs once required data is retrieved from store */}
+                                        {(tournamentId === null || tournaments.find(t => t.id === tournamentId))  &&
+                                            <Autocomplete
+                                                style={{textAlign: "center"}}
+                                                value={tournamentId}
+                                                size='small'
+                                                onChange={(e, newVal) => setTournamentId(newVal) }
+                                                options={tournaments.map((option) => option.id)}
+                                                getOptionLabel={(option) => tournaments.find(t => t.id === option)?.title ?? ''}
+                                                sx={{ width: 1 }}
+                                                renderInput={(params) => <TextField {...params} label="Tournament" />}
+                                            />
+                                        }
                                         <Typography sx={{ ml: 1, my: 0 }} variant='caption'>
                                             {numDrafts && tournamentId === null ? numDrafts : filteredNumDrafts} Drafts
                                         </Typography>
@@ -213,11 +238,10 @@ export default function Exposure() {
                                         )}
                                     </Stack>
                                 </div>
-                                <div style={{width: '100%'}}>
-                                    {playerId && playerData &&
-                                        <PlayerExposure data={playerData} />
-                                    }
-                                </div>
+                                {playerId && playerData && <PlayerExposure data={playerData} /> }
+                                {playerId && playerData && playoffMatchupsMap && stacks &&
+                                    <PlayerStacks team={playerData.playerInfo.team} stacks={stacks} playoffMatchupsMap={playoffMatchupsMap} />
+                                }
                             </>}/>
                         </Box>
                     </Grid>
