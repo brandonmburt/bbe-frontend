@@ -62,7 +62,7 @@ export default function Dashboard() {
         setMobileOpen(!mobileOpen);
     };
 
-    const handleExporsureUploadTypeChange = (event) => {
+    const handleExposureUploadTypeChange = (event) => {
         let val = event.target.value;
         if (EXPOSURE_TYPES.find(([value,]) => value === val)) {
             dispatch(setExposureType(val))
@@ -85,7 +85,7 @@ export default function Dashboard() {
                     labelId="exposureType"
                     value={exposureType}
                     label="Exposure Type"
-                    onChange={handleExporsureUploadTypeChange} >
+                    onChange={handleExposureUploadTypeChange} >
                     {EXPOSURE_TYPES.map(([value, label], index) =>
                         <MenuItem key={index} disabled={userUploadedTypes.find(x => x[0] === value) === undefined} value={value}>
                             <img style={{ height: '24px', marginRight: '10px' }} src="/logos/uf-logo-small.png" alt="Underdog Fantasy" />
