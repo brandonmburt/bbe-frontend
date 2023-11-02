@@ -85,7 +85,7 @@ export default function PlayerExposure(props) {
                 />
             }
             
-            {scatterRange && playerData && scatterData && lineData &&
+            {scatterRange && playerData && scatterData && lineData && playerData.timesDrafted > 1 &&
                 <PlayerScatterPlotChart
                     height={'400px'}
                     playerData={playerData}

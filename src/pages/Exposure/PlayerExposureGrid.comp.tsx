@@ -153,17 +153,13 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
             field: 'id', headerName: '', minWidth: 100, align: 'center', sortable: false, filterable: false, hideable: false, disableColumnMenu: true,
             renderCell({row}) {
                 return (
-                    <Tooltip arrow placement='top' title={row.timesDrafted < 2 ? 'Available for players drafted two or more times' : ''}>
-                        <span>
-                            <Button
-                            disabled={row.timesDrafted < 2}
-                            onClick={() => handleViewPlayer(row.id)}
-                            variant="contained"
-                            color="primary">
-                                View
-                            </Button>
-                        </span>
-                    </Tooltip>
+                    <Button
+                        disabled={row.timesDrafted < 1}
+                        onClick={() => handleViewPlayer(row.id)}
+                        variant="contained"
+                        color="primary">
+                            View
+                    </Button>
                 );
             }
         })

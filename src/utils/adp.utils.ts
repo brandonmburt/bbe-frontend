@@ -9,6 +9,7 @@ import { Adp } from "../models/adp.model";
  * @returns {Adp} - Adp object
  */
 export const getAdpObj = (draftedPlayer: Partial<DraftedPlayer>, adpMap: Map<string, Adp>, playerKeysMap: Map<string, string>): Adp => {
+    if (!adpMap) return null;
     const { playerId, additionalKeys } = draftedPlayer;
     if (adpMap.has(playerId)) {
         return adpMap.get(playerId);

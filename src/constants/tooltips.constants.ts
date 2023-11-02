@@ -14,7 +14,6 @@ export const TOOLTIPS = {
     ADP: 'Average Draft Position',
     CLV: 'Closing Line Value: Pick Number - Average Draft Position',
     RESURRECTION: 'Resurrection is a best ball tournament which began on week 6 of the 2023 NFL season. The Resurrection ADPs reflect a player\'s perceived value through the first five weeks of the season.',
-    PLAYER_EXPOSURE: 'Available for players drafted two or more times',
     DELETE_EXPOSURE: 'Delete exposure data',
     DELETE_DISABLED: 'Deletion Disabled',
 }

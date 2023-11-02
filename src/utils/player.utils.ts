@@ -10,8 +10,7 @@ import { PLAYOFF_MATCHUPS } from '../constants/playoffs.constants';
  * @returns {PlayerInputOption[]} - array of PlayerInputOptions
  */
 export const generateInputOptions = (draftedPlayers: DraftedPlayer[]): PlayerInputOption[] => {
-    // Excluding players that were only drafted once, as the scatterplot wont properly populate
-    return draftedPlayers.filter(x => x.timesDrafted > 1).map(player => {
+    return draftedPlayers.map(player => {
         const { name, playerId, selectionInfo, avgPickNumber, timesDrafted } = player;
         return { label: name, playerId, selectionInfo, avgPick: avgPickNumber, timesDrafted };
     }).sort((a,b) => b.timesDrafted - a.timesDrafted);

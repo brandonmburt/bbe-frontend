@@ -218,7 +218,7 @@ export default function Exposure() {
                 {!resurrectionToggle &&
                     <Grid xs={12} >
                         <Box>
-                            <CardComp title={'Player Exposure'} tooltip={TOOLTIPS.PLAYER_EXPOSURE} body={<>
+                            <CardComp title={'Player Exposure'} body={<>
                                 <div ref={playerRef} style={{width: '100%', display: 'block', justifyContent: 'center'}}>
                                     <Stack>
                                         <Autocomplete
