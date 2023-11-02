@@ -8,8 +8,8 @@ import { PlayerBadge } from '../../components/badges/PlayerBadge.comp';
 import { PlayerStack } from '../../models/exposure.model';
 import { DOMES } from '../../constants/domes.constants';
 import StadiumIcon from '@mui/icons-material/Stadium';
-import Tooltip from '@mui/material/Tooltip';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
+import { ToolTip } from '../../components/ToolTip.comp';
 
 const TOGGLE_INFO = [
     ['teammates', 'Teammates'],
@@ -53,9 +53,9 @@ export function PlayerStacks(props) {
             <span style={{ fontSize: '12px' }}> @ </span>
             <TeamBadge mr={0} team={playoffMatchupsMap.get(stack.team).home} />
             {DOMES[playoffMatchupsMap.get(stack.team).home] &&
-                <Tooltip title={TOOLTIPS.DOME_GAME} placement="top" arrow>
-                    <StadiumIcon sx={{ height: '20px', color: 'grey', verticalAlign: 'inherit' }}/>
-                </Tooltip>
+                <ToolTip title={TOOLTIPS.DOME_GAME} content={
+                    <StadiumIcon sx={{ height: '20px', color: 'grey', verticalAlign: 'top' }}/>
+                }/>
             }
         </>);
     }

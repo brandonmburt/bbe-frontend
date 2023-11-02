@@ -3,8 +3,8 @@ import { DRAFT_COLORS } from '../../constants/colors.constants';
 import SportsFootballIcon from '@mui/icons-material/SportsFootball';
 import TimerIcon from '@mui/icons-material/Timer';
 import BoltIcon from '@mui/icons-material/Bolt';
-import Tooltip from '@mui/material/Tooltip';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
+import { ToolTip } from '../ToolTip.comp';
 
 export function DraftBadge(props) {
 
@@ -19,7 +19,7 @@ export function DraftBadge(props) {
         <>
             {props.type && badges.map(badge => {
                 return (
-                    <Tooltip key={badge} arrow placement='top' title={TOOLTIPS[badge+'_DRAFT'] ?? ''}>
+                    <ToolTip key={badge} title={TOOLTIPS[badge+'_DRAFT'] ?? ''} content={
                         <Chip
                             size='small'
                             sx={{
@@ -42,7 +42,8 @@ export function DraftBadge(props) {
                                 badge === 'INSTANT' ? <BoltIcon sx={{ height: '13px', width: '13px', marginTop: '3px' }} /> :
                                 badge
                             } />
-                    </Tooltip>
+                    } />
+                    
                 );
             })}
         </>

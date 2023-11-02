@@ -3,9 +3,8 @@ import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, X
 import { CustomTooltip } from './CustomTooltip.comp';
 import { ToggleButtonGroup, ToggleButton, Typography, Box } from '@mui/material';
 import { formatAsMoney } from '../../utils/format.utils';
-import InfoIcon from '@mui/icons-material/Info';
-import { Tooltip as MUIToolTip } from '@mui/material';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
+import { ToolTip } from '../ToolTip.comp';
 
 export function DraftsEnteredAreaChart(props) {
 
@@ -35,9 +34,7 @@ export function DraftsEnteredAreaChart(props) {
                 <Box sx={{ width: .55 }}>
                     <Typography variant="h5" sx={{ fontSize: { xs: '20px', md: '24px' } }}>
                         Cumulative <span style={{ whiteSpace: 'nowrap' }}>Drafts
-                        <MUIToolTip title={TOOLTIPS.SELECTED_TYPE_DATA} placement="top" arrow>
-                            <InfoIcon sx={{ marginLeft: '5px', color: 'lightgrey', lineHeight: 1, verticalAlign: 'middle' }} />
-                        </MUIToolTip>
+                        <ToolTip title={TOOLTIPS.SELECTED_TYPE_DATA} infoIcon={true} />
                         </span>
                     </Typography>
                 </Box>

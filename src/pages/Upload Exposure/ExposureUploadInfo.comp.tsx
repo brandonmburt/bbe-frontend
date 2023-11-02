@@ -2,8 +2,8 @@ import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRo
 import { EXPOSURE_TYPES } from '../../constants/types.constants';
 import { convertTimestampToDate } from '../../utils/date.utils';
 import ClearIcon from '@mui/icons-material/Clear';
-import Tooltip from '@mui/material/Tooltip';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
+import { ToolTip } from '../../components/ToolTip.comp';
 
 export function ExposureUploadTable(props) {
 
@@ -36,13 +36,13 @@ export function ExposureUploadTable(props) {
                             </TableCell>
                             <TableCell align="right">
                                 {uploadTimestamps.find(timestamp => timestamp[0] === value) ?
-                                    <Tooltip title={isDemo ? TOOLTIPS.DELETE_DISABLED : TOOLTIPS.DELETE_EXPOSURE} placement='top' arrow>
+                                    <ToolTip title={isDemo ? TOOLTIPS.DELETE_DISABLED : TOOLTIPS.DELETE_EXPOSURE} content={
                                         <span>
                                             <Button sx={{ color: 'red', minWidth: '20px' }} onClick={() => handleDelete(value)} disabled={disableDeletion || isDemo}>
                                                 <ClearIcon />
                                             </Button>
                                         </span>
-                                    </Tooltip> :
+                                    }/> :
                                     <Typography sx={{ color: 'rgb(185, 185, 182)', minWidth: '20px', padding: '6px 8px' }}><ClearIcon /></Typography>
                                 }
                             </TableCell>

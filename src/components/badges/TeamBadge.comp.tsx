@@ -1,7 +1,7 @@
 import Chip from '@mui/material/Chip';
 import { TEAM_COLORS } from '../../constants/colors.constants';
 import { TEAMS } from '../../constants/teams.constants';
-import Tooltip from '@mui/material/Tooltip';
+import { ToolTip } from '../ToolTip.comp';
 
 export function TeamBadge(props) {
 
@@ -23,13 +23,13 @@ export function TeamBadge(props) {
     return (
         <>
             {teamColors && sxData &&
-                <Tooltip arrow placement='top' title={TEAMS[props.team] ?? ''}>
+                <ToolTip title={TEAMS[props.team] ?? ''} content={
                     <Chip
                         size='small'
                         sx={sxData}
                         label={!props.team || props.team === '' ? 'N/A' : props.team}
                     />
-                </Tooltip>
+                } />
             }
         </>
     );

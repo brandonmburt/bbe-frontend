@@ -2,9 +2,8 @@ import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, X
 import { CustomTooltip } from './CustomTooltip.comp';
 import { POS_COLORS } from '../../constants/colors.constants';
 import { Box, Typography } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
-import { Tooltip as MUIToolTip } from '@mui/material';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
+import { ToolTip } from '../ToolTip.comp';
 
 export function PickTendenciesAreaChart(props) {
 
@@ -16,9 +15,7 @@ export function PickTendenciesAreaChart(props) {
                 <Box sx={{ width: 1 }}>
                     <Typography variant="h5" sx={{ marginBottom: { xs: '10px', sm: '20px' }, fontSize: { xs: '20px', md: '24px' } }}>
                         Pick Tendencies By Round
-                        <MUIToolTip title={TOOLTIPS.SELECTED_TYPE_DATA} placement="top" arrow>
-                            <InfoIcon sx={{ marginLeft: '5px', color: 'lightgrey', lineHeight: 1, verticalAlign: 'middle' }} />
-                        </MUIToolTip>
+                        <ToolTip title={TOOLTIPS.SELECTED_TYPE_DATA} infoIcon={true} />
                     </Typography>
                 </Box>
             </Box>

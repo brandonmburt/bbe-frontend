@@ -2,8 +2,8 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from
 import { formatAsMoney } from '../../utils/format.utils';
 import { TeamBadge } from '../../components/badges/TeamBadge.comp';
 import React from 'react';
-import Tooltip from '@mui/material/Tooltip';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
+import { ToolTip } from '../../components/ToolTip.comp';
 
 export function RosterTable(props) {
 
@@ -23,7 +23,7 @@ export function RosterTable(props) {
         tableData.push(formatAsMoney(selectedTeamData?.tournamentPrizes));
     }
 
-    const tableWidth = (100/tableCols.length).toString() + '%';
+    const tableWidth: string = (100/tableCols.length).toString() + '%';
 
     return (
         <>
@@ -32,13 +32,11 @@ export function RosterTable(props) {
                     <TableHead>
                         <TableRow>
                             {tableCols.map((col, i) => {
-                                return col === 'Total CLV' ? (
-                                    <Tooltip key={'header'+i} title={TOOLTIPS.TOTAL_CLV + ' (as of ' + adpDateString + ')'} placement="top" arrow>
-                                        <TableCell key={'headercell'+i} style={{ width: tableWidth }} align="center">{col}</TableCell>
-                                    </Tooltip>
-                                ) : (
-                                    <TableCell key={'header'+i} style={{ width: tableWidth }} align="center">{col}</TableCell>
-                                )
+                                return (
+                                    <TableCell key={'header'+i} style={{ width: tableWidth }} align="center">
+                                        {col === 'Total CLV' ? <ToolTip title={TOOLTIPS.TOTAL_CLV + ' (as of ' + adpDateString + ')'} content={col} /> : col }
+                                    </TableCell>
+                                );
                             })}
                         </TableRow>
                     </TableHead>
@@ -59,12 +57,12 @@ export function RosterTable(props) {
                         <TableRow sx={{textAlign: 'center'}}>
                             <TableCell></TableCell>
                             <TableCell>Pick</TableCell>
-                            <Tooltip title={TOOLTIPS.ADP + ' (as of ' + adpDateString + ')'} placement="top" arrow>
-                                <TableCell>ADP</TableCell>
-                            </Tooltip>
-                            <Tooltip title={TOOLTIPS.CLV + ' (as of ' + adpDateString + ')'} placement="top" arrow>
-                                <TableCell>CLV</TableCell>
-                            </Tooltip>
+                            <TableCell>
+                                <ToolTip title={TOOLTIPS.ADP + ' (as of ' + adpDateString + ')'} content={<>ADP</>} />
+                            </TableCell>
+                            <TableCell>
+                                <ToolTip title={TOOLTIPS.CLV + ' (as of ' + adpDateString + ')'} content={<>CLV</>} />
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

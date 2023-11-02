@@ -4,7 +4,7 @@ import { selectDraftedPlayers,selectNumDrafts, selectTournaments, selectDraftedT
 import { Adp } from '../../models/adp.model';
 import { selectAdpMap, selectAdditionalKeysMap, selectResurrectionAdpMap, selectResurrectionAdditionalKeysMap } from '../../redux/slices/adps.slice';
 import { DraftedPlayer, Tournament, DraftedTeam, ExposureSnapshot, PlayerStack, PlayoffMatchupInfo } from '../../models/exposure.model';
-import { FormControlLabel, FormGroup, Stack, Switch, Typography, Box, TextField, Autocomplete, Tooltip } from '@mui/material';
+import { FormControlLabel, FormGroup, Stack, Switch, Typography, Box, TextField, Autocomplete } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { CardComp } from '../../components/CardComp.comp';
 import PlayerExposure from './Player.comp';
@@ -27,6 +27,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
 import { PositionButtons } from './PositionButtons.comp';
 import { PlayerStacks } from './PlayerStacks.comp';
+import { ToolTip } from '../../components/ToolTip.comp';
 
 export default function Exposure() {
     useLoginRedirect();
@@ -193,9 +194,9 @@ export default function Exposure() {
                                                         <Switch checked={resurrectionToggle} onChange={() => setResurrectionToggle(!resurrectionToggle)} />
                                                     } />
                                             </FormGroup>
-                                            <Tooltip title={TOOLTIPS.RESURRECTION} placement="top" arrow>
+                                            <ToolTip title={TOOLTIPS.RESURRECTION} content={
                                                 <InfoIcon sx={{ ml: '5px', mt: '7px', color: 'lightgrey' }} />
-                                            </Tooltip>
+                                            }/>
                                         </Box>
                                     </Grid>
                                 }

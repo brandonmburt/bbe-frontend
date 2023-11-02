@@ -3,8 +3,8 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from
 import { TeamBadge } from '../../components/badges/TeamBadge.comp';
 import { DOMES } from '../../constants/domes.constants';
 import StadiumIcon from '@mui/icons-material/Stadium';
-import Tooltip from '@mui/material/Tooltip';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
+import { ToolTip } from '../../components/ToolTip.comp';
 
 export function GameStacksTable(props) {
 
@@ -38,9 +38,9 @@ export function GameStacksTable(props) {
                                                 <span style={{ fontSize: '12px' }}> @ </span>
                                                 <TeamBadge mr={0} team={home[0].team} />
                                                 {DOMES[home[0].team] &&
-                                                    <Tooltip title={TOOLTIPS.DOME_GAME} placement="top" arrow>
-                                                        <StadiumIcon sx={{ height: '20px', position: 'absolute', color: 'grey' }}/>
-                                                    </Tooltip>
+                                                    <ToolTip title={TOOLTIPS.DOME_GAME} content={
+                                                        <StadiumIcon sx={{ height: '20px', color: 'grey', verticalAlign: 'top' }}/>
+                                                    } />
                                                 }
                                             </TableCell>
                                             <TableCell>{away.map(p => p.name).join(', ')}</TableCell>

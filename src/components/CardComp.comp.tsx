@@ -3,8 +3,7 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import InfoIcon from '@mui/icons-material/Info';
-import Tooltip from '@mui/material/Tooltip';
+import { ToolTip } from './ToolTip.comp';
 
 export function CardComp(props) {
 
@@ -14,11 +13,7 @@ export function CardComp(props) {
             {props.title &&
                 <Typography variant="h5" component="div" sx={{ marginBottom: { xs: '10px', sm: '20px' }, fontSize: { xs: '20px', md: '24px' } }}>
                     {props.title}
-                    {props.tooltip &&
-                        <Tooltip title={props.tooltip} placement="top" arrow>
-                            <InfoIcon sx={{ marginLeft: '5px', color: 'lightgrey', lineHeight: 1, verticalAlign: 'middle' }} />
-                        </Tooltip>
-                    }
+                    {props.tooltip && <ToolTip title={props.tooltip} infoIcon={true} /> }
                 </Typography>
             }
 

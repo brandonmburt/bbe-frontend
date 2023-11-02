@@ -2,16 +2,16 @@ import Button from '@mui/material/Button';
 import { DataGrid, GridColDef, GridColumnGroupingModel, GridToolbar } from '@mui/x-data-grid';
 import { PlayerBadge } from '../../components/badges/PlayerBadge.comp';
 import { TeamBadge } from '../../components/badges/TeamBadge.comp';
-import Tooltip from '@mui/material/Tooltip';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
+import { ToolTip } from '../../components/ToolTip.comp';
 
 export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurrectionColumns }) {
 
     const renderError = () => {
         return (
-            <Tooltip arrow placement='top' title={TOOLTIPS.GRID_ERROR}>
+            <ToolTip title={TOOLTIPS.GRID_ERROR} content={
                 <span style={{ color: 'red' }}>ERROR</span>
-            </Tooltip>
+            }/>
         )
     }
 
