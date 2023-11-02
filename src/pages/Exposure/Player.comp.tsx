@@ -3,6 +3,7 @@ import { calcuateScatterRange, calculateLineOfBestFit } from '../../utils/math.u
 import { SelectedPlayerTable } from './SelectedPlayerTable.comp';
 import { PlayerScatterPlotChart } from '../../components/charts/PlayerScatterPlot.comp';
 import { ScatterData } from '../../models/charts.model';
+import { Box } from '@mui/material';
 
 interface PlayerData {
     playerAvg: number;
@@ -71,7 +72,7 @@ export default function PlayerExposure(props) {
     }
 
     return (
-        <>
+        <Box>
             {playerData && 
                 <SelectedPlayerTable
                     team={team}
@@ -93,7 +94,6 @@ export default function PlayerExposure(props) {
                     lineData={lineData}
                 />
             }
-            
-        </>
+        </Box>
     );
 }

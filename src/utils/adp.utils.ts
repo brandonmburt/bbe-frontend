@@ -20,7 +20,7 @@ export const getAdpObj = (draftedPlayer: Partial<DraftedPlayer>, adpMap: Map<str
                 return adpMap.get(playerKeysMap.get(key));
             }
         }
-        console.error('No ADP data found for player', draftedPlayer);
+        // console.log('No ADP data found for player', draftedPlayer);
         return null;
     }
 }

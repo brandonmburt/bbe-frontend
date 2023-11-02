@@ -1,8 +1,8 @@
+import React from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { TeamBadge } from '../../components/badges/TeamBadge.comp';
 import { DOMES } from '../../constants/domes.constants';
-import StadiumIcon from '@mui/icons-material/Stadium'; // TODO: used to indicate dome games
-import React from 'react';
+import StadiumIcon from '@mui/icons-material/Stadium';
 import Tooltip from '@mui/material/Tooltip';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
 
