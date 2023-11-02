@@ -26,7 +26,7 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import StickyFooter from './StickyFooter.comp';
 import { EXPOSURE_TYPES } from '../constants/types.constants';
 import { selectLoggedIn, selectUserIsAdmin, selectShouldRenderApp } from '../redux/slices/user.slice';
-import { FormControl, InputLabel, Select, MenuItem, Stack } from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem, Stack, Container } from '@mui/material';
 import { selectExposureType, setExposureType, selectUserUploadedTypes, selectUploadTimestamps } from '../redux/slices/exposure.slice';
 import useFetchData from '../hooks/useFetchData';
 import useToken from '../hooks/useToken';
@@ -220,7 +220,9 @@ export default function Dashboard() {
             </Box>
             <Box sx={{ flexGrow: 1, p: { s: 1, md: 3 }, width: { xs: `calc(100% - ${drawerWidth}px)` } }}>
                 <Toolbar />
-                <Outlet />
+                <Container>
+                    <Outlet />
+                </Container>
             </Box>
         </Box>
         <StickyFooter /></>
