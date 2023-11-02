@@ -49,89 +49,9 @@ export function Drafts() {
     // TODO: create component for grid
     const columns: GridColDef[] = [
         {
-            field: 'entryType',
-            headerName: 'Badges',
-            minWidth: 125,
-            type: 'string',
-            headerAlign: 'center',
-            align: 'left',
-            renderCell(params) {
-                return (<DraftBadge type={params.row.entryType} draftType={params.row.draftType} />);
-            }
-        },
-        {
-            field: 'title',
-            headerName: 'Title',
-            minWidth: 150,
-            type: 'string',
-            headerAlign: 'center',
-            align: 'center'
-        },
-        {
-            field: 'draftType',
-            headerName: 'Draft Type',
-            minWidth: 75,
-            type: 'string',
-            headerAlign: 'center',
-            align: 'center'
-        },
-        {
-            field: 'entryFee',
-            headerName: 'Entry Fee',
-            minWidth: 100,
-            type: 'number',
-            valueFormatter: ({ value }) => !value ? null : formatAsMoney(value),
-            headerAlign: 'center',
-            align: 'center'
-        },
-        {
-            field: 'totalCLV',
-            headerName: 'Total CLV',
-            minWidth: 100,
-            type: 'number',
-            align: 'center',
-            headerAlign: 'center',
-            description: 'Total Closing Line Value for Drafted Team. Closing Line Value for each player is calculated as follows: Pick Number - Average Draft Position (as of ' + adpDateString + ')',
-        },
-        {
-            field: 'draftSize',
-            headerName: 'Draft Size',
-            minWidth: 100,
-            type: 'number',
-            align: 'center',
-            headerAlign: 'center'
-        },
-        {
-            field: 'startDate',
-            headerName: 'Draft Date',
-            minWidth: 100,
-            type: 'string',
-            valueFormatter: ({ value }) => value.split(' ')[0],
-            align: 'center',
-            headerAlign: 'center'
-        },
-        {
-            field: 'tournamentSize',
-            headerName: 'Tournament Size',
-            minWidth: 150,
-            type: 'number',
-            align: 'center',
-            headerAlign: 'center'
-        },
-        {
-            field: 'tournamentPrizes',
-            headerName: 'Prize Pool',
-            minWidth: 100,
-            type: 'number',
-            align: 'center',
-            valueFormatter: ({ value }) => !value ? null : formatAsMoney(value),
-            headerAlign: 'center'
-        },
-        {
             field: 'id',
             headerName: '',
             minWidth: 100,
-            type: 'number',
             align: 'center',
             sortable: false,
             filterable: false,
@@ -140,6 +60,94 @@ export function Drafts() {
             renderCell({row}) {
                 return (<Button onClick={() => handleViewTeam(row.id)} variant="contained" color="primary">View</Button>);
             }
+        },
+        {
+            field: 'entryType',
+            headerName: 'Badges',
+            minWidth: 125,
+            type: 'string',
+            headerAlign: 'left',
+            align: 'left',
+            sortable: false,
+            renderCell(params) {
+                return (<DraftBadge type={params.row.entryType} draftType={params.row.draftType} />);
+            }
+        },
+        {
+            field: 'title',
+            headerName: 'Title',
+            minWidth: 140,
+            type: 'string',
+            headerAlign: 'center',
+            align: 'center',
+            hideSortIcons: true,
+        },
+        {
+            field: 'draftType',
+            headerName: 'Type',
+            minWidth: 75,
+            type: 'string',
+            headerAlign: 'center',
+            align: 'center',
+            hideSortIcons: true,
+        },
+        {
+            field: 'entryFee',
+            headerName: 'Fee',
+            minWidth: 75,
+            type: 'number',
+            valueFormatter: ({ value }) => !value ? null : formatAsMoney(value),
+            headerAlign: 'center',
+            align: 'center',
+            hideSortIcons: true,
+        },
+        {
+            field: 'totalCLV',
+            headerName: 'Total CLV',
+            minWidth: 110,
+            type: 'number',
+            align: 'center',
+            headerAlign: 'center',
+            description: 'Total Closing Line Value for Drafted Team. Closing Line Value for each player is calculated as follows: Pick Number - Average Draft Position (as of ' + adpDateString + ')',
+            hideSortIcons: true,
+        },
+        {
+            field: 'draftSize',
+            headerName: 'Draft Size',
+            minWidth: 110,
+            type: 'number',
+            align: 'center',
+            headerAlign: 'center',
+            hideSortIcons: true,
+        },
+        {
+            field: 'startDate',
+            headerName: 'Draft Date',
+            minWidth: 110,
+            type: 'string',
+            valueFormatter: ({ value }) => value.split(' ')[0],
+            align: 'center',
+            headerAlign: 'center',
+            hideSortIcons: true,
+        },
+        {
+            field: 'tournamentSize',
+            headerName: 'Field Size',
+            minWidth: 125,
+            type: 'number',
+            align: 'center',
+            headerAlign: 'center',
+            hideSortIcons: true,
+        },
+        {
+            field: 'tournamentPrizes',
+            headerName: 'Prize Pool',
+            minWidth: 110,
+            type: 'number',
+            align: 'center',
+            valueFormatter: ({ value }) => !value ? null : formatAsMoney(value),
+            headerAlign: 'center',
+            hideSortIcons: true,
         },
     ];
 
@@ -184,7 +192,7 @@ export function Drafts() {
                                     <CardComp title={
                                             <>
                                                 {selectedTeamData.title} <DraftBadge type={selectedTeamData.entryType} draftType={selectedTeamData.draftType} />
-                                                <span style={{color: 'grey', fontWeight: 'normal', fontSize: '16px'}}>{selectedTeamData.startDate.split(' ')[0]}</span>
+                                                <span style={{color: 'grey', fontWeight: 'normal', fontSize: '16px', whiteSpace: 'nowrap'}}>{selectedTeamData.startDate.split(' ')[0]}</span>
                                             </>
                                         } body={selectedRosterTable} />
                                 </Box>

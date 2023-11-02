@@ -20,10 +20,11 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
         {
             field: 'team',
             headerName: 'Team',
-            minWidth: 125,
+            minWidth: 75,
             type: 'string',
             align: 'center',
             headerAlign: 'center',
+            hideSortIcons: true,
             renderCell(params) {
                 return (<TeamBadge inGrid={true} team={params.row.team} />)
             }
@@ -32,12 +33,13 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
             field: 'name',
             headerName: 'Player',
             minWidth: 150,
-            type: 'string'
+            type: 'string',
+            hideSortIcons: true,
         },
         {
             field: 'posRank',
-            headerName: 'Position Rank',
-            minWidth: 125,
+            headerName: 'Pos Rank',
+            minWidth: 120,
             type: 'string',
             sortable: false,
             renderCell(params) {
@@ -46,54 +48,60 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
                 );
             },
             align: 'center',
-            headerAlign: 'center'
+            headerAlign: 'center',
+            description: 'Position Rank',
         },
         {
             field: 'fees',
-            headerName: 'Entry Fees',
-            minWidth: 75,
+            headerName: 'Fees',
+            minWidth: 100,
             type: 'number',
             valueFormatter: ({ value }) => `$${value}`,
             align: 'center',
-            headerAlign: 'center'
+            headerAlign: 'center',
+            hideSortIcons: true,
         },
         {
             field: 'avgPick',
             headerName: 'Avg Pick',
-            minWidth: 50,
+            minWidth: 75,
             type: 'number',
             align: 'center',
             headerAlign: 'center',
             description: 'Average Pick Number',
+            hideSortIcons: true,
         },
         {
             field: 'adp',
             headerName: 'ADP',
-            minWidth: 50,
+            minWidth: 75,
             type: 'number',
             align: 'center',
             headerAlign: 'center',
             renderCell(params) { return params.row.adp !== -1 ? params.row.adp : renderError() },
             description: 'Average Draft Position on 9/07/2023',
+            hideSortIcons: true,
         },
         {
             field: 'clv',
             headerName: 'CLV',
-            minWidth: 50,
+            minWidth: 75,
             type: 'number',
             align: 'center',
             headerAlign: 'center',
             renderCell(params) { return params.row.adp !== -1 ? params.row.adp : renderError() },
             description: 'Closing Line Value: Avg Pick - ADP',
+            hideSortIcons: true,
         },
         {
             field: 'percentDrafted',
             headerName: 'Exposure',
-            minWidth: 75,
+            minWidth: 125,
             type: 'number',
             valueFormatter: ({ value }) => `${value}%`,
             align: 'center',
-            headerAlign: 'center'
+            headerAlign: 'center',
+            hideSortIcons: true,
         },  
     ];
 
@@ -115,11 +123,12 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
         columns.push(
             {
                 field: 'resurrectionPosRank',
-                headerName: 'Position Rank',
-                minWidth: 125,
+                headerName: 'Pos Rank',
+                minWidth: 120,
                 type: 'string',
                 align: 'center',
                 headerAlign: 'center',
+                hideSortIcons: true,
                 renderCell(params) {
                     return params.row.resurrectionAdp === -1 ? renderError() : (
                         <PlayerBadge pos={params.row.pos} posRank={params.row.resurrectionPosRank} />
@@ -130,20 +139,22 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
             {
                 field: 'resurrectionAdp',
                 headerName: 'ADP',
-                minWidth: 50,
+                minWidth: 75,
                 type: 'number',
                 align: 'center',
                 headerAlign: 'center',
+                hideSortIcons: true,
                 renderCell(params) { return params.row.resurrectionAdp !== -1 ? params.row.resurrectionAdp : renderError() },
                 description: 'Resurrection Average Draft Position on 10/12/2023',
             },
             {
                 field: 'resurrectionClv',
                 headerName: 'CLV',
-                minWidth: 50,
+                minWidth: 75,
                 type: 'number',
                 align: 'center',
                 headerAlign: 'center',
+                hideSortIcons: true,
                 renderCell(params) { return params.row.resurrectionAdp !== -1 ? params.row.resurrectionClv : renderError() },
                 description: 'Closing Line Value: Avg Pick - Resurrection ADP',
             }
