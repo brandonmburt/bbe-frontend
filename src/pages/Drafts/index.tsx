@@ -7,14 +7,15 @@ import { selectAdpMap, selectAdditionalKeysMap } from '../../redux/slices/adps.s
 import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid';
 import { formatAsMoney } from '../../utils/format.utils';
 import { CardComp } from '../../components/CardComp.comp';
-import { Box, Button } from '@mui/material';
+import { Autocomplete, Box, Button, TextField, Chip } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { DraftBadge } from '../../components/badges/DraftBadge.comp';
 import useLoginRedirect from '../../hooks/useLoginRedirect';
 import { RosterTable } from './RosterTable.comp';
 import { GameStacksTable } from './GameStacksTable.comp';
-import { DraftedTeamRowData, PlayoffStack } from '../../models/roster.model';
-import { getDraftedRosters, getPlayoffStacks } from '../../utils/roster.utils';
+import { DraftedTeamRowData, PlayerFilterOption, PlayoffStack } from '../../models/roster.model';
+import { getDraftedRosters, generateRosterFilterOptions, getPlayoffStacks } from '../../utils/roster.utils';
+import { POS_COLORS } from '../../constants/colors.constants';
 
 export function Drafts() {
     useLoginRedirect();
@@ -30,6 +31,8 @@ export function Drafts() {
     const adpDateString: string = exposureType === '2023resurrection' ? '10/12/2023' : '9/07/2023';
 
     const [draftedTeamsData, setDraftedTeamsData] = useState<DraftedTeamRowData[]>(null);
+    const [autocompleteOptions, setAutocompleteOptions] = useState<PlayerFilterOption[]>(null);
+    const [selectedOptions, setSelectedOptions] = useState<PlayerFilterOption[]>([]);
     const [selectedTeamData, setSelectedTeamData] = useState<DraftedTeamRowData>(null);
     const [playoffStacks, setPlayoffStacks] = useState<Map<number, PlayoffStack[]>>(null);
 
@@ -155,7 +158,14 @@ export function Drafts() {
         if (!draftedTeams || !adpMap || !playerKeysMap || !draftedPlayersMap) return;
         let arr: DraftedTeamRowData[] = getDraftedRosters(draftedTeams, adpMap, playerKeysMap, draftedPlayersMap, tournaments);
         setDraftedTeamsData(arr);
+        let options: PlayerFilterOption[] = generateRosterFilterOptions(arr, draftedPlayersMap);
+        setAutocompleteOptions(options);
     }, [draftedTeams, adpMap, draftedPlayersMap, playerKeysMap, tournaments]);
+
+    const handleOptionChange = (e, newValue) => {
+        if (newValue.length > 5) return;
+        setSelectedOptions(newValue);
+    };
 
     const selectedRosterTable = !selectedTeamData ? null : <RosterTable selectedTeamData={selectedTeamData} adpDateString={adpDateString} />;
     const playoffStacksTable = !playoffStacks ? null : <GameStacksTable playoffStacks={playoffStacks} />;
@@ -166,18 +176,46 @@ export function Drafts() {
                 <Box sx={{ padding: { xs: '10px', sm: '20px 40px' }, width: '100%' }}>
                     <Grid container spacing={{ xs: 2, sm: 4 }} >
                         <Grid xs={12} >
-                            <CardComp title='Drafted Teams' body={
+                            <CardComp title='Drafted Teams' body={<>
+                                {autocompleteOptions &&
+                                    <Box sx={{ mb: 2 }}>
+                                        <Autocomplete
+                                            multiple
+                                            value={selectedOptions}
+                                            onChange={handleOptionChange}
+                                            options={autocompleteOptions}
+                                            getOptionLabel={(option) => option.label}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Players"
+                                                    placeholder={selectedOptions.length === 0 ? 'Filter by Players' : ''}
+                                                />
+                                            )}
+                                            renderTags={(selectedOptions: PlayerFilterOption[], getTagProps) =>
+                                                selectedOptions.map((obj: PlayerFilterOption, index: number) => (
+                                                  <Chip sx={{bgcolor: POS_COLORS[obj.position] ?? 'grey', color: 'white' }} variant='filled' label={obj.label} {...getTagProps({ index })} />
+                                                ))
+                                              }
+                                        />
+                                    </Box>
+                                }
                                 <div style={{ height: '500px', width: '100%'}}>
                                     <DataGrid
                                         rowSelection={false}
-                                        rows={draftedTeamsData}
+                                        rows={
+                                            selectedOptions.length === 0 ? draftedTeamsData :
+                                            draftedTeamsData.filter(({ selections }) => {
+                                                return selectedOptions.every(({ value }) => selections.find(s => s.id === value));
+                                            })
+                                        }
                                         columns={columns}
                                         disableDensitySelector={true}
                                         density="compact"
                                         slots={{ toolbar: GridToolbar }}
                                         slotProps={{ toolbar: { printOptions: { disableToolbarButton: true } } }}/>
                                 </div>
-                            } />
+                            </>} />
                         </Grid>
                     </Grid>
                 </Box>

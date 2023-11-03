@@ -1,4 +1,4 @@
-import { DraftedTeamRowData, PickInfo, PlayoffStack } from '../models/roster.model';
+import { DraftedTeamRowData, PickInfo, PlayoffStack, PlayerFilterOption } from '../models/roster.model';
 import { Adp } from '../models/adp.model';
 import { DraftedPlayer, DraftedTeam, Tournament } from '../models/exposure.model';
 import { PLAYOFF_MATCHUPS } from '../constants/playoffs.constants';
@@ -71,6 +71,27 @@ export const getDraftedRosters = (draftedTeams: DraftedTeam[], adpMap: Map<strin
     });
     arr.sort((a, b) => b.totalCLV - a.totalCLV);
     return arr;
+}
+
+/**
+ * Generate the options for the multi-select autocomplete
+ * @param {DraftedTeamRowData[]} rosters - Drafts grid data
+ * @param {Map<string, DraftedPlayer>} draftedPlayersMap - map of drafted players
+ * @returns {PlayerFilterOption[]} - Array of player filter options
+ */
+export const generateRosterFilterOptions = (rosters: DraftedTeamRowData[], draftedPlayersMap: Map<string, DraftedPlayer>): PlayerFilterOption[] => {
+    let optionsMap: Map<string, { name: string, position: string }> = new Map();;
+    rosters.forEach(roster => {
+        roster.selections.forEach(({ id, name }) => {
+            if (!optionsMap.has(id)) {
+                const position = draftedPlayersMap.get(id)?.position ?? '';
+                optionsMap.set(id, { name, position });
+            }
+        });
+    });
+    let options: PlayerFilterOption[] = [];
+    optionsMap.forEach((obj, id) => options.push({ value: id, label: obj.name, position: obj.position }) );
+    return options;
 }
 
 /**

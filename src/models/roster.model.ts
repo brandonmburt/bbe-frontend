@@ -24,6 +24,12 @@ export interface PickInfo {
     team: string;
 }
 
+export interface PlayerFilterOption {
+    label: string;
+    value: string;
+    position: string;
+}
+
 export interface PlayoffStack {
     home: PickInfo[];
     away: PickInfo[];
