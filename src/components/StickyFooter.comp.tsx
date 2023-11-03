@@ -24,7 +24,6 @@ export default function StickyFooter() {
                 height: '100px',
                 pt: 3,
                 pb: 10,
-                px: 2,
                 mt: 'auto',
                 mb: 0,
                 pl: { xs: '0px', sm: '200px' },
