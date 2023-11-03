@@ -4,7 +4,18 @@ import { DraftedPlayer, DraftedTeam, Tournament } from '../models/exposure.model
 import { PLAYOFF_MATCHUPS } from '../constants/playoffs.constants';
 import { getAdpObj } from './adp.utils';
 
-export const getDraftedRosters = (draftedTeams: DraftedTeam[], adpMap: Map<string, Adp>, playerKeysMap: Map<string, string>, draftedPlayersMap: Map<string, DraftedPlayer>, tournaments: Tournament[]): DraftedTeamRowData[] => {
+/**
+ * Generate drafted roster data for data grid
+ * @param {DraftedTeam[]} draftedTeams - array of drafted teams
+ * @param {Map<string, Adp>} adpMap - map of adp data
+ * @param {Map<string, string>} playerKeysMap - map of additional player keys
+ * @param {Map<string, DraftedPlayer>} draftedPlayersMap - map of drafted players
+ * @param {Tournament[]} tournaments - array of tournaments
+ * @returns {DraftedTeamRowData[]} - array of drafted team row data
+ */
+export const getDraftedRosters = (draftedTeams: DraftedTeam[], adpMap: Map<string, Adp>, playerKeysMap: Map<string, string>,
+    draftedPlayersMap: Map<string, DraftedPlayer>, tournaments: Tournament[]): DraftedTeamRowData[] => {
+
     let arr: DraftedTeamRowData[] = [];
     draftedTeams.forEach(draftedTeam => {
         const { qbs, rbs, wrs, tes, draftEntryFee, draftEntry, weeklyWinnerId, tournamentId, draftSize, draftType } = draftedTeam;
@@ -62,6 +73,11 @@ export const getDraftedRosters = (draftedTeams: DraftedTeam[], adpMap: Map<strin
     return arr;
 }
 
+/**
+ * Generate playoff stacks for a given roster
+ * @param {DraftedTeamRowData} teamData - The roster we want to get playoff stacks for
+ * @returns {Map<number, PlayoffStack[]>} - Map of playoff stacks by week
+ */
 export const getPlayoffStacks = (teamData: DraftedTeamRowData): Map<number, PlayoffStack[]> => {
     let uniqueTeams = new Set<string>(teamData.selections.map(({ team }) => team));
     let teamStackMap = new Map<string, PickInfo[]>();
