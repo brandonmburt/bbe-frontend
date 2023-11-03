@@ -8,22 +8,22 @@ export function ToolTip(props) {
     
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
+    const handleOpen = () => setIsOpen(true);
+    const handleClose = () => setIsOpen(false);
+
     return (
         <Tooltip
             open={isOpen}
-            title={title}                
+            title={title}
             placement="top"
             arrow
-            disableFocusListener
-            disableHoverListener
-            disableTouchListener
-            onClose={() => setIsOpen(false)}
+            onOpen={handleOpen}
+            onClose={handleClose}
         >
-        
             <span
-                onMouseEnter={() => setIsOpen(true)}
-                onMouseLeave={() => setIsOpen(false)}
-                onClick={() => setIsOpen(!isOpen)}
+                onMouseEnter={handleOpen}
+                onMouseLeave={handleClose}
+                onTouchStart={handleOpen}
             >
                 {infoIcon && <InfoIcon sx={{ ml: '5px', color: 'lightgrey', lineHeight: 1, verticalAlign: 'middle' }} /> }
                 {!infoIcon && !!content && content}
