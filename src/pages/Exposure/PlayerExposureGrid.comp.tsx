@@ -89,7 +89,7 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
             type: 'number',
             align: 'center',
             headerAlign: 'center',
-            renderCell(params) { return params.row.adp !== -1 ? params.row.adp : renderError() },
+            renderCell(params) { return params.row.adp !== -1 ? params.row.clv : renderError() },
             description: 'Closing Line Value: Avg Pick - ADP',
             hideSortIcons: true,
         },
