@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk, createSelector } from '@reduxjs/toolkit'
-import { Exposure, EntryBreakdown, DraftedTeam, DraftedPlayer } from '../../models/exposure.model';
+import { Exposure, EntryBreakdown, DraftedTeam, DraftedPlayer, UploadedExposureData } from '../../models/exposure.model';
 import { EXPOSURE_TYPES } from '../../constants/types.constants';
 import { deserializeMap, serializeMap } from '../utils/serialize.utils';
 import ApiService from '../api/api.service';
@@ -22,7 +22,7 @@ export interface ExposureState {
         userUploadedTypes: [string, string][], // [exposureId, draftQuantityStr]
         selectedType: string,
     }
-    uploadTimestamps: string[][], // [exposureType, exposureDisplay, timestamp][]
+    uploadTimestamps: UploadedExposureData[],
     shouldRefreshData: boolean,
     redirectPathOnLogin: string,
 }
@@ -78,7 +78,7 @@ export const exposureSlice = createSlice({
         setExposureType: (state, action: PayloadAction<string>) => {
             const type = action.payload, { userUploadedTypes } = state.exposureTypes;
             if (type === '') state.exposureTypes.selectedType = null;
-            if (EXPOSURE_TYPES.map(t => t[0]).includes(type) && userUploadedTypes.find(t => t[0] === type)) {
+            if (EXPOSURE_TYPES.map(t => t.id).includes(type) && userUploadedTypes.find(t => t[0] === type)) {
                 state.exposureTypes.selectedType = action.payload;
             }
         },
@@ -113,11 +113,11 @@ export const exposureSlice = createSlice({
 
             const exposureMap = new Map<string, Exposure>();
             const exposureResponse = action.payload, responseExposureTypes = [];
-            let timestampInfo = [];
-            EXPOSURE_TYPES.forEach(exposureType => {
-                if (exposureResponse.hasOwnProperty(exposureType[0])) {
+            let timestampInfo: UploadedExposureData[] = [];
+            EXPOSURE_TYPES.forEach(({ id, label, active }) => {
+                if (active && exposureResponse.hasOwnProperty(id)) {
                     
-                    const exposureObj = { ...exposureResponse[exposureType[0]] };
+                    const exposureObj = { ...exposureResponse[id] };
                     const draftedPlayersMap = new Map<string, DraftedPlayer>();
                     exposureObj.draftedPlayers.forEach(player => {
                         draftedPlayersMap.set(player.playerId, player);
@@ -125,9 +125,13 @@ export const exposureSlice = createSlice({
                     exposureObj.draftedPlayersMap = serializeMap(draftedPlayersMap);
                     const numTeams: number = exposureObj.draftSpots.totalNumDrafts;
                     const numTeamsStr: string = numTeams.toString() + (numTeams === 1 ? ' Draft' : ' Drafts');
-                    responseExposureTypes.push([exposureType[0], numTeamsStr]);
-                    exposureMap.set(exposureType[0], exposureObj);
-                    timestampInfo.push([exposureType[0], exposureType[1], exposureObj.uploadTime]);
+                    responseExposureTypes.push([id, numTeamsStr]);
+                    exposureMap.set(id, exposureObj);
+                    timestampInfo.push({
+                        id,
+                        label,
+                        timestamp: exposureObj.uploadTime,
+                    });
                 }
             });
             state.exposureMap = serializeMap(exposureMap);

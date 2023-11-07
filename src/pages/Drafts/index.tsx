@@ -16,6 +16,7 @@ import { GameStacksTable } from './GameStacksTable.comp';
 import { DraftedTeamRowData, PlayerFilterOption, PlayoffStack } from '../../models/roster.model';
 import { getDraftedRosters, generateRosterFilterOptions, getPlayoffStacks } from '../../utils/roster.utils';
 import { POS_COLORS } from '../../constants/colors.constants';
+import { EXPOSURE_TYPES } from '../../constants/types.constants';
 
 export function Drafts() {
     useLoginRedirect();
@@ -28,7 +29,7 @@ export function Drafts() {
     const playerKeysMap: Map<string, string> = useAppSelector(selectAdditionalKeysMap);
     const draftedTeams: DraftedTeam[] = useAppSelector(selectDraftedTeams);
     const exposureType: string = useAppSelector(selectExposureType);
-    const adpDateString: string = exposureType === '2023resurrection' ? '10/12/2023' : '9/07/2023';
+    const adpDateString: string = EXPOSURE_TYPES.find(({ id }) => id === exposureType)?.cutoffDate ?? '';
 
     const [draftedTeamsData, setDraftedTeamsData] = useState<DraftedTeamRowData[]>(null);
     const [autocompleteOptions, setAutocompleteOptions] = useState<PlayerFilterOption[]>(null);

@@ -67,16 +67,16 @@ export const adpsSlice = createSlice({
             const adpResponse = JSON.parse(action.payload);
             const adpTypeMap: Map<string, { adpMap: [string, Adp][], additionalKeysMap: [string, string][] }> = new Map();
 
-            EXPOSURE_TYPES.forEach(([type, ]) => {
-                if (adpResponse.hasOwnProperty(type)) {
-                    const { adps, additionalKeysArr } = adpResponse[type];
+            EXPOSURE_TYPES.forEach(({ id, active }) => {
+                if (active && adpResponse.hasOwnProperty(id)) {
+                    const { adps, additionalKeysArr } = adpResponse[id];
                     let adpMap: Map<string, Adp> = new Map();
                     adps.forEach((x: Adp) => adpMap.set(x.playerId, { ...x, adp: x.adp === null ? 216 : x.adp })); // TODO: can't blindly apply 216
                     let additionalKeysMap: Map<string, string> = new Map();
                     additionalKeysArr.forEach(([key, value]) => additionalKeysMap.set(key, value));
                     let serializedAdpMap: [string, Adp][] = serializeMap(adpMap);
                     let serializedAdditionalKeysMap: [string, string][] = serializeMap(additionalKeysMap);
-                    adpTypeMap.set(type, {
+                    adpTypeMap.set(id, {
                         adpMap: serializedAdpMap,
                         additionalKeysMap: serializedAdditionalKeysMap
                     });

@@ -31,7 +31,7 @@ export function UploadAdp() {
 
     const handleExporsureUploadTypeChange = (event) => {
         let val = event.target.value;
-        if (EXPOSURE_TYPES.find(([value, ]) => value === val)) {
+        if (EXPOSURE_TYPES.find(({ id }) => id === val)) {
             setExposureUploadType(event.target.value);
         }
     };
@@ -53,8 +53,8 @@ export function UploadAdp() {
                                 value={exposureUploadType}
                                 label="Exposure Type"
                                 onChange={handleExporsureUploadTypeChange} >
-                                {EXPOSURE_TYPES.map(([value, label], index) =>
-                                    <MenuItem key={index} value={value}>{label}</MenuItem>
+                                {EXPOSURE_TYPES.map(({ id, label }, index) =>
+                                    <MenuItem key={index} value={id}>{label}</MenuItem>
                                 )}
                             </Select>
                         </FormControl>

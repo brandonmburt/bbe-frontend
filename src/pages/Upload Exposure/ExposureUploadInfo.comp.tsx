@@ -4,6 +4,7 @@ import { convertTimestampToDate } from '../../utils/date.utils';
 import ClearIcon from '@mui/icons-material/Clear';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
 import { ToolTip } from '../../components/ToolTip.comp';
+import { UploadedExposureData } from '../../models/exposure.model';
 
 export function ExposureUploadTable(props) {
 
@@ -22,23 +23,23 @@ export function ExposureUploadTable(props) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {EXPOSURE_TYPES.map(([value, label], index) => (
+                    {EXPOSURE_TYPES.map(({ id, label }, index) => (
                         <TableRow key={index}>
                             <TableCell>
                                 <img style={{ height: '13px', marginRight: '5px' }} src="/logos/uf-logo-small.png" alt="Underdog Fantasy" />
                                 {label}
                             </TableCell>
                             <TableCell align="center">
-                                {uploadTimestamps.find(timestamp => timestamp[0] === value) ?
-                                    convertTimestampToDate(uploadTimestamps.find(timestamp => timestamp[0] === value)[2]) :
+                                {uploadTimestamps.find((t: UploadedExposureData) => t.id === id) ?
+                                    convertTimestampToDate(uploadTimestamps.find((t: UploadedExposureData) => t.id === id).timestamp) :
                                     'N/A'
                                 }
                             </TableCell>
                             <TableCell align="right">
-                                {uploadTimestamps.find(timestamp => timestamp[0] === value) ?
+                                {uploadTimestamps.find((t: UploadedExposureData) => t.id === id) ?
                                     <ToolTip title={isDemo ? TOOLTIPS.DELETE_DISABLED : TOOLTIPS.DELETE_EXPOSURE} content={
                                         <span>
-                                            <Button sx={{ color: 'red', minWidth: '20px' }} onClick={() => handleDelete(value)} disabled={disableDeletion || isDemo}>
+                                            <Button sx={{ color: 'red', minWidth: '20px' }} onClick={() => handleDelete(id)} disabled={disableDeletion || isDemo}>
                                                 <ClearIcon />
                                             </Button>
                                         </span>

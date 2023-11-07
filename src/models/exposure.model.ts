@@ -120,4 +120,21 @@ export interface PlayoffMatchupInfo {
     away: string;
 }
 
+export interface ExposureType {
+    id: string;
+    label: string;
+    season: number; // i.e. 2023
+    platform: string; // i.e. 'underdog'
+    cutoffDate: string; // i.e. '9/07/2023'
+    allowUpload: boolean;
+    enableResurrection: boolean;
+    active: boolean;
+}
+
+export interface UploadedExposureData {
+    id: string; // corresponds to exposureType.id
+    label: string;
+    timestamp: string;
+}
+
 export type SelectionArr = [number, string, string][]; // [Pick Number, Draft Entry, Picked At][]

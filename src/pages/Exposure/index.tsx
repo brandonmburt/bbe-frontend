@@ -28,6 +28,7 @@ import { TOOLTIPS } from '../../constants/tooltips.constants';
 import { PositionButtons } from './PositionButtons.comp';
 import { PlayerStacks } from './PlayerStacks.comp';
 import { ToolTip } from '../../components/ToolTip.comp';
+import { EXPOSURE_TYPES } from '../../constants/types.constants';
 
 export default function Exposure() {
     useLoginRedirect();
@@ -127,7 +128,7 @@ export default function Exposure() {
             let exposurePlayers: DraftedPlayer[] = tournamentId === null ? draftedPlayers : filteredDraftedPlayers;
             let draftQuantity: number = tournamentId === null ? numDrafts : filteredNumDrafts;
             const gridRows: ExposureData[] = getPlayerExposureRows(adpMap, playerKeysMap, exposurePlayers, draftQuantity);
-            if (resurrectionToggle && exposureType === '2023season') addResurrectionData(gridRows, resurrectionMap, resurrectionKeysMap);
+            if (resurrectionToggle && EXPOSURE_TYPES.find(({ id }) => id === exposureType)?.enableResurrection) addResurrectionData(gridRows, resurrectionMap, resurrectionKeysMap);
             const snapshot: ExposureSnapshot = generateExposureSnapshot(gridRows, draftQuantity);
             setExposureSnapshot(snapshot);
             setRows(gridRows);
@@ -183,7 +184,7 @@ export default function Exposure() {
                                         {exposureSnapshot && <UniquePlayers snapshot={exposureSnapshot} /> }
                                     </Box>
                                 </Grid>
-                                {exposureType === '2023season' &&
+                                {EXPOSURE_TYPES.find(({ id }) => id === exposureType)?.enableResurrection &&
                                     <Grid xs={12} sx={{ py: 0, my: 0 }}>
                                         <Box sx={{ width: 1, flexDirection: 'row', display: 'flex', justifyContent: 'right', fontSize: '12px' }}>
                                             <FormGroup>

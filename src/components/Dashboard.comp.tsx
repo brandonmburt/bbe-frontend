@@ -31,6 +31,7 @@ import { selectExposureType, setExposureType, selectUserUploadedTypes, selectUpl
 import useFetchData from '../hooks/useFetchData';
 import useToken from '../hooks/useToken';
 import { convertTimestampToDate } from '../utils/date.utils';
+import { UploadedExposureData } from '../models/exposure.model';
 
 const drawerWidth = 200;
 
@@ -53,7 +54,7 @@ export default function Dashboard() {
     const exposureType = useAppSelector<string>(selectExposureType);
     const shouldRenderApp = useAppSelector<boolean>(selectShouldRenderApp);
     const userUploadedTypes = useAppSelector<string[]>(selectUserUploadedTypes);
-    const uploadTimestamps: string[] = useAppSelector(selectUploadTimestamps);
+    const uploadTimestamps: UploadedExposureData[] = useAppSelector(selectUploadTimestamps);
 
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -64,7 +65,7 @@ export default function Dashboard() {
 
     const handleExposureUploadTypeChange = (event) => {
         let val = event.target.value;
-        if (EXPOSURE_TYPES.find(([value,]) => value === val)) {
+        if (EXPOSURE_TYPES.find(({ id }) => id === val)) {
             dispatch(setExposureType(val))
         }
         setMobileOpen(false);
@@ -86,20 +87,20 @@ export default function Dashboard() {
                     value={exposureType}
                     label="Exposure Type"
                     onChange={handleExposureUploadTypeChange} >
-                    {EXPOSURE_TYPES.map(([value, label], index) =>
-                        <MenuItem key={index} disabled={userUploadedTypes.find(x => x[0] === value) === undefined} value={value}>
+                    {EXPOSURE_TYPES.map(({ id, label }, index) =>
+                        <MenuItem key={index} disabled={userUploadedTypes.find(x => x[0] === id) === undefined} value={id}>
                             <img style={{ height: '24px', marginRight: '10px' }} src="/logos/uf-logo-small.png" alt="Underdog Fantasy" />
                             {label}
-                            {userUploadedTypes.find(x => x[0] === value) !== undefined && (
-                                <span style={{ marginLeft: '5px', color: 'grey', fontSize: '12px' }}>{userUploadedTypes.find(x => x[0] === value)[1]}</span>
+                            {userUploadedTypes.find(x => x[0] === id) !== undefined && (
+                                <span style={{ marginLeft: '5px', color: 'grey', fontSize: '12px' }}>{userUploadedTypes.find(x => x[0] === id)[1]}</span>
                             )}
                         </MenuItem>
                     )}
                 </Select>
             </FormControl>
-            {uploadTimestamps && uploadTimestamps.find(t => t[0] === exposureType) &&
+            {uploadTimestamps && uploadTimestamps.find(t => t.id === exposureType) &&
                 <Box sx={{mb: 2, color: 'grey', pl: '15px', fontSize: '12px'}}>
-                    Last Upload Date: {convertTimestampToDate(uploadTimestamps.find(t => t[0] === exposureType)[2])}
+                    Last Upload Date: {convertTimestampToDate(uploadTimestamps.find(t => t.id === exposureType).timestamp)}
                 </Box>
             }
         </Box>
@@ -169,14 +170,14 @@ export default function Dashboard() {
                     <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2, display: { sm: 'none' } }}>
                         <MenuIcon />
                     </IconButton>
-                    {exposureType && EXPOSURE_TYPES.find(([value,]) => value === exposureType) ? (
+                    {exposureType && EXPOSURE_TYPES.find(({ id }) => id === exposureType) ? (
                         <Stack>
                             <Typography variant="h6" noWrap component="div" sx={{ lineHeight: '1' }}>
                                 Best Ball Explorer
                             </Typography>
                             <Typography variant='overline' component='div' sx={{ lineHeight: '1', height: '16px', color: '#1976d2'}} >
                                 <img style={{ height: '12px', marginRight: '5px' }} src="/logos/uf-logo-small.png" alt="Underdog Fantasy" />
-                                {EXPOSURE_TYPES.find(([value,]) => value === exposureType)[1]}
+                                {EXPOSURE_TYPES.find(({ id }) => id === exposureType).label}
                             </Typography>
                         </Stack>
                     ) : (

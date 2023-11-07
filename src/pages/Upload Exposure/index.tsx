@@ -15,6 +15,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { UploadedExposureData } from '../../models/exposure.model';
 
 const steps: string[] = [
     'Specify Type',
@@ -36,7 +37,7 @@ export function UploadExposureForm() {
     const dispatch = useAppDispatch();
 
     const [loggedIn] = useState<boolean>(useAppSelector(selectLoggedIn));
-    const uploadTimestamps: string[][] = useAppSelector(selectUploadTimestamps);
+    const uploadTimestamps: UploadedExposureData[] = useAppSelector(selectUploadTimestamps);
     const uploadMessage: string = useAppSelector(selectUploadMessage);
     const isDemo: boolean = useAppSelector(selectUserIsDemo);
 
@@ -49,8 +50,8 @@ export function UploadExposureForm() {
 
     const handleExporsureUploadTypeChange = (event) => {
         let val = event.target.value;
-        if (EXPOSURE_TYPES.find(([value, ]) => value === val)) {
-            setExposureUploadType(event.target.value);
+        if (EXPOSURE_TYPES.find(({ id }) => id === val)) {
+            setExposureUploadType(val);
         }
     };
 
@@ -60,7 +61,7 @@ export function UploadExposureForm() {
     const isBackButtonDisabled = () => stepNumber === 0;
 
     const isNextButtonDisabled = () => {
-        if (stepNumber === 0 && !EXPOSURE_TYPES.find(type => type[0] === exposureUploadType)) return true;
+        if (stepNumber === 0 && !EXPOSURE_TYPES.find(({ id }) => id === exposureUploadType)) return true;
         if (stepNumber === 1 && file === null) return true;
         return false;
     }
@@ -111,7 +112,7 @@ export function UploadExposureForm() {
     };
 
     const handleUpload = () => {
-        if (loggedIn && file !== null && EXPOSURE_TYPES.find(type => type[0] === exposureUploadType) && !isDemo) {
+        if (loggedIn && file !== null && EXPOSURE_TYPES.find(({ id }) => id === exposureUploadType) && !isDemo) {
             // TODO: more validations here
             setWaitingForResponse(true);
             dispatch(uploadExposure({ csvFile: file, exposureType: exposureUploadType }))
@@ -171,10 +172,10 @@ export function UploadExposureForm() {
                                     value={exposureUploadType}
                                     label="Exposure Type"
                                     onChange={handleExporsureUploadTypeChange} >
-                                    {EXPOSURE_TYPES.map(([value, label], index) =>
-                                        <MenuItem key={index} value={value}>
+                                    {EXPOSURE_TYPES.map(({ id, label }, index) =>
+                                        <MenuItem key={index} value={id}>
                                             <img style={{ height: '24px', marginRight: '10px' }} src="/logos/uf-logo-small.png" alt="Underdog Fantasy" />
-                                            {label + (value === '2023season' ? ' (Most Popular)' : '')}
+                                            {label + (id === '2023season' ? ' (Most Popular)' : '')}
                                         </MenuItem>
                                     )}
                                 </Select>
@@ -201,7 +202,7 @@ export function UploadExposureForm() {
                             <Box>
                                 <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between'}}>
                                     <Typography>Exposure Type:</Typography>
-                                    <Typography color={'grey'}>{exposureUploadType !== '' && EXPOSURE_TYPES.find(x => x[0] === exposureUploadType)[1]}</Typography>
+                                    <Typography color={'grey'}>{exposureUploadType !== '' && EXPOSURE_TYPES.find(({ id }) => id === exposureUploadType).label}</Typography>
                                 </Box>
                                 <Box sx={{ mt: 1, width: 1, display: 'flex', justifyContent: 'space-between' }}>
                                     <Typography>File:</Typography>
