@@ -195,6 +195,11 @@ class ApiService {
             .then(res => res.data);
     }
 
+    async fetchUserInfo(token: string) {
+        return axios.get(this.baseUrl + '/admin/users', { headers: { 'Authorization': 'Bearer ' + token } })
+            .then(res => res.data);
+    }
+
     
 }
 

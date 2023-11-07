@@ -2,11 +2,12 @@ import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
 import ApiService from '../api/api.service';
 import { RookieDefinition } from '../../models/player.model';
-import { RookieProps, ReplacementRule, ReplacementRuleProps } from '../../models/admin.model';
+import { RookieProps, ReplacementRule, ReplacementRuleProps, RegisteredUser } from '../../models/admin.model';
 
 export interface AdminState {
     rookieDefinitions?: RookieDefinition[];
     replacementRules?: ReplacementRule[];
+    users?: RegisteredUser[];
 }
 
 const initialState: AdminState = {};
@@ -57,6 +58,13 @@ export const fetchRookieDefinitions = createAsyncThunk('admin/fetchRookieDefinit
     else return await ApiService.fetchRookieDefinitions(token);
 });
 
+export const fetchUserInfo = createAsyncThunk('admin/fetchUserInfo', async (obj: any, { getState }) => {
+    let state: any = getState();
+    let token = state.user.accessToken;
+    if (state.user.userInfo.role !== 'admin') return { users: null };
+    else return await ApiService.fetchUserInfo(token);
+});
+
 export const adminSlice = createSlice({
     name: 'admin',
     initialState,
@@ -93,11 +101,19 @@ export const adminSlice = createSlice({
             state.rookieDefinitions = rookieDefinitions;
         })
         builder.addCase(fetchRookieDefinitions.rejected, (state, action) => {})
+        // fetchUserInfo
+        builder.addCase(fetchUserInfo.pending, (state) => {})
+        builder.addCase(fetchUserInfo.fulfilled, (state, action) => {
+            const users: RegisteredUser[] = action.payload.users;
+            state.users = users;
+        })
+        builder.addCase(fetchUserInfo.rejected, (state, action) => {})
     }
 })
 
 export const selectAdminState = (state: RootState) => state.admin;
 export const selectReplacementRules = createSelector([selectAdminState], adminState => adminState.replacementRules);
 export const selectRookieDefinitions = createSelector([selectAdminState], adminState => adminState.rookieDefinitions);
+export const selectUsers = createSelector([selectAdminState], adminState => adminState.users);
 
 export default adminSlice.reducer

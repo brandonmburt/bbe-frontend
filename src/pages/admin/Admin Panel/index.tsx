@@ -4,6 +4,7 @@ import useAdminRedirect from '../../../hooks/useAdminRedirect';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import GroupIcon from '@mui/icons-material/Group';
 import { Link } from "react-router-dom";
 
 interface LinkObj {
@@ -17,9 +18,10 @@ export function AdminPanel() {
     useAdminRedirect();
 
     const adminLinks: LinkObj[] = [
+        { name: 'Users', path: '/admin/users', icon: <GroupIcon /> },
         { name: 'Upload ADPs', path: '/admin/uploadADPs', icon: <UploadFileIcon /> },
         { name: 'Player Name Rules', path: '/admin/replacement', icon: <EditNoteIcon /> },
-        { name: 'Rookies', path: '/admin/rookies', icon: <EmojiPeopleIcon /> }
+        { name: 'Rookie Definitions', path: '/admin/rookies', icon: <EmojiPeopleIcon /> }
     ];
 
     return (

@@ -21,3 +21,12 @@ export interface ReplacementRuleProps {
     fNameReplacement: string,
     lNameReplacement: string,
 }
+
+export interface RegisteredUser {
+    email: string,
+    role: string,
+    firstName: string,
+    lastName: string,
+    createdAt: string,
+    lastLogin: string,
+}

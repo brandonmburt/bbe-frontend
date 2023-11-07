@@ -4,7 +4,7 @@ import { selectLoggedIn, selectShouldFetchData, selectUserAccessToken,
     setShouldFetchData, selectUserIsAdmin } from '../redux/slices/user.slice';
 import { fetchADPs } from '../redux/slices/adps.slice';
 import { fetchExposureData, selectShouldRefreshData, setShouldRefreshData } from '../redux/slices/exposure.slice';
-import { fetchRookieDefinitions, fetchReplacementRules } from '../redux/slices/admin.slice';
+import { fetchRookieDefinitions, fetchReplacementRules, fetchUserInfo } from '../redux/slices/admin.slice';
 
 const useFetchData = () => {
     const loggedIn: boolean = useAppSelector(selectLoggedIn);
@@ -24,6 +24,7 @@ const useFetchData = () => {
             if (isAdmin) {
                 dispatch(fetchReplacementRules({}));
                 dispatch(fetchRookieDefinitions({}));
+                dispatch(fetchUserInfo({}));
             }
         }
     }, [loggedIn, shouldFetchData, accessToken, shouldRefreshData, isAdmin]);

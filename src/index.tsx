@@ -18,6 +18,7 @@ import { ReplacementRules } from './pages/admin/Replacement Rules';
 import ByeWeeks from './components/ByeWeeks.comp';
 import { Rookies } from './pages/admin/Rookies';
 import { AdminPanel } from './pages/admin/Admin Panel';
+import { RegisteredUsers } from './pages/admin/Registered Users';
 
 const router = createBrowserRouter([
     {
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
             {
                 path: "/admin",
                 element: <AdminPanel />,
+            },
+            {
+                path: "/admin/users",
+                element: <RegisteredUsers />,
             },
             {
                 path: "/admin/uploadADPs",
