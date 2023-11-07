@@ -44,3 +44,14 @@ export interface ReplacementRule {
     lastNameReplacement: string,
     createdAt: string,
 }
+
+export interface RookieDefinition {
+    id: string,
+    playerId: string,
+    season: number,
+    firstName: string,
+    lastName: string,
+    team: string,
+    position: string,
+    createdAt: string,
+}

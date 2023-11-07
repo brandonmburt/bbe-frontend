@@ -76,9 +76,7 @@ export function ReplacementRules() {
                         <Button
                             sx={{ width: 1 }}
                             variant='contained'
-                            disabled={[firstNameMatch, lastNameMatch, firstNameReplacement, lastNameReplacement].some(v => {
-                                return v === null || v === '' || v.length > 50;
-                            })}
+                            disabled={disableSubmission()}
                             onClick={handleSubmit} >
                             {'Submit'}
                         </Button>

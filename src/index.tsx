@@ -16,6 +16,7 @@ import { Drafts } from './pages/Drafts';
 import SignOut from './components/SignOut.comp';
 import { ReplacementRules } from './pages/admin/Replacement Rules';
 import ByeWeeks from './components/ByeWeeks.comp';
+import { Rookies } from './pages/admin/Rookies';
 
 const router = createBrowserRouter([
     {
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
                 path: "/byes",
                 element: <ByeWeeks />,
             },
+            {
+                path: "/rookies",
+                element: <Rookies />,
+            }
         ],
     },
 ]);
