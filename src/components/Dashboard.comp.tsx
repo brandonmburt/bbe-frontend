@@ -22,7 +22,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import EditNoteIcon from '@mui/icons-material/EditNote';
+import SettingsIcon from '@mui/icons-material/Settings';
 import StickyFooter from './StickyFooter.comp';
 import { EXPOSURE_TYPES } from '../constants/types.constants';
 import { selectLoggedIn, selectUserIsAdmin, selectShouldRenderApp } from '../redux/slices/user.slice';
@@ -121,11 +121,7 @@ export default function Dashboard() {
     ];
 
     if (isAdmin) {
-        accountLinks.splice(1, 0, 
-            { name: 'Upload ADPs', path: '/uploadADPs', icon: <UploadFileIcon /> },
-            { name: 'Player Name Rules', path: '/replacement', icon: <EditNoteIcon /> },
-            { name: 'Rookies', path: '/rookies', icon: <GroupsIcon /> }
-        );
+        accountLinks.splice(1, 0, { name: 'Admin Panel', path: '/admin', icon: <SettingsIcon /> } );
     }
 
     const pathname = useLocation().pathname; // React Hook; returns relative path, without domain name

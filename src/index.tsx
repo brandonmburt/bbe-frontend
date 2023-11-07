@@ -17,6 +17,7 @@ import SignOut from './components/SignOut.comp';
 import { ReplacementRules } from './pages/admin/Replacement Rules';
 import ByeWeeks from './components/ByeWeeks.comp';
 import { Rookies } from './pages/admin/Rookies';
+import { AdminPanel } from './pages/admin/Admin Panel';
 
 const router = createBrowserRouter([
     {
@@ -49,10 +50,6 @@ const router = createBrowserRouter([
                 element: <SignUp />,
             },
             {
-                path: "/uploadADPs",
-                element: <UploadAdp />,
-            },
-            {
                 path: "/drafts",
                 element: <Drafts />,
             },
@@ -61,15 +58,23 @@ const router = createBrowserRouter([
                 element: <SignOut />,
             },
             {
-                path: "/replacement",
-                element: <ReplacementRules />,
-            },
-            {
                 path: "/byes",
                 element: <ByeWeeks />,
             },
             {
-                path: "/rookies",
+                path: "/admin",
+                element: <AdminPanel />,
+            },
+            {
+                path: "/admin/uploadADPs",
+                element: <UploadAdp />,
+            },
+            {
+                path: "/admin/replacement",
+                element: <ReplacementRules />,
+            },
+            {
+                path: "/admin/rookies",
                 element: <Rookies />,
             }
         ],
