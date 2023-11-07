@@ -2,13 +2,37 @@ import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
 import ApiService from '../api/api.service';
 import { RookieDefinition } from '../../models/player.model';
-import { RookieProps } from '../../models/admin.model';
+import { RookieProps, ReplacementRule, ReplacementRuleProps } from '../../models/admin.model';
 
 export interface AdminState {
     rookieDefinitions?: RookieDefinition[];
+    replacementRules?: ReplacementRule[];
 }
 
 const initialState: AdminState = {};
+
+export const addReplacementRule = createAsyncThunk('admin/addReplacementRule', async (props: ReplacementRuleProps, { getState }) => {
+    const { fName, lName, fNameReplacement, lNameReplacement } = props;
+    let state: any = getState();
+    let token = state.user.accessToken;
+    if (state.user.userInfo.role !== 'admin') console.error('Unauthorized to upload ADPs');
+    return await ApiService.addReplacementRule(token, fName, lName, fNameReplacement, lNameReplacement);
+});
+
+export const deleteReplacementRule = createAsyncThunk('admin/deleteReplacementRule', async (props: { id: string }, { getState }) => {
+    const { id } = props;
+    let state: any = getState();
+    let token = state.user.accessToken;
+    if (state.user.userInfo.role !== 'admin') console.error('Unauthorized to upload ADPs');
+    return await ApiService.deleteReplacementRule(token, id);
+});
+
+export const fetchReplacementRules = createAsyncThunk('admin/fetchReplacementRules', async (obj: any, { getState }) => {
+    let state: any = getState();
+    let token = state.user.accessToken;
+    if (state.user.userInfo.role !== 'admin') return { rules: null };
+    else return await ApiService.getReplacementRules(token);
+});
 
 export const addRookieDefinition = createAsyncThunk('admin/addRookieDefinitions', async (props: RookieProps, { getState }) => {
     const { firstName, lastName, team, position, season } = props;
@@ -39,22 +63,21 @@ export const adminSlice = createSlice({
     reducers: {
     },
     extraReducers: (builder) => {
-        // // addReplacementRule
-        // builder.addCase(addReplacementRule.pending, (state) => {})
-        // builder.addCase(addReplacementRule.fulfilled, (state, action) => {})
-        // builder.addCase(addReplacementRule.rejected, (state, action) => {})
-        // // deleteReplacementRule
-        // builder.addCase(deleteReplacementRule.pending, (state) => {})
-        // builder.addCase(deleteReplacementRule.fulfilled, (state, action) => {})
-        // builder.addCase(deleteReplacementRule.rejected, (state, action) => {})
-        // // fetchReplacementRules
-        // builder.addCase(fetchReplacementRules.pending, (state) => {})
-        // builder.addCase(fetchReplacementRules.fulfilled, (state, action) => {
-        //     const rules: ReplacementRule[] = action.payload.rules;
-        //     state.replacementRules = rules;
-        // })
-
-        // builder.addCase(fetchReplacementRules.rejected, (state, action) => {})
+        // addReplacementRule
+        builder.addCase(addReplacementRule.pending, (state) => {})
+        builder.addCase(addReplacementRule.fulfilled, (state, action) => {})
+        builder.addCase(addReplacementRule.rejected, (state, action) => {})
+        // deleteReplacementRule
+        builder.addCase(deleteReplacementRule.pending, (state) => {})
+        builder.addCase(deleteReplacementRule.fulfilled, (state, action) => {})
+        builder.addCase(deleteReplacementRule.rejected, (state, action) => {})
+        // fetchReplacementRules
+        builder.addCase(fetchReplacementRules.pending, (state) => {})
+        builder.addCase(fetchReplacementRules.fulfilled, (state, action) => {
+            const rules: ReplacementRule[] = action.payload.rules;
+            state.replacementRules = rules;
+        })
+        builder.addCase(fetchReplacementRules.rejected, (state, action) => {})
         // addRookieDefinition
         builder.addCase(addRookieDefinition.pending, (state) => {})
         builder.addCase(addRookieDefinition.fulfilled, (state, action) => {})
@@ -74,6 +97,7 @@ export const adminSlice = createSlice({
 })
 
 export const selectAdminState = (state: RootState) => state.admin;
+export const selectReplacementRules = createSelector([selectAdminState], adminState => adminState.replacementRules);
 export const selectRookieDefinitions = createSelector([selectAdminState], adminState => adminState.rookieDefinitions);
 
 export default adminSlice.reducer

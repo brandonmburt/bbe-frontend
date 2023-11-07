@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { selectLoggedIn, selectShouldFetchData, selectUserAccessToken,
-    fetchReplacementRules, setShouldFetchData, selectUserIsAdmin } from '../redux/slices/user.slice';
+    setShouldFetchData, selectUserIsAdmin } from '../redux/slices/user.slice';
 import { fetchADPs } from '../redux/slices/adps.slice';
 import { fetchExposureData, selectShouldRefreshData, setShouldRefreshData } from '../redux/slices/exposure.slice';
-import { fetchRookieDefinitions } from '../redux/slices/admin.slice';
+import { fetchRookieDefinitions, fetchReplacementRules } from '../redux/slices/admin.slice';
 
 const useFetchData = () => {
     const loggedIn: boolean = useAppSelector(selectLoggedIn);

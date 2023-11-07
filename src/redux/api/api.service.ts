@@ -159,6 +159,42 @@ class ApiService {
         return axios.get(this.baseUrl + '/admin/replacementRules', { headers: { 'Authorization': 'Bearer ' + token } })
             .then(res => res.data);
     }
+
+    async addRookieDefinition(token: string, firstName: string, lastName: string, team: string, position: string, season: number) {
+        const formData = new FormData();
+        formData.append('firstName', firstName);
+        formData.append('lastName', lastName);
+        formData.append('team', team);
+        formData.append('position', position);
+        formData.append('season', season.toString());
+        const headersObj = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            }
+        }
+        return axios.post(this.baseUrl + '/admin/addRookieDefinition', formData, headersObj)
+            .then(res => res.data);
+    }
+    
+    async deleteRookieDefinition(token: string, id: string) {
+        const formData = new FormData();
+        formData.append('id', id);
+        const headersObj = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            }
+        }
+        return axios.post(this.baseUrl + '/admin/deleteRookieDefinition', formData, headersObj)
+            .then(res => res.data);
+    }
+
+    async fetchRookieDefinitions(token: string) {
+        return axios.get(this.baseUrl + '/admin/rookieDefinitions', { headers: { 'Authorization': 'Bearer ' + token } })
+            .then(res => res.data);
+    }
+
     
 }
 

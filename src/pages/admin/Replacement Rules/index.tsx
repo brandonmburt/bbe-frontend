@@ -3,8 +3,8 @@ import { useAppSelector, useAppDispatch } from '../../../redux/hooks';
 import { Box, Container, CssBaseline, TextField, Button, Typography, TableBody, Table, TableCell, TableHead, TableRow } from '@mui/material';
 import useLoginRedirect from '../../../hooks/useLoginRedirect';
 import useAdminRedirect from '../../../hooks/useAdminRedirect';
-import { addReplacementRule, selectReplacementRules, deleteReplacementRule } from '../../../redux/slices/user.slice';
-import { ReplacementRule } from '../../../models/player.model';
+import { addReplacementRule, selectReplacementRules, deleteReplacementRule } from '../../../redux/slices/admin.slice';
+import { ReplacementRule } from '../../../models/admin.model';
 import { convertTimestampToDate } from '../../../utils/date.utils';
 import ClearIcon from '@mui/icons-material/Clear';
 

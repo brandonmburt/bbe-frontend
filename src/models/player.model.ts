@@ -36,15 +36,6 @@ export interface SelectedPlayer {
     tournamentTitle: string;
 }
 
-export interface ReplacementRule {
-    id: string,
-    firstNameMatch: string,
-    lastNameMatch: string,
-    firstNameReplacement: string,
-    lastNameReplacement: string,
-    createdAt: string,
-}
-
 export interface RookieDefinition {
     id: string,
     playerId: string,
