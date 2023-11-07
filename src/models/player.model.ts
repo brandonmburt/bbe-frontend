@@ -46,3 +46,8 @@ export interface RookieDefinition {
     position: string,
     createdAt: string,
 }
+
+export interface RookieKey {
+    playerId: string,
+    season: number,
+}

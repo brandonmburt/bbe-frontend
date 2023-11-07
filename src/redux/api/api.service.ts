@@ -200,6 +200,10 @@ class ApiService {
             .then(res => res.data);
     }
 
+    async fetchRookieKeys(token: string) {
+        return axios.get(this.baseUrl + '/rookies', { headers: { 'Authorization': 'Bearer ' + token } })
+            .then(res => res.data);
+    }
     
 }
 

@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { selectLoggedIn, selectShouldFetchData, selectUserAccessToken,
     setShouldFetchData, selectUserIsAdmin } from '../redux/slices/user.slice';
 import { fetchADPs } from '../redux/slices/adps.slice';
-import { fetchExposureData, selectShouldRefreshData, setShouldRefreshData } from '../redux/slices/exposure.slice';
+import { fetchExposureData, fetchRookieKeys, selectShouldRefreshData, setShouldRefreshData } from '../redux/slices/exposure.slice';
 import { fetchRookieDefinitions, fetchReplacementRules, fetchUserInfo } from '../redux/slices/admin.slice';
 
 const useFetchData = () => {
@@ -20,6 +20,7 @@ const useFetchData = () => {
             dispatch(fetchADPs({}));
             dispatch(setShouldFetchData(false));
             dispatch(setShouldRefreshData(false));
+            dispatch(fetchRookieKeys({}));
             /* Admin Functionality */
             if (isAdmin) {
                 dispatch(fetchReplacementRules({}));

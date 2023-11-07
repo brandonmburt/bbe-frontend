@@ -3,6 +3,7 @@ import { Exposure, EntryBreakdown, DraftedTeam, DraftedPlayer, UploadedExposureD
 import { EXPOSURE_TYPES } from '../../constants/types.constants';
 import { deserializeMap, serializeMap } from '../utils/serialize.utils';
 import ApiService from '../api/api.service';
+import { RookieKey } from '../../models/player.model';
 
 export interface ExposureState {
     uploadInProgress: boolean,
@@ -25,6 +26,7 @@ export interface ExposureState {
     uploadTimestamps: UploadedExposureData[],
     shouldRefreshData: boolean,
     redirectPathOnLogin: string,
+    rookies: RookieKey[];
 }
 
 const initialState: ExposureState = {
@@ -48,6 +50,7 @@ const initialState: ExposureState = {
     uploadTimestamps: [],
     shouldRefreshData: false,
     redirectPathOnLogin: null,
+    rookies: null,
 }
 
 // first argument is the action type, second argument is the async function which returns a promise
@@ -69,6 +72,12 @@ export const fetchExposureData = createAsyncThunk('user/fetchExposureData', asyn
     let state: any = getState();
     let token = state.user.accessToken;
     return await ApiService.getExposureData(token);
+});
+
+export const fetchRookieKeys = createAsyncThunk('user/fetchRookieKeys', async (obj: any, { getState }) => {
+    let state: any = getState();
+    let token = state.user.accessToken;
+    return await ApiService.fetchRookieKeys(token);
 });
 
 export const exposureSlice = createSlice({
@@ -200,6 +209,13 @@ export const exposureSlice = createSlice({
             state.deleteError = action.error.message;
             state.shouldRefreshData = false;
         })
+        // fetchRookieKeys
+        builder.addCase(fetchRookieKeys.pending, (state) => {})
+        builder.addCase(fetchRookieKeys.fulfilled, (state, action) => {
+            const rookieKeys: RookieKey[] = action.payload.rookies;
+            state.rookies = rookieKeys;
+        })
+        builder.addCase(fetchRookieKeys.rejected, (state, action) => {})
     }
 })
 
