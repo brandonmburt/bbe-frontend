@@ -2,18 +2,18 @@ import { useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../../../redux/hooks';
 import { Box, Container, CssBaseline, TextField, Button, Typography, TableBody, Table, TableCell, TableHead, TableRow } from '@mui/material';
 import useLoginRedirect from '../../../hooks/useLoginRedirect';
-import { selectLoggedIn, selectUserIsAdmin, addReplacementRule, selectReplacementRules, deleteReplacementRule } from '../../../redux/slices/user.slice';
+import useAdminRedirect from '../../../hooks/useAdminRedirect';
+import { addReplacementRule, selectReplacementRules, deleteReplacementRule } from '../../../redux/slices/user.slice';
 import { ReplacementRule } from '../../../models/player.model';
 import { convertTimestampToDate } from '../../../utils/date.utils';
 import ClearIcon from '@mui/icons-material/Clear';
 
 export function ReplacementRules() {
     useLoginRedirect();
+    useAdminRedirect();
 
     const dispatch = useAppDispatch();
 
-    const isLoggedIn: boolean = useAppSelector(selectLoggedIn);
-    const isAdmin: boolean = useAppSelector(selectUserIsAdmin);
     const replacementRules: ReplacementRule[] = useAppSelector(selectReplacementRules);
 
     const [firstNameMatch, setFirstNameMatch] = useState<string>(null);
@@ -52,7 +52,6 @@ export function ReplacementRules() {
         dispatch(deleteReplacementRule({id}));
     }
 
-    if (!isLoggedIn || !isAdmin) return null;
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />

@@ -1,42 +1,37 @@
-import React, { useState } from 'react';
-import { useAppSelector, useAppDispatch } from '../../../redux/hooks';
+import { useState } from 'react';
+import { useAppDispatch } from '../../../redux/hooks';
 import { uploadADPs } from '../../../redux/slices/adps.slice';
 import { EXPOSURE_TYPES } from '../../../constants/types.constants';
 import { FormControl, InputLabel, Select, MenuItem, Box, Container, CssBaseline } from '@mui/material';
 import useLoginRedirect from '../../../hooks/useLoginRedirect';
-import { selectLoggedIn, selectUserIsAdmin } from '../../../redux/slices/user.slice';
+import useAdminRedirect from '../../../hooks/useAdminRedirect';
 
 export function UploadAdp() {
     useLoginRedirect();
+    useAdminRedirect();
 
     const [file, setFile] = useState(null);
     const [exposureUploadType, setExposureUploadType] = useState<string>('');
 
     const dispatch = useAppDispatch();
 
-    const isLoggedIn = useAppSelector(selectLoggedIn);
-    const isAdmin = useAppSelector(selectUserIsAdmin);
-
     const handleFileChange = (event) => {
         setFile(event.target.files[0]);
     };
 
     const handleUpload = () => {
-        if (isLoggedIn && file !== null) {
+        if (file !== null && exposureUploadType !== '') {
             dispatch(uploadADPs({ csvFile: file, exposureType: exposureUploadType }))
-        } else {
-            console.log('You must be logged in to upload a file')
         }
     };
 
     const handleExporsureUploadTypeChange = (event) => {
         let val = event.target.value;
         if (EXPOSURE_TYPES.find(({ id }) => id === val)) {
-            setExposureUploadType(event.target.value);
+            setExposureUploadType(val);
         }
     };
 
-    if (!isLoggedIn || !isAdmin) return null;
     return (
         <>
             <Container component="main" maxWidth="xs">
