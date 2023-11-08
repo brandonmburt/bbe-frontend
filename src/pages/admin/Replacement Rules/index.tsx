@@ -84,7 +84,7 @@ export function ReplacementRules() {
 
                     {replacementRules && replacementRules.length > 0 &&
                         <Box sx={{ width: 1, mt: 5 }}>
-                            <Table>
+                            <Table size='small'>
                                 <TableHead sx={{whiteSpace: 'nowrap'}}>
                                     <TableRow>
                                         <TableCell size='small' colSpan={2} align='center'>Match Values</TableCell>

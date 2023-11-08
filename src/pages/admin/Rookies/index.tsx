@@ -138,7 +138,7 @@ export function Rookies() {
 
                     {rookies && rookies.length > 0 &&
                         <Box sx={{ width: 1, mt: 5 }}>
-                            <Table>
+                            <Table size='small'>
                                 <TableHead sx={{whiteSpace: 'nowrap'}}>
                                     <TableRow>
                                         {tableHeaders.map((header, i) => <TableCell key={i} align='center'>{header}</TableCell>)}
