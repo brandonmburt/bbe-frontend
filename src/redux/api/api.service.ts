@@ -4,8 +4,8 @@ class ApiService {
 
     private baseUrl: string;
 
-    constructor() {
-        this.baseUrl = process.env.REACT_APP_API_URL;
+    constructor(apiUrl: string) {
+        this.baseUrl = apiUrl;
     }
 
     async signUp(firstName: string, lastName: string, email: string, password: string) {
@@ -204,4 +204,5 @@ class ApiService {
     
 }
 
-export default new ApiService();
+const apiService = new ApiService(process.env.REACT_APP_API_URL);
+export default apiService;
