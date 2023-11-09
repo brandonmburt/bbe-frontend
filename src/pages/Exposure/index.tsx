@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAppSelector } from '../../redux/hooks'
-import { selectDraftedPlayers,selectNumDrafts, selectTournaments, selectDraftedTeams, selectDraftedPlayersMap } from '../../redux/slices/exposure.slice';
+import { selectDraftedPlayers,selectNumDrafts, selectTournaments, selectDraftedTeams, selectDraftedPlayersMap, selectRookieKeysSet, selectSophomoreKeysSet } from '../../redux/slices/exposure.slice';
 import { Adp } from '../../models/adp.model';
 import { selectAdpMap, selectAdditionalKeysMap, selectResurrectionAdpMap, selectResurrectionAdditionalKeysMap } from '../../redux/slices/adps.slice';
 import { DraftedPlayer, Tournament, DraftedTeam, ExposureSnapshot, PlayerStack, PlayoffMatchupInfo } from '../../models/exposure.model';
-import { FormControlLabel, FormGroup, Stack, Switch, Typography, Box, TextField, Autocomplete } from '@mui/material';
+import { Stack, Typography, Box, TextField, Autocomplete } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { CardComp } from '../../components/CardComp.comp';
 import PlayerExposure from './Player.comp';
@@ -23,12 +23,11 @@ import {
 import { PlayerInputOption, ExposureData, SelectedPlayer } from '../../models/player.model';
 import { selectExposureType } from '../../redux/slices/exposure.slice';
 import { UniquePlayers } from './UniquePlayersTable.comp';
-import InfoIcon from '@mui/icons-material/Info';
-import { TOOLTIPS } from '../../constants/tooltips.constants';
 import { PositionButtons } from './PositionButtons.comp';
 import { PlayerStacks } from './PlayerStacks.comp';
-import { ToolTip } from '../../components/ToolTip.comp';
 import { EXPOSURE_TYPES } from '../../constants/types.constants';
+import { FilterOptions } from './FilterOptions.comp';
+
 
 export default function Exposure() {
     useLoginRedirect();
@@ -69,6 +68,13 @@ export default function Exposure() {
     // Player stacks
     const [stacks, setStacks] = useState<PlayerStack[]>(null);
     const [playoffMatchupsMap, setPlayoffMatchupsMap] = useState<Map<string, PlayoffMatchupInfo>>(null);
+
+    // Filter Options
+    const isResurrectionEnabled: boolean = EXPOSURE_TYPES.find(({ id }) => id === exposureType)?.enableResurrection;
+    const [showRookies, setShowRookies] = useState<boolean>(false);
+    const [showSophomores, setShowSophomores] = useState<boolean>(false);
+    const rookieKeysSet: Set<string> = useAppSelector(selectRookieKeysSet);
+    const sophomoreKeysSet: Set<string> = useAppSelector(selectSophomoreKeysSet);
 
     useEffect(() => {
         setTournamentId(null);
@@ -128,7 +134,7 @@ export default function Exposure() {
             let exposurePlayers: DraftedPlayer[] = tournamentId === null ? draftedPlayers : filteredDraftedPlayers;
             let draftQuantity: number = tournamentId === null ? numDrafts : filteredNumDrafts;
             const gridRows: ExposureData[] = getPlayerExposureRows(adpMap, playerKeysMap, exposurePlayers, draftQuantity);
-            if (resurrectionToggle && EXPOSURE_TYPES.find(({ id }) => id === exposureType)?.enableResurrection) addResurrectionData(gridRows, resurrectionMap, resurrectionKeysMap);
+            if (resurrectionToggle && isResurrectionEnabled) addResurrectionData(gridRows, resurrectionMap, resurrectionKeysMap);
             const snapshot: ExposureSnapshot = generateExposureSnapshot(gridRows, draftQuantity);
             setExposureSnapshot(snapshot);
             setRows(gridRows);
@@ -144,6 +150,13 @@ export default function Exposure() {
 
     const handlePositionsFilterChange = (positions: string[]) => setFilteredPositions(new Set(positions));
     const handlePlayerFilterChange = (str: string) => setPlayerFilter(str);
+
+    const filterRows = (rows: ExposureData[]): ExposureData[] => {
+        if (playerFilter !== '') return rows.filter(({ name }) => name.toLowerCase().includes(playerFilter.toLowerCase()));
+        else if (showRookies) return rows.filter(({ pos, id }) => rookieKeysSet.has(id) && filteredPositions.has(pos));
+        else if (showSophomores) return rows.filter(({ pos, id }) => sophomoreKeysSet.has(id) && filteredPositions.has(pos));
+        else return rows.filter(({ pos }) => filteredPositions.has(pos))
+    }
 
     return numDrafts && adpMap && draftedPlayers && rows && inputOptions ? (
         <Box sx={{ padding: { xs: '10px', sm: '20px 40px' } }}>
@@ -184,33 +197,22 @@ export default function Exposure() {
                                         {exposureSnapshot && <UniquePlayers snapshot={exposureSnapshot} /> }
                                     </Box>
                                 </Grid>
-                                {EXPOSURE_TYPES.find(({ id }) => id === exposureType)?.enableResurrection &&
-                                    <Grid xs={12} sx={{ py: 0, my: 0 }}>
-                                        <Box sx={{ width: 1, flexDirection: 'row', display: 'flex', justifyContent: 'right', fontSize: '12px' }}>
-                                            <FormGroup>
-                                                <FormControlLabel
-                                                    label={<span style={{ fontSize: '14px' }}>Show Resurrection Data</span>}
-                                                    labelPlacement='start'
-                                                    control={
-                                                        <Switch checked={resurrectionToggle} onChange={() => setResurrectionToggle(!resurrectionToggle)} />
-                                                    } />
-                                            </FormGroup>
-                                            <ToolTip title={TOOLTIPS.RESURRECTION} content={
-                                                <InfoIcon sx={{ ml: '5px', mt: '7px', color: 'lightgrey' }} />
-                                            }/>
-                                        </Box>
-                                    </Grid>
-                                }
+                                <Grid xs={12} sx={{ py: 0, my: 0 }}>
+                                    <FilterOptions
+                                        setShowRookies={setShowRookies}
+                                        setShowSophomores={setShowSophomores}
+                                        isResurrectionEnabled={isResurrectionEnabled}
+                                        resurrectionToggle={resurrectionToggle}
+                                        setResurrectionToggle={setResurrectionToggle}
+                                    />
+                                </Grid>
                             </Grid>
                             <Box sx={{ mb: 1, mt: 3, w: 1, height: 500 }}>
                                 <PlayerExposureGrid
                                     handleViewPlayer={handleViewPlayer}
-                                    rows={
-                                        playerFilter === '' ?
-                                        rows.filter(({ pos }) => filteredPositions.has(pos)) :
-                                        rows.filter(({ name }) => name.toLowerCase().includes(playerFilter.toLowerCase()))
-                                    }
-                                    showResurrectionColumns={resurrectionToggle} />
+                                    rows={filterRows(rows)}
+                                    showResurrectionColumns={resurrectionToggle} 
+                                    exposureType={exposureType} />
                             </Box>
                         </>}/>
                     </Box>

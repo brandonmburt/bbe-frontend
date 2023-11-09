@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk, createSelector } from '@reduxjs/toolkit'
-import { Exposure, EntryBreakdown, DraftedTeam, DraftedPlayer, UploadedExposureData } from '../../models/exposure.model';
+import { Exposure, EntryBreakdown, DraftedTeam, DraftedPlayer, UploadedExposureData, ExposureType } from '../../models/exposure.model';
 import { EXPOSURE_TYPES } from '../../constants/types.constants';
 import { deserializeMap, serializeMap } from '../utils/serialize.utils';
 import ApiService from '../api/api.service';
@@ -26,7 +26,7 @@ export interface ExposureState {
     uploadTimestamps: UploadedExposureData[],
     shouldRefreshData: boolean,
     redirectPathOnLogin: string,
-    rookies: RookieKey[];
+    rookieSeasonMap: [number, string[]][],
 }
 
 const initialState: ExposureState = {
@@ -50,7 +50,7 @@ const initialState: ExposureState = {
     uploadTimestamps: [],
     shouldRefreshData: false,
     redirectPathOnLogin: null,
-    rookies: null,
+    rookieSeasonMap: null,
 }
 
 // first argument is the action type, second argument is the async function which returns a promise
@@ -212,8 +212,16 @@ export const exposureSlice = createSlice({
         // fetchRookieKeys
         builder.addCase(fetchRookieKeys.pending, (state) => {})
         builder.addCase(fetchRookieKeys.fulfilled, (state, action) => {
+            const rookieMap: Map<number, string[]> = new Map<number, string[]>();
             const rookieKeys: RookieKey[] = action.payload.rookies;
-            state.rookies = rookieKeys;
+            rookieKeys.forEach(({ playerId, season }) => {
+                if (rookieMap.has(season)) {
+                    rookieMap.get(season).push(playerId);
+                } else {
+                    rookieMap.set(season, [playerId]);
+                }
+            });
+            state.rookieSeasonMap = serializeMap(rookieMap);
         })
         builder.addCase(fetchRookieKeys.rejected, (state, action) => {})
     }
@@ -244,5 +252,19 @@ export const selectRunningTotals = createSelector([selectExposureByType], (expos
 export const selectDraftedPlayers = createSelector([selectExposureByType], (exposure) => exposure?.draftedPlayers ?? null);
 export const selectDraftedPlayersMap = createSelector([selectExposureByType], (exposure) => deserializeMap(exposure?.draftedPlayersMap ?? []));
 export const selectTournaments = createSelector([selectExposureByType], (exposure) => exposure?.tournaments ?? null);
+
+const selectRookieSeasonMap = createSelector([selectExposure], exposure => deserializeMap(exposure.rookieSeasonMap));
+export const selectRookieKeysSet = createSelector([selectRookieSeasonMap, selectExposureType], (rookieSeasonMap, type) => {
+    const typeInfo: ExposureType = EXPOSURE_TYPES.find(t => t.id === type);
+    const season: number = typeInfo?.season ?? null;
+    const keysSet: Set<string> = new Set(rookieSeasonMap.get(season) ?? []);
+    return keysSet;
+});
+export const selectSophomoreKeysSet = createSelector([selectRookieSeasonMap, selectExposureType], (rookieSeasonMap, type) => {
+    const typeInfo: ExposureType = EXPOSURE_TYPES.find(t => t.id === type);
+    const season: number = typeInfo?.season-1 ?? null;
+    const keysSet: Set<string> = new Set(rookieSeasonMap.get(season) ?? []);
+    return keysSet;
+});
 
 export default exposureSlice.reducer

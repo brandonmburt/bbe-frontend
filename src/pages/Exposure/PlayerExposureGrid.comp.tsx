@@ -4,8 +4,10 @@ import { PlayerBadge } from '../../components/badges/PlayerBadge.comp';
 import { TeamBadge } from '../../components/badges/TeamBadge.comp';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
 import { ToolTip } from '../../components/ToolTip.comp';
+import { EXPOSURE_TYPES } from '../../constants/types.constants';
+import { ExposureType } from '../../models/exposure.model';
 
-export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurrectionColumns }) {
+export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurrectionColumns, exposureType }) {
 
     const renderError = () => {
         return (
@@ -14,6 +16,10 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
             }/>
         )
     }
+
+    const exposureInfo: ExposureType = EXPOSURE_TYPES.find(x => x.id === exposureType);
+    const cutoffDate: string = exposureInfo.cutoffDate;
+    const resurrectionCutoffDate: string = EXPOSURE_TYPES.find(x => x.id === '2023resurrection').cutoffDate;
 
      // TODO: What's the best way to store these column definitions
     const columns: GridColDef[] = [
@@ -49,7 +55,7 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
             },
             align: 'center',
             headerAlign: 'center',
-            description: 'Position Rank',
+            description: 'ADP Positional Rank on ' + cutoffDate,
         },
         {
             field: 'fees',
@@ -79,7 +85,7 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
             align: 'center',
             headerAlign: 'center',
             renderCell(params) { return params.row.adp !== -1 ? params.row.adp : renderError() },
-            description: 'Average Draft Position on 9/07/2023',
+            description: 'Average Draft Position on ' + cutoffDate,
             hideSortIcons: true,
         },
         {
@@ -90,7 +96,7 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
             align: 'center',
             headerAlign: 'center',
             renderCell(params) { return params.row.adp !== -1 ? params.row.clv : renderError() },
-            description: 'Closing Line Value: Avg Pick - ADP',
+            description: 'Closing Line Value: Average Pick - ADP',
             hideSortIcons: true,
         },
         {
@@ -134,7 +140,7 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
                         <PlayerBadge pos={params.row.pos} posRank={params.row.resurrectionPosRank} />
                     );
                 },
-                description: 'Resurrection Position Rank',
+                description: 'Resurrection ADP Position Rank on ' + resurrectionCutoffDate,
             },
             {
                 field: 'resurrectionAdp',
@@ -145,7 +151,7 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
                 headerAlign: 'center',
                 hideSortIcons: true,
                 renderCell(params) { return params.row.resurrectionAdp !== -1 ? params.row.resurrectionAdp : renderError() },
-                description: 'Resurrection Average Draft Position on 10/12/2023',
+                description: 'Resurrection Average Draft Position on ' + resurrectionCutoffDate,
             },
             {
                 field: 'resurrectionClv',
@@ -156,7 +162,7 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
                 headerAlign: 'center',
                 hideSortIcons: true,
                 renderCell(params) { return params.row.resurrectionAdp !== -1 ? params.row.resurrectionClv : renderError() },
-                description: 'Closing Line Value: Avg Pick - Resurrection ADP',
+                description: 'Closing Line Value: Average Pick - Resurrection ADP',
             }
         );
     } else {

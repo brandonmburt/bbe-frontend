@@ -28,7 +28,7 @@ const TABLE_COLS: string[] = [
 export function PlayerStacks(props) {
 
     const { stacks, playoffMatchupsMap, team } = props;
-    const [toggleButton, setToggleButton] = useState<string>('teammates');
+    const [toggleButton, setToggleButton] = useState<string>(TOGGLE_INFO[0][0]);
 
     const handleToggleButtonChange = (e, value) => (value && value !== toggleButton) ? setToggleButton(value) : null;
 

@@ -29,7 +29,7 @@ export function Rookies() {
     for (let key in TEAMS) teamArr.push([key, TEAMS[key]]);
 
     const positions: string[] = ['QB', 'RB', 'WR', 'TE'];
-    const seasons: number[] = [2023, 2024];
+    const seasons: number[] = [2023, 2022];
 
     const handleSubmit = () => {
         if (!disableSubmission()) {

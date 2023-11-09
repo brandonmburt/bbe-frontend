@@ -1,4 +1,4 @@
-version: 1.0
+version: 1.1
 runtime: nodejs14
 build:
   commands:
@@ -7,3 +7,8 @@ build:
       - npm run build
 run:
   command: npx serve -s build
+  env:
+    - name: REACT_APP_ENV
+      value: production
+    - name: REACT_APP_API_URL
+      value: https://dtauecfjkd.us-east-1.awsapprunner.com/api

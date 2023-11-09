@@ -218,7 +218,7 @@ export default function Dashboard() {
             </Box>
             <Box sx={{ flexGrow: 1, p: { s: 1, md: 3 }, width: { xs: `calc(100% - ${drawerWidth}px)` } }}>
                 <Toolbar />
-                <Container>
+                <Container sx={{ px: { xs: '3px', sm: 'auto'} }} >
                     <Outlet />
                 </Container>
             </Box>

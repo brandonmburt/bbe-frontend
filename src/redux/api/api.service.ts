@@ -1,14 +1,11 @@
 import axios from "axios";
 
-// const baseURL: string = 'http://localhost:8080/api';
-const baseURL: string = 'https://dtauecfjkd.us-east-1.awsapprunner.com/api';
-
 class ApiService {
 
     private baseUrl: string;
 
     constructor() {
-        this.baseUrl = baseURL;
+        this.baseUrl = process.env.REACT_APP_API_URL;
     }
 
     async signUp(firstName: string, lastName: string, email: string, password: string) {
