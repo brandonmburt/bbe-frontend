@@ -174,7 +174,15 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
         );
     } else {
         columns.push({
-            field: 'id', headerName: '', minWidth: 100, align: 'center', sortable: false, filterable: false, hideable: false, disableColumnMenu: true,
+            field: 'id',
+            headerName: '',
+            minWidth: 100,
+            align: 'center',
+            sortable: false,
+            filterable: false,
+            hideable: false,
+            disableColumnMenu: true,
+            disableExport: true,
             renderCell({row}) {
                 return (
                     <Button

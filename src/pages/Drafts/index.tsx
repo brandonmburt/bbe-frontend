@@ -61,6 +61,7 @@ export function Drafts() {
             filterable: false,
             hideable: false,
             disableColumnMenu: true,
+            disableExport: true,
             renderCell({row}) {
                 return (<Button onClick={() => handleViewTeam(row.id)} variant="contained" color="primary">View</Button>);
             }
