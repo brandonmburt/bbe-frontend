@@ -3,11 +3,12 @@ import { Box, FormControlLabel, FormGroup, Switch, ToggleButton, ToggleButtonGro
 import { ToolTip } from '../../components/ToolTip.comp';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
 import InfoIcon from '@mui/icons-material/Info';
+import { ExperienceAvatar } from '../../components/badges/ExperienceAvatar.comp';
 
-const TOGGLE_INFO = [
-    ['all', 'All'],
-    ['rookies', 'Rookies'],
-    ['sophomores', 'Sophomores'],
+const TOGGLE_INFO: [string, string, any][] = [
+    ['all', 'All', null],
+    ['rookies', 'Rookies', <ExperienceAvatar experience={'R'} />],
+    ['sophomores', 'Sophomores', <ExperienceAvatar experience={'S'} />],
 ];
 
 export function FilterOptions(props) {
@@ -27,9 +28,16 @@ export function FilterOptions(props) {
         <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between', fontSize: '12px', flexWrap: 'wrap', mb: 1 }}>
 
             <ToggleButtonGroup size='small' color="primary" exclusive value={toggleButton} onChange={handleToggleButtonChange} sx={{ mt:1 }}>
-                {TOGGLE_INFO.map(([value, label]) => <ToggleButton key={value} value={value} sx={{fontSize: '11px'}}>{label}</ToggleButton> )}
+                {TOGGLE_INFO.map(([value, label, avatar]) => {
+                    return (
+                        <ToggleButton key={value} value={value} sx={{fontSize: '11px'}}>
+                            {label}
+                            {avatar && avatar}
+                        </ToggleButton>
+                    )
+                })}
             </ToggleButtonGroup>
-            
+
             {isResurrectionEnabled &&
                 <Box sx={{ flexDirection: 'row', display: 'flex', mt: 1 }}>
                     <FormGroup>

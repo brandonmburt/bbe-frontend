@@ -14,6 +14,7 @@ import {
     generateInputOptions,
     getPlayerExposureRows,
     addResurrectionData,
+    addExperienceData,
     getPlayerExposureByTournamentId,
     generateExposureSnapshot,
     getSelectedPlayerData,
@@ -135,11 +136,12 @@ export default function Exposure() {
             let draftQuantity: number = tournamentId === null ? numDrafts : filteredNumDrafts;
             const gridRows: ExposureData[] = getPlayerExposureRows(adpMap, playerKeysMap, exposurePlayers, draftQuantity);
             if (resurrectionToggle && isResurrectionEnabled) addResurrectionData(gridRows, resurrectionMap, resurrectionKeysMap);
+            if (rookieKeysSet && sophomoreKeysSet) addExperienceData(gridRows, rookieKeysSet, sophomoreKeysSet);
             const snapshot: ExposureSnapshot = generateExposureSnapshot(gridRows, draftQuantity);
             setExposureSnapshot(snapshot);
             setRows(gridRows);
         }
-    }, [adpMap, draftedPlayers, numDrafts, filteredDraftedPlayers, filteredNumDrafts, resurrectionToggle]);
+    }, [adpMap, draftedPlayers, numDrafts, filteredDraftedPlayers, filteredNumDrafts, resurrectionToggle, rookieKeysSet, sophomoreKeysSet]);
 
     useEffect(() => {
         setPlayerId(null);
@@ -153,8 +155,8 @@ export default function Exposure() {
 
     const filterRows = (rows: ExposureData[]): ExposureData[] => {
         if (playerFilter !== '') return rows.filter(({ name }) => name.toLowerCase().includes(playerFilter.toLowerCase()));
-        else if (showRookies) return rows.filter(({ pos, id }) => rookieKeysSet.has(id) && filteredPositions.has(pos));
-        else if (showSophomores) return rows.filter(({ pos, id }) => sophomoreKeysSet.has(id) && filteredPositions.has(pos));
+        else if (showRookies) return rows.filter(row => row?.experience === 'R' && filteredPositions.has(row.pos));
+        else if (showSophomores) return rows.filter(row => row?.experience === 'S' && filteredPositions.has(row.pos));
         else return rows.filter(({ pos }) => filteredPositions.has(pos))
     }
 

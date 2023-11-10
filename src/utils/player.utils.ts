@@ -72,6 +72,20 @@ export const addResurrectionData = (rows: ExposureData[], resurrectionAdps: Map<
 }
 
 /**
+ * Populates the experience property of the previously generated ExposureData objects
+ * @param {ExposureData[]} rows - array of ExposureData objects generated for the exposure grid
+ * @param {Set<string>} rookieKeysSet - Set of rookie keys
+ * @param {Set<string>} sophomoreKeysSet - Set of sophomore keys
+ */
+export const addExperienceData = (rows: ExposureData[], rookieKeysSet: Set<string>, sophomoreKeysSet: Set<string>): void => {
+    rows.forEach((rowObj: ExposureData) => {
+        const { id, additionalKeys } = rowObj;
+        const experience: string = rookieKeysSet.has(id) ? 'R' : sophomoreKeysSet.has(id) ? 'S' : null;
+        rowObj.experience = experience;
+    });
+}
+
+/**
  * Filters draftedTeams by the provided tournamentId and generates player exposure data for that subset of teams
  * @param {Tournament} tournament - tournament to filter exposure data on
  * @param {DraftedTeam[]} draftedTeams - array of drafted teams

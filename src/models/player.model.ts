@@ -25,6 +25,7 @@ export interface ExposureData {
     resurrectionPosRank?: string;
     resurrectionAdp?: number;
     resurrectionClv?: number;
+    experience?: string; // 'R' | 'S' | 'V'; Note that 'V' is for veteran and is not currently used
 }
 
 export interface SelectedPlayer {

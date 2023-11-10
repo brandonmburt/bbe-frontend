@@ -21,6 +21,11 @@ export const DRAFT_COLORS = {
     INSTANT: '#b40dbf', // instant #b40dbf
 }
 
+export const EXPERIENCE_COLORS = {
+    R: '#7CB9E8', // Rookie
+    S: '#00CC99', // Sophomore
+}
+
 export const TEAM_COLORS = {
     ARI: {
         primary: 'rgb(151,35,63)',

@@ -6,6 +6,7 @@ import { TOOLTIPS } from '../../constants/tooltips.constants';
 import { ToolTip } from '../../components/ToolTip.comp';
 import { EXPOSURE_TYPES } from '../../constants/types.constants';
 import { ExposureType } from '../../models/exposure.model';
+import { ExperienceAvatar } from '../../components/badges/ExperienceAvatar.comp';
 
 export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurrectionColumns, exposureType }) {
 
@@ -21,7 +22,7 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
     const cutoffDate: string = exposureInfo.cutoffDate;
     const resurrectionCutoffDate: string = EXPOSURE_TYPES.find(x => x.id === '2023resurrection').cutoffDate;
 
-     // TODO: What's the best way to store these column definitions
+    // TODO: What's the best way to store these column definitions
     const columns: GridColDef[] = [
         {
             field: 'team',
@@ -38,9 +39,15 @@ export default function PlayerExposureGrid({ handleViewPlayer, rows, showResurre
         {
             field: 'name',
             headerName: 'Player',
-            minWidth: 150,
+            minWidth: 175,
             type: 'string',
             hideSortIcons: true,
+            renderCell(params) {
+                return (<>
+                    {params.row.name}
+                    {params.row?.experience && <ExperienceAvatar experience={params.row.experience} /> }
+                </>)
+            }
         },
         {
             field: 'posRank',
