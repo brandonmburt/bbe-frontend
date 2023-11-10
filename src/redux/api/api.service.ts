@@ -204,5 +204,5 @@ class ApiService {
     
 }
 
-const apiService = new ApiService(process.env.REACT_APP_API_URL);
+const apiService = new ApiService(process.env.REACT_APP_API_URL ?? 'https://dtauecfjkd.us-east-1.awsapprunner.com/api');
 export default apiService;

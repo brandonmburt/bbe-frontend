@@ -5,15 +5,5 @@ build:
     build:
       - npm install
       - npm run build
-  env:
-    - name: REACT_APP_ENV
-      value: "production"
-    - name: REACT_APP_API_URL
-      value: "https://dtauecfjkd.us-east-1.awsapprunner.com/api"
 run:
   command: npx serve -s build
-  env:
-    - name: REACT_APP_ENV
-      value: "production"
-    - name: REACT_APP_API_URL
-      value: "https://dtauecfjkd.us-east-1.awsapprunner.com/api"
