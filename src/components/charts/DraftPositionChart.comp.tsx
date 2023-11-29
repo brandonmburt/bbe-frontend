@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Bar, CartesianGrid, ComposedChart, LabelList, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { CustomTooltip } from './CustomTooltip.comp';
 import { ToggleButtonGroup, ToggleButton, Typography, Box } from '@mui/material';
@@ -7,6 +7,7 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { TOOLTIPS } from '../../constants/tooltips.constants';
 import { ToolTip } from '../ToolTip.comp';
+// import CaptureImage from '../CaptureImage.comp';
 
 export function DraftPositionChart (props) {
 
@@ -14,6 +15,8 @@ export function DraftPositionChart (props) {
     const [expectedSwitch, setExpectedSwitch] = useState<boolean>(false);
     const [expectedOccurenceAvg, setExpectedOccurenceAvg] = useState<number>(null);
     const [expectedFeeAvg, setExpectedFeeAvg] = useState<number>(null);
+
+    // const sectionRef = useRef(null);
 
     useEffect(() => {
         if (props.data && props.data.length > 0) {
@@ -39,14 +42,15 @@ export function DraftPositionChart (props) {
         </ToggleButtonGroup>
     )
    
-    return (
+    return (<>
         <div style={{height: `${props.height}` }} >
             <Box sx={{ width: 1,flexDirection: 'row', display: 'flex', justifyContent: 'space-between' }}>
-                <Box sx={{ width: .5 }}>
+                <Box sx={{ width: .5, display: 'flex' }}>
                     <Typography variant="h5" sx={{ fontSize: { xs: '20px', md: '24px' } }}>
                         Draft Position Distribution
                         <ToolTip title={TOOLTIPS.SELECTED_TYPE_DATA} infoIcon={true} />
-                    </Typography>        
+                    </Typography>
+                    {/* <CaptureImage compRef={sectionRef} /> */}
                 </Box>
                 <Box sx={{ width: .5, textAlign: 'right' }}>
                     {distributionToggleButtons}
@@ -64,33 +68,34 @@ export function DraftPositionChart (props) {
                 </FormGroup>
             </Box>
 
-            <ResponsiveContainer width="100%" height="85%">
-                <ComposedChart
-                    width={500}
-                    height={300}
-                    data={props.data}
-                    margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="draftPosition" label={{ value: 'Position', position: 'insideBottom', offset: -10 }} />
-                    <YAxis label={{ value: distributionToggle === 'frequency' ? 'Frequency' : 'Entry Fees', angle: -90, position: 'insideLeft', offset: 10 }} />
-                    
-                    <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey={distributionToggle === 'frequency' ? 'frequency' : 'entryFees'} fill='#82ca9d' >
-                        <LabelList dataKey={distributionToggle === 'frequency' ? 'frequency' : 'entryFees'} position="top" />
-                    </Bar>
-                    {expectedSwitch && 
-                        <ReferenceLine
-                            visibility={expectedSwitch ? 'visible' : 'hidden'}
-                            stroke="blue"
-                            strokeDasharray="3 3"
-                            label={{ position: 'left', value: distributionToggle === 'frequency' ? expectedOccurenceAvg : expectedFeeAvg}}
-                            y={distributionToggle === 'frequency' ? expectedOccurenceAvg : expectedFeeAvg}
-                        />
-                    }
-                </ComposedChart>
-            </ResponsiveContainer>
-        </div>
-    );
-  
+            {/* <div ref={sectionRef} style={{width: '100%', height: '85%'}}> */}
+                <ResponsiveContainer width="100%" height="85%">
+                    <ComposedChart
+                        width={500}
+                        height={300}
+                        data={props.data}
+                        margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="draftPosition" label={{ value: 'Position', position: 'insideBottom', offset: -10 }} />
+                        <YAxis label={{ value: distributionToggle === 'frequency' ? 'Frequency' : 'Entry Fees', angle: -90, position: 'insideLeft', offset: 10 }} />
+                        
+                        <Tooltip content={<CustomTooltip />} />
+                        <Bar dataKey={distributionToggle === 'frequency' ? 'frequency' : 'entryFees'} fill='#82ca9d' >
+                            <LabelList dataKey={distributionToggle === 'frequency' ? 'frequency' : 'entryFees'} position="top" />
+                        </Bar>
+                        {expectedSwitch && 
+                            <ReferenceLine
+                                visibility={expectedSwitch ? 'visible' : 'hidden'}
+                                stroke="blue"
+                                strokeDasharray="3 3"
+                                label={{ position: 'left', value: distributionToggle === 'frequency' ? expectedOccurenceAvg : expectedFeeAvg}}
+                                y={distributionToggle === 'frequency' ? expectedOccurenceAvg : expectedFeeAvg}
+                            />
+                        }
+                    </ComposedChart>
+                </ResponsiveContainer>
+            </div>
+        {/* </div> */}
+    </>);
   };
